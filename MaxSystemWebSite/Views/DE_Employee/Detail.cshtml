@@ -1,0 +1,384 @@
+﻿@using Component_TableListing.Models
+@model MaxSys.Models.DE.DE_EMPLOYEE
+@using MaxSys.Models
+@using static MaxSys.Enum.Enum
+@{
+    //Top Panel ===============================================================================================
+    ComponentTopPanelModel componentTopPanelModel = new ComponentTopPanelModel();
+    componentTopPanelModel.Title_LabelVisible = true;
+    componentTopPanelModel.Title_LabelText = "Employee Detail";
+    componentTopPanelModel.Edit_ButtonEditVisible = true;
+    componentTopPanelModel.Back_ButtonVisible_Back = true;
+    componentTopPanelModel.Del_ButtonVisible_Delete = true;
+    componentTopPanelModel.Del_AjaxInfo_FetchData_Delete = new ComponentTable_AJAXModel("/DE_Event/Delete", Ajax_Type.POST, null, "/DE_Event/Index");
+    componentTopPanelModel.Submit_ButtonVisible_Submit = true;
+    componentTopPanelModel.Submit_ButtonType_Submit = "Submit";
+    componentTopPanelModel.Submit_AjaxInfo_FetchData_Submit = new ComponentTable_AJAXModel("/DE_Employee/Post", Ajax_Type.POST, null, "/DE_Employee/Index");
+}
+<form asp-action="Post" asp-controller="Appraise" method="post" id="frmEmployee">
+    @await Component.InvokeAsync("ComponentTopPanel", componentTopPanelModel)
+    <div class="page-container card-height">
+        @Html.HiddenFor(model => model.Page_Type, new { @class = "form-control", @id = "txtPageType" })
+        <div class="d-flex flex-column flex-grow-1 h-100" id="main_section">
+            <div class="card">
+                <div class="card-body g-0 px-3">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6 col- xl-6">
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Name  <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.HiddenFor(model => model.Page_Type, new { @class = "form-control", @id = "txtPageType" })
+                                    @Html.HiddenFor(model => model.ID_DE_EMPLOYEE)
+                                    @Html.TextBoxFor(model => model.EMP_NAME, new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">IC No <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.IC_NO, new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Address <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.ADDRESS_1, new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">&nbsp;</p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.ADDRESS_2, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">&nbsp;</p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.ADDRESS_3, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Postcode <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.POSTCODE, new { @class = "form-control isEdit required", placeholder = "Contoh : 14400" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">City <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.CITY, new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">State <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.DropDownListFor(model => model.STATE, new SelectList(Model.ddlSTATE, "DDL_Value", "DDL_Text"), new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Country <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.DropDownListFor(model => model.COUNTRY, new SelectList(Model.ddlCOUNTRY, "DDL_Value", "DDL_Text"), new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Gender <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.DropDownListFor(model => model.GENDER, new SelectList(Model.ddlGENDER, "DDL_Value", "DDL_Text"), new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Date of Birth<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.DATE_OF_BIRTH, new { @class = "form-control isEdit", type = "date" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Race <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.DropDownListFor(model => model.RACE, new SelectList(Model.ddlRACE, "DDL_Value", "DDL_Text"), new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Status Marital <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.DropDownListFor(model => model.MARITAL, new SelectList(Model.ddlSTATUS, "DDL_Value", "DDL_Text"), new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Upload Photo <span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    <div>
+                                        <p class="text-muted">Please select profile picture that not more than 10mb</p>
+                                        <input type="file" class="form-control isEdit" id="fileUpload" accept="image/*" />
+                                        @Html.HiddenFor(Model => Model.PHOTO_URL, new { @class = "form-control", @id = "txtPHOTO_URL" })
+                                        @Html.HiddenFor(Model => Model.PHOTO_URL_TMP, new { @class = "form-control", @id = "txtPHOTO_URL_TMP" })
+                                        <div id="progressBar" class="hidden" style="width: 100%; background-color: #f3f3f3;">
+                                            <div id="progressBarFill" style="width: 0%; height: 20px; background-color: #4caf50;"></div>
+                                        </div>
+                                        <div id="uploadStatus"></div>
+                                        <img id="uploadedImage" src="~/Images/user-avatar.png" alt="Profile Picture" style="margin-top:10px; width:50%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col- xl-6">
+
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Work No <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.EMP_NO, new { @class = "form-control isEdit required" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Email Working <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.EMAIL, new { @class = "form-control isEdit required", type = "email" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Email Personal<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.EMAIL_PERSONAL, new { @class = "form-control isEdit", type = "email" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Designation<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.DESIGNATION, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Department<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.DEPARTMENT, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Division<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.DIVISION, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Education Level<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.HIGH_EDUCATION, new { @class = "form-control isEdit" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Date Join<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.DATE_JOIN, new { @class = "form-control isEdit", type = "date" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Resign Date<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.RESIGN_DATE, new { @class = "form-control isEdit", type = "date" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Last Working Date<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    @Html.TextBoxFor(model => model.LAST_WORK_DATE, new { @class = "form-control isEdit", type = "date" })
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Phone Primary <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    <div class="input-group">
+                                        <!-- Dropdown -->
+                                        @Html.DropDownListFor(
+                                                 model => model.PHONE_1_CODE,
+                                                 new SelectList(Model.ddlPHONE_CODE, "DDL_Value", "DDL_Text"),
+                                                 new { @class = "form-select isEdit max-d-120" }
+                                                 )
+                                        <!-- Textbox -->
+                                        @Html.TextBoxFor(
+                                                 model => model.PHONE_1,
+                                                 new { @class = "form-control isEdit required", type = "number", placeholder = "Exp : 1110234567" }
+                                                 )
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                                    <p class="text-muted">Phone Alt<span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-9">
+                                    <div class="input-group">
+                                        <!-- Dropdown -->
+                                        @Html.DropDownListFor(
+                                                 model => model.PHONE_2_CODE,
+                                                 new SelectList(Model.ddlPHONE_CODE, "DDL_Value", "DDL_Text"),
+                                                 new { @class = "form-select isEdit max-d-120" }
+                                                 )
+                                        <!-- Textbox -->
+                                        @Html.TextBoxFor(
+                                                 model => model.PHONE_2,
+                                                 new { @class = "form-control isEdit", type = "number", placeholder = "Exp : 1110234567" }
+                                                 )
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        pageViewType();
+    });
+</script>
+<script>
+    $('#frmEmployee').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+      
+        // Validate the form
+        var formIsValid = true;
+        $(this).find('input, select, textarea').each(function () {
+            if (!validateField($(this))) {
+                formIsValid = false;
+            }
+        });
+        if (!formIsValid) {
+            return; // Stop form submission if validation fails
+        }
+
+        // var model = {
+        //     ID_DE_EMPLOYEE: $('input[name="ID_DE_EMPLOYEE"]').val(),
+        //     EMP_NO: $('input[name="EMP_NO"]').val(),
+        //     EMP_NAME: $('input[name="EMP_NAME"]').val(),
+        // };
+        var formData = $(this).serialize();
+
+        $.ajax({
+            url: '@componentTopPanelModel.Submit_AjaxInfo_FetchData_Submit.URL_Ajax', // Replace with your controller action URL
+            type: '@componentTopPanelModel.Submit_AjaxInfo_FetchData_Submit.Type_Ajax',
+            data: {
+                model: formData
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastSuccess("Success", response.message, function () {
+                        window.location.href = '@componentTopPanelModel.Submit_AjaxInfo_FetchData_Submit.Success_URL';
+                    });
+                } else {
+                    toastError("Error", response.message);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                console.error(xhr.responseText);
+                // Example: Show error message or handle specific errors
+            }
+        });
+    });
+</script>
+<script>
+    // File Upload Script
+    $('#fileUpload').on('change', function () {
+        var file = this.files[0];
+        if (file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '@Url.Action("Upload", "DE_Employee")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function () {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (event) {
+                        if (event.lengthComputable) {
+                            var percentComplete = Math.round((event.loaded / event.total) * 100);
+                            $("#progressBar").removeClass("hidden");
+                            $('#progressBarFill').css('width', percentComplete + '%');
+                            $('#uploadStatus').text('Upload Progress: ' + percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $('#uploadStatus').text(response.message);
+
+
+                        // Update hidden inputs with the uploaded photo URL
+                        $('input[name="PHOTO_URL"]').val(response.filePath);
+                        $('input[name="PHOTO_URL_TMP"]').val(response.filePath);
+
+
+                        // Display uploaded photo below the input
+                        $("#uploadedImage").attr('src', response.filePath);
+                        $("#uploadedImage").show();
+
+                        // Hide progress bar
+                        $("#progressBar").addClass("hidden");
+                    } else {
+                        $('#uploadStatus').text('Upload Failed: ' + response.message);
+                    }
+                },
+                error: function () {
+                    $('#uploadStatus').text('Upload Failed');
+                }
+            });
+        }
+    });
+</script>
