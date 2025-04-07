@@ -115,18 +115,19 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Error handling middleware
-app.UseStatusCodePages(async context =>
-{
-    if (context.HttpContext.Response.StatusCode == 401)
-    {
-        context.HttpContext.Response.Redirect("/Errors/Unauthorize");
-    }
-    if (context.HttpContext.Response.StatusCode == 404)
-    {
-        context.HttpContext.Response.Redirect("/Errors/NotFound");
-    }
-});
+//app.Use(async (context, next) =>
+//{
+//    await next();
+
+//    if (context.Response.StatusCode == 404 && !context.Response.HasStarted)
+//    {
+//        context.Response.Redirect("/Errors/NotFound");
+//    }
+//    else if (context.Response.StatusCode == 401 && !context.Response.HasStarted)
+//    {
+//        context.Response.Redirect("/Errors/Unauthorize");
+//    }
+//});
 
 
 app.UseRequestLocalization(new RequestLocalizationOptions
