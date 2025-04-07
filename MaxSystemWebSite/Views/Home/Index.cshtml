@@ -10,6 +10,7 @@
 
 <!-- Vendor CSS Files -->
 <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="~/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="~/vendor/aos/aos.css" rel="stylesheet">
 <link href="~/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
@@ -35,32 +36,13 @@
                     <li><a href="#portfolio">Portfolio</a></li>
                     <li><a href="#team">Team</a></li>
                     @* <li><a href="#pricing">Pricing</a></li> *@
-                    <li><a href="blog.html">Blog</a></li>
-                    <li class="dropdown">
-                        <a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                        <ul>
-                            <li><a href="#">Dropdown 1</a></li>
-                            <li class="dropdown">
-                                <a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                                <ul>
-                                    <li><a href="#">Deep Dropdown 1</a></li>
-                                    <li><a href="#">Deep Dropdown 2</a></li>
-                                    <li><a href="#">Deep Dropdown 3</a></li>
-                                    <li><a href="#">Deep Dropdown 4</a></li>
-                                    <li><a href="#">Deep Dropdown 5</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Dropdown 2</a></li>
-                            <li><a href="#">Dropdown 3</a></li>
-                            <li><a href="#">Dropdown 4</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="#recent-blog-postst">Blog</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
-            <a class="btn-getstarted" href="#about">Login Employee</a>
+            <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a>
 
         </div>
     </header>
@@ -555,6 +537,16 @@
                             </div>
                         </div><!-- End Portfolio Item -->
 
+                        <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
+                            <img src="~/Images/img/portfolio/penduduk.jpg" class="img-fluid" alt="">
+                            <div class="portfolio-info">
+                                <h4>Web - ePenduduk</h4>
+                                <p>Designed to streamline the management and tracking of resident information. It enables users to efficiently view and manage resident data.</p>
+                                <a href="~/Images/img/portfolio/penduduk.jpg" title="App 3" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+                                <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+                            </div>
+                        </div><!-- End Portfolio Item -->
+
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
                             <img src="~/Images/img/portfolio/portfolio-8.webp" class="img-fluid" alt="">
                             <div class="portfolio-info">
@@ -718,122 +710,6 @@
 
         </section><!-- /Team Section -->
        
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="testimonials section">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Testimonials</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-            </div><!-- End Section Title -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-                <div class="swiper init-swiper">
-                    <script type="application/json" class="swiper-config">
-                        {
-                          "loop": true,
-                          "speed": 600,
-                          "autoplay": {
-                            "delay": 5000
-                          },
-                          "slidesPerView": "auto",
-                          "pagination": {
-                            "el": ".swiper-pagination",
-                            "type": "bullets",
-                            "clickable": true
-                          }
-                        }
-                    </script>
-                    <div class="swiper-wrapper">
-
-                        <div class="swiper-slide">
-                            <div class="testimonial-item">
-                                <img src="~/Images/img/person/person-m-9.webp" class="testimonial-img" alt="">
-                                <h3>Saul Goodman</h3>
-                                <h4>Ceo &amp; Founder</h4>
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                </div>
-                                <p>
-                                    <i class="bi bi-quote quote-icon-left"></i>
-                                    <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                                    <i class="bi bi-quote quote-icon-right"></i>
-                                </p>
-                            </div>
-                        </div><!-- End testimonial item -->
-
-                        <div class="swiper-slide">
-                            <div class="testimonial-item">
-                                <img src="~/Images/img/person/person-f-5.webp" class="testimonial-img" alt="">
-                                <h3>Sara Wilsson</h3>
-                                <h4>Designer</h4>
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                </div>
-                                <p>
-                                    <i class="bi bi-quote quote-icon-left"></i>
-                                    <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                                    <i class="bi bi-quote quote-icon-right"></i>
-                                </p>
-                            </div>
-                        </div><!-- End testimonial item -->
-
-                        <div class="swiper-slide">
-                            <div class="testimonial-item">
-                                <img src="~/Images/img/person/person-f-12.webp" class="testimonial-img" alt="">
-                                <h3>Jena Karlis</h3>
-                                <h4>Store Owner</h4>
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                </div>
-                                <p>
-                                    <i class="bi bi-quote quote-icon-left"></i>
-                                    <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                                    <i class="bi bi-quote quote-icon-right"></i>
-                                </p>
-                            </div>
-                        </div><!-- End testimonial item -->
-
-                        <div class="swiper-slide">
-                            <div class="testimonial-item">
-                                <img src="~/Images/img/person/person-m-12.webp" class="testimonial-img" alt="">
-                                <h3>Matt Brandon</h3>
-                                <h4>Freelancer</h4>
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                </div>
-                                <p>
-                                    <i class="bi bi-quote quote-icon-left"></i>
-                                    <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                                    <i class="bi bi-quote quote-icon-right"></i>
-                                </p>
-                            </div>
-                        </div><!-- End testimonial item -->
-
-                        <div class="swiper-slide">
-                            <div class="testimonial-item">
-                                <img src="~/Images/img/person/person-m-13.webp" class="testimonial-img" alt="">
-                                <h3>John Larson</h3>
-                                <h4>Entrepreneur</h4>
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                </div>
-                                <p>
-                                    <i class="bi bi-quote quote-icon-left"></i>
-                                    <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                                    <i class="bi bi-quote quote-icon-right"></i>
-                                </p>
-                            </div>
-                        </div><!-- End testimonial item -->
-
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-
-            </div>
-
-        </section><!-- /Testimonials Section -->
         <!-- Faq 2 Section -->
         <section id="faq-2" class="faq-2 section light-background">
 
@@ -912,7 +788,7 @@
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Recent Blog Posts</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <p>Explore the latest events, team activities, and company highlights that showcase our vibrant culture and commitment to excellence.</p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -923,27 +799,27 @@
                         <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">
 
                             <div class="post-img position-relative overflow-hidden">
-                                <img src="~/Images/img/blog/blog-post-1.webp" class="img-fluid" alt="">
-                                <span class="post-date">December 12</span>
+                                <img src="~/Images/img/blog/team9.jpg" class="img-fluid" alt="">
+                                <span class="post-date">July 1</span>
                             </div>
 
                             <div class="post-content d-flex flex-column">
 
-                                <h3 class="post-title">Eum ad dolor et. Autem aut fugiat debitis</h3>
+                                <h3 class="post-title">Team Building 2024</h3>
 
                                 <div class="meta d-flex align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Julia Parker</span>
+                                        <i class="bi bi-person"></i> <span class="ps-2">HR and Admin</span>
                                     </div>
                                     <span class="px-3 text-black-50">/</span>
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Politics</span>
+                                        <i class="bi bi-folder2"></i> <span class="ps-2">Team Activities</span>
                                     </div>
                                 </div>
 
                                 <hr>
 
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+                                <a href="#" class="readmore stretched-link" data-bs-toggle="modal" data-bs-target="#blogModal1"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
 
                             </div>
 
@@ -954,27 +830,27 @@
                         <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="200">
 
                             <div class="post-img position-relative overflow-hidden">
-                                <img src="~/Images/img/blog/blog-post-2.webp" class="img-fluid" alt="">
-                                <span class="post-date">July 17</span>
+                                <img src="~/Images/img/blog/Ramadan8.jpeg" class="img-fluid" alt="">
+                                <span class="post-date">March 27</span>
                             </div>
 
                             <div class="post-content d-flex flex-column">
 
-                                <h3 class="post-title">Et repellendus molestiae qui est sed omnis</h3>
+                                <h3 class="post-title">Ramadan Buffet 2025</h3>
 
                                 <div class="meta d-flex align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Mario Douglas</span>
+                                        <i class="bi bi-person"></i> <span class="ps-2">HR and Admin</span>
                                     </div>
                                     <span class="px-3 text-black-50">/</span>
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Sports</span>
+                                        <i class="bi bi-folder2"></i> <span class="ps-2">Buffet Gathering</span>
                                     </div>
                                 </div>
 
                                 <hr>
 
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+                                <a href="#" class="readmore stretched-link" data-bs-toggle="modal" data-bs-target="#blogModal2"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
 
                             </div>
 
@@ -985,27 +861,27 @@
                         <div class="post-item position-relative h-100">
 
                             <div class="post-img position-relative overflow-hidden">
-                                <img src="~/Images/img/blog/blog-post-3.webp" class="img-fluid" alt="">
-                                <span class="post-date">September 05</span>
+                                <img src="~/Images/img/blog/recognition.png" class="img-fluid" alt="">
+                                <span class="post-date">2024 - 2025</span>
                             </div>
 
                             <div class="post-content d-flex flex-column">
 
-                                <h3 class="post-title">Quia assumenda est et veritati tirana ploder</h3>
+                                <h3 class="post-title">Company Recognition and Gift</h3>
 
                                 <div class="meta d-flex align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Lisa Hunter</span>
+                                        <i class="bi bi-person"></i> <span class="ps-2">HR and Admin</span>
                                     </div>
                                     <span class="px-3 text-black-50">/</span>
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Economics</span>
+                                        <i class="bi bi-folder2"></i> <span class="ps-2">Appreciation</span>
                                     </div>
                                 </div>
 
                                 <hr>
 
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+                                <a href="#" class="readmore stretched-link" data-bs-toggle="modal" data-bs-target="#blogModal3">><span>Read More</span><i class="bi bi-arrow-right"></i></a>
 
                             </div>
 
@@ -1017,6 +893,194 @@
             </div>
 
         </section><!-- /Recent Blog Postst Section -->
+
+
+        <!-- Modal for Blog 1 with Image Carousel -->
+        <div class="modal fade" id="blogModal1" tabindex="-1" aria-labelledby="blogModal1Label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="blogModal1Label">Team Building 2024</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Carousel -->
+                        <div id="carouselTeamBuilding" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="~/Images/img/blog/team8.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team7.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 7">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team6.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 6">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team5.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 5">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team4.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 4">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team3.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 3">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team2.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;"alt="Team 2">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/team1.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 1">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselTeamBuilding" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselTeamBuilding" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-3">
+                            <p><strong>Date:</strong> July 1 2024</p>
+                            <p>
+                                Our 2024 team building event featured various collaborative challenges, games, and bonding activities aimed at strengthening our culture.
+                            </p>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal for Blog 1 with Image Carousel -->
+
+        
+        <!-- Modal for Blog 2 with Image Carousel -->
+        <div class="modal fade" id="blogModal2" tabindex="-1" aria-labelledby="blogModal2Label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="blogModal2Label">Ramadan Buffet 2025</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="carouselRamadan" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="~/Images/img/blog/Ramadan7.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan6.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 6">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan5.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 5">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan4.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 4">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan3.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 3">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan2.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 2">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="~/Images/img/blog/Ramadan1.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 1">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselRamadan" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselRamadan" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Date:</strong> March 27, 2025</p>
+                            <p>
+                                A delightful Ramadan buffet gathering where our team bonded over delicious food and celebrated the holy month together.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal for Blog 2 with Image Carousel -->
+        
+        <!-- Modal for Blog 3 with Image Carousel -->
+        <div class="modal fade" id="blogModal3" tabindex="-1" aria-labelledby="blogModal3Label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="blogModal3Label">Company Recognition and Gift</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="carouselGifts" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="~/Images/img/blog/Gift (9).jpg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (8).jpg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 8">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (7).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 7">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (6).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 6">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (5).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 5">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (4).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 4">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (3).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 3">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (2).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 2">
+            </div>
+            <div class="carousel-item">
+              <img src="~/Images/img/blog/Gift (1).jpg"class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 1">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselGifts" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselGifts" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="mt-3">
+          <p><strong>Date:</strong> 2024 - 2025</p>
+          <p>
+            Employees were recognized and appreciated with heartfelt gifts and thank-you notes for their outstanding contributions.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+        <!-- End Modal for Blog 3 with Image Carousel -->
+
         <!-- Contact Section -->
         <section id="contact" class="contact section">
 
@@ -1182,8 +1246,17 @@
     <!-- Preloader -->
     <div id="preloader"></div>
 
-    <!-- Vendor JS Files -->
-    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS: CDN first -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Fallback: Load local if CDN fails -->
+    <script>
+        if (typeof bootstrap === 'undefined') {
+            document.write('<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"><\/script>');
+        }
+    </script>
+
+    <!-- 🌐 Other Vendor JS Files -->
     <script src="~/vendor/php-email-form/validate.js"></script>
     <script src="~/vendor/aos/aos.js"></script>
     <script src="~/vendor/glightbox/js/glightbox.min.js"></script>
@@ -1305,3 +1378,53 @@
     });
 });
 </script> *@
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Sign In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" method="post" action="/Home/Login">
+                    @Html.AntiForgeryToken() <!-- Add this line -->
+                    <div class="mb-3">
+                        <label for="loginEmail" class="form-label">Email address</label>
+                        @Html.TextBoxFor(a => a.LOGIN_ID, new { placeholder = "Enter email", id = "loginEmail", @class = "form-control remove-left-border login-txt textbox keyboard", @value = "", type = "email" })
+                        <span class="text-danger" id="emailError"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        @Html.TextBoxFor(a => a.PASSWORD, new { placeholder = "Password", id = "loginPassword", @class = "form-control remove-left-border login-txt textbox keyboard", @value = "", type = "password" })
+                        <span class="text-danger" id="passwordError"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                </form>
+                <hr />
+                <button type="submit" class="btn btn-outline-primary w-100">Microsoft Sign In</button>
+
+                <div class="text-center mt-3">
+                    <a href="/Account/ForgotPassword" id="forgotPasswordLink">Forgot Password?</a> <!-- Forgot Password link -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery Script to Show Modal -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const loginBtn = document.getElementById('loginBtn');
+      const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+
+      loginBtn.addEventListener('click', function () {
+        loginModal.show();
+      });
+    });
+</script>
