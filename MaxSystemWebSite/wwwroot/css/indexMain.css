@@ -1236,6 +1236,53 @@ section,
 		}
 
 /*--------------------------------------------------------------
+# Different Section
+--------------------------------------------------------------*/
+.different .different-item {
+	background-color: var(--surface-color);
+	box-shadow: 0px 5px 90px 0px rgba(0, 0, 0, 0.1);
+	padding: 50px 30px;
+	transition: all ease-in-out 0.4s;
+	height: 100%;
+	width: 300px;
+}
+
+	.different .different-item .icon {
+		margin-bottom: 10px;
+	}
+
+		.different .different-item .icon i {
+			color: var(--accent-color);
+			font-size: 36px;
+			transition: 0.3s;
+		}
+
+	.different .different-item h4 {
+		font-weight: 700;
+		margin-bottom: 15px;
+		font-size: 20px;
+	}
+
+		.different .different-item h4 a {
+			color: var(--heading-color);
+			transition: ease-in-out 0.3s;
+		}
+
+	.different .different-item p {
+		line-height: 24px;
+		font-size: 14px;
+		margin-bottom: 0;
+	}
+
+	.different .different-item:hover {
+		transform: translateY(-10px);
+	}
+
+.services .service-item:hover h4 a {
+	color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
 # Work Process Section
 --------------------------------------------------------------*/
 .work-process .steps-item {
