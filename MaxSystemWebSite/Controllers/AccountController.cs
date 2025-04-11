@@ -197,10 +197,10 @@ namespace MaxSys.Controllers
 
                 if (returnAuth.success == false)
                 {
-                    return Json(new { success = false, message = "Permohonan untuk menukar kata laluan tidak berjaya. Sila cuba sebentar lagi." });
+                    return Json(new { success = false, message = "Failed to change password" });
                 }
                 else {
-                    return Json(new { success = true, message = $"Permohonan menukar kata laluan Berjaya." });
+                    return Json(new { success = true, message = $"Successfully changes password." });
                 }
 
             }
