@@ -14,6 +14,9 @@ using System.Globalization;
 using Component_TableListing.Services;
 using MaxSys.Interface;
 using E_Template.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,12 +49,60 @@ builder.Services.AddHttpContextAccessor();
 var provider = builder.Services.BuildServiceProvider();
 var _configuration = provider.GetRequiredService<IConfiguration>();
 
+////JWT Token
+//builder.Services.AddAuthentication(
+//    options =>
+//    {
+//        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    }
+//)
+//.AddJwtBearer(options =>
+//{
+//    options.Events = new JwtBearerEvents
+//    {
+//        OnMessageReceived = context =>
+//        {
+//            var token = context.HttpContext.Request.Cookies["jwt"];
+//            if (!string.IsNullOrEmpty(token))
+//            {
+//                context.Token = token;
+//            }
+//            return Task.CompletedTask;
+//        },
+//        OnAuthenticationFailed = context =>
+//        {
+//            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+//            return Task.CompletedTask;
+//        },
+//        OnTokenValidated = context =>
+//        {
+//            Console.WriteLine("Token is valid.");
+//            return Task.CompletedTask;
+//        }
+//    };
+
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+//        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JwtSettings").GetValue<string>("Key").ToString()))
+//    };
+//});
 //JWT Token
 builder.Services.AddAuthentication(
     options =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+       // options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+       //// options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // For sign-in
+       // options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+       // options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
     }
 )
 .AddJwtBearer(options =>
@@ -89,7 +140,7 @@ builder.Services.AddAuthentication(
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JwtSettings").GetValue<string>("Key").ToString()))
     };
-});
+}).AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
 
 builder.Services.AddRazorPages().AddMvcOptions(options =>
 {

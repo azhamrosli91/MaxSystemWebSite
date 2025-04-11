@@ -292,6 +292,7 @@ namespace MaxSys.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetSidebar()
         {
             List<AclResource> sidebarItems = null;

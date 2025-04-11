@@ -1475,7 +1475,11 @@
                     <button type="submit" class="btn btn-primary w-100">Sign In</button>
                 </form>
                 <hr />
-                <button type="submit" class="btn btn-outline-primary w-100">Microsoft Sign In</button>
+                <a class="btn btn-outline-primary btn-microsoft-small" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="Sign">
+                    <img src="~/Images/Microsoft_logo.svg" alt="Microsoft Logo">
+                    Microsoft Sign In
+                </a>
+               @*  <button type="submit" class="btn btn-outline-primary w-100">Microsoft Sign In</button> *@
 
                 <div class="text-center mt-3">
                     <a href="/Account/ForgotPassword" id="forgotPasswordLink">Forgot Password?</a> <!-- Forgot Password link -->
