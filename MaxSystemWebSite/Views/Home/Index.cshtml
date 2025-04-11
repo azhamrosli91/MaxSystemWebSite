@@ -24,7 +24,7 @@
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
             <a href="index.html" class="logo d-flex align-items-center me-auto">
-                 <img src="~/Images/Max_logo3.ico" alt="Max System Logo" class="logo-img" style="height: 30px; width: auto;">
+                 <img src="~/Images/Max_logo3.ico" alt="Max System Logo" class="logo-img" style="height: 50px; width: auto;">
                 <h1 class="sitename fs-4 me-4">Max System Solution</h1>
             </a>
 
@@ -49,26 +49,31 @@
 
     <main class="main">
 
-        <!-- Hero Section -->
-        <section id="hero" class="hero section dark-background">
+       <!-- Hero Section -->
+<section id="hero" class="hero section dark-background" style="position:relative; overflow:hidden;">
+<img src="~/Images/bg10.jpg"
+                 style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.2; z-index:1;" />
+ 
+            <div class="container" style="position:relative; z-index:10;">
+<div class="row gy-4">
+<div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
+<h1>Transform Your Business with Innovative IT and AI Solutions</h1>
+<p>We are team of talent designer best solution for your business</p>
+<div class="d-flex">
+<a href="#about" class="btn-get-started">Get Started</a>
+<a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center">
+<i class="bi bi-play-circle"></i><span>Watch Video</span>
+</a>
+</div>
+</div>
+<div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
+<img src="~/Images/img/hero-img.png" class="img-fluid animated" alt="">
+</div>
+</div>
+</div>
+</section>
+<!-- /Hero Section -->
 
-            <div class="container">
-                <div class="row gy-4">
-                    <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
-                        <h1>Transform Your Business with Innovative IT and AI Solutions</h1>
-                        <p>We are team of talent designer best solution for your business</p>
-                        <div class="d-flex">
-                            <a href="#about" class="btn-get-started">Get Started</a>
-                            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
-                        <img src="~/Images/img/hero-img.png" class="img-fluid animated" alt="">
-                    </div>
-                </div>
-            </div>
-
-        </section><!-- /Hero Section -->
         <!-- Clients Section -->
         <section id="clients" class="clients section light-background">
 
@@ -118,6 +123,7 @@
                         <div class="swiper-slide"><img src="~/Images/img/clients/Plexus_resized.png" class="img-fluid" alt="Plexus Logo"></div>
                         <div class="swiper-slide"><img src="~/Images/img/clients/ASE_resized.png" class="img-fluid" alt="ASE Logo"></div>
                         <div class="swiper-slide"><img src="~/Images/img/clients/toray.jpg" class="img-fluid" alt="Toray Logo"></div>
+                        <div class="swiper-slide"><img src="~/Images/img/clients/Penfibre.png" class="img-fluid" alt="Penfibre Logo"></div>
                        
                     </div>
                 </div>
@@ -163,64 +169,177 @@
 
             </div>
 
-        </section><!-- /About Section -->
-        <!-- Why Us Section -->
-        <section id="why-us" class="section why-us light-background" data-builder="section">
+            <!-- Why Us Section -->
+            <section id="why-us" class="section why-us light-background" data-builder="section">
 
-            <div class="container-fluid">
+                <div class="container-fluid">
 
-                <div class="row gy-4">
+                    <div class="row gy-4">
 
-                    <div class="col-lg-7 d-flex flex-column justify-content-center order-2 order-lg-1">
+                        <div class="col-lg-7 d-flex flex-column justify-content-center order-2 order-lg-1">
 
-                        <div class="content px-xl-5" data-aos="fade-up" data-aos-delay="100">
-                            <h3><span>The task of dividing responsibilities, </span><strong>while ensuring efficiency and a strategic approach, remains a challenge.</strong></h3>
-                            <p>
-                                Optimizing Business Processes with Strategic Planning, Expert Efficiency, and a Focus on Long-Term Success.
-                            </p>
+                            <div class="content px-xl-5" data-aos="fade-up" data-aos-delay="100">
+                                <h3><span>Is your business experiencing these </span><strong>challenges?</strong></h3>
+                                <p>
+                                    Improving business operations through smart planning, expert solutions, and long-term focus.
+                                </p>
+                            </div>
+
+                            <div class="faq-container px-xl-5" data-aos="fade-up" data-aos-delay="200">
+
+                                <div class="faq-item faq-active">
+
+                                    <h3><span>01</span> Streamlining your business with smart strategies and long-term goals.</h3>
+                                    <div class="faq-content">
+                                        <p>We help simplify your operations by applying proven strategies that not only boost productivity today but also set your business up for lasting success.</p>
+                                    </div>
+                                    <i class="faq-toggle bi bi-chevron-right"></i>
+                                </div><!-- End Faq item-->
+
+                                <div class="faq-item">
+                                    <h3><span>02</span> Enhancing business performance with expert planning and a future-focused approach.</h3>
+                                    <div class="faq-content">
+                                        <p>Our team brings deep expertise to guide your business decisions, ensuring stronger performance now while preparing for tomorrow’s challenges.</p>
+                                    </div>
+                                    <i class="faq-toggle bi bi-chevron-right"></i>
+                                </div><!-- End Faq item-->
+
+                                <div class="faq-item">
+                                    <h3><span>03</span> Making your business more efficient with strategic planning and lasting solutions.</h3>
+                                    <div class="faq-content">
+                                        <p>Through thoughtful planning and tailored solutions, we optimize your processes to save time, reduce costs, and deliver sustainable growth.</p>
+                                    </div>
+                                    <i class="faq-toggle bi bi-chevron-right"></i>
+                                </div><!-- End Faq item-->
+
+                            </div>
+
                         </div>
 
-                        <div class="faq-container px-xl-5" data-aos="fade-up" data-aos-delay="200">
-
-                            <div class="faq-item faq-active">
-
-                                <h3><span>01</span> Streamlining Business Operations through Expert Planning and Strategic Efficiency.</h3>
-                                <div class="faq-content">
-                                    <p>By optimizing workflows with strategic planning and expert efficiency, we ensure smoother operations, reduced costs, and a pathway to sustainable business growth.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
-
-                            <div class="faq-item">
-                                <h3><span>02</span> Empowering Business Growth with Data-Driven Insights and Intelligent Solutions.</h3>
-                                <div class="faq-content">
-                                    <p>Leverage the power of data analytics and AI-driven insights to make informed decisions, improve customer experience, and unlock new opportunities for growth.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
-
-                            <div class="faq-item">
-                                <h3><span>03</span> Enhancing Productivity with Automated Solutions and Seamless Integration.</h3>
-                                <div class="faq-content">
-                                    <p>Automate routine tasks and seamlessly integrate advanced IT solutions to boost productivity, improve efficiency, and free up valuable resources for more strategic initiatives.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
-
+                        <div class="col-lg-5 order-1 order-lg-2 why-us-img">
+                            <img src="~/Images/img/why-us.png" class="img-fluid" alt="" data-aos="zoom-in" data-aos-delay="100">
                         </div>
-
                     </div>
 
-                    <div class="col-lg-5 order-1 order-lg-2 why-us-img">
-                        <img src="~/Images/img/why-us.png" class="img-fluid" alt="" data-aos="zoom-in" data-aos-delay="100">
-                    </div>
                 </div>
 
-            </div>
+            </section><!-- /Why Us Section -->
 
-        </section><!-- /Why Us Section -->
+            <!-- Services Section -->
+            <section id="services" class="services section bg-white text-dark">
+
+                <!-- Section Title -->
+                <div class="container section-title" data-aos="fade-up">
+                    <h2>Services</h2>
+                    <p>We provide custom solutions designed to fit your business and help it grow.</p>
+                </div><!-- End Section Title -->
+
+                <div class="container">
+
+                    <div class="row gy-4">
+
+                        <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
+                            <div class="service-item position-relative">
+                                <div class="icon"><i class="bi bi-code-slash icon"></i></div>
+                                <h4><a href="" class="stretched-link">IT Solution</a></h4>
+                                <p>VProviding innovative IT solutions tailored to optimize your business operations, streamline processes, and enhance overall performance.</p>
+                            </div>
+                        </div><!-- End Service Item -->
+
+                        <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
+                            <div class="service-item position-relative">
+                                <div class="icon"><i class="bi bi-robot icon"></i></div>
+                                <h4><a href="" class="stretched-link">AI Solution</a></h4>
+                                <p>Harnessing the power of artificial intelligence to improve decision-making, automate tasks, and create smarter, more efficient business strategies.</p>
+                            </div>
+                        </div><!-- End Service Item -->
+
+                        <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+                            <div class="service-item position-relative">
+                                <div class="icon"><i class="bi bi-people-fill icon"></i></div>
+                                <h4><a href="" class="stretched-link">Resourece Provider</a></h4>
+                                <p>Supplying skilled resources to support your business needs, from technical expertise to project management, ensuring seamless operations and growth.</p>
+                            </div>
+                        </div><!-- End Service Item -->
+
+                        <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="400">
+                            <div class="service-item position-relative">
+                                <div class="icon"><i class="bi bi-chat-dots-fill icon"></i></div>
+                                <h4><a href="" class="stretched-link">IT Consultant</a></h4>
+                                <p>Offering expert guidance to help you navigate complex IT challenges, optimize your infrastructure, and align technology with your business goals.</p>
+                            </div>
+                        </div><!-- End Service Item -->
+
+                    </div>
+
+                </div>
+
+            </section><!-- /Services Section -->
+
+        </section>
+
+        <!-- Different Section -->
+<section id="diffent" class="different section light-background">
+ 
+            <!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+<h2>What make us different</h2>
+<p>We deliver industry best practices through practical, cost-effective solutions and leading technologies—enhanced by a personal touch. As digital transformation becomes a top priority, we help businesses adopt effective strategies to stay competitive and future-ready.</p>
+</div><!-- End Section Title -->
+ 
+            <div class="container">
+ 
+                <div class="row gy-4">
+ 
+                     <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+<div class="different-item position-relative">
+<div class="icon"><i class="bi bi-people-fill icon"></i></div>
+<h4><a href="" class="stretched-link">Local Support</a></h4>
+</div>
+</div><!-- End Service Item -->
+ 
+                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
+<div class="different-item position-relative">
+<div class="icon"><i class="bi bi-pencil-fill icon"></i></div>
+<h4>
+<a href="" class="stretched-link">
+                                    Customisation
+                                    solutions
+</a>
+</h4>
+</div>
+</div><!-- End Service Item -->
+ 
+                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
+<div class="different-item position-relative">
+<div class="icon"><i class="bi bi-cash-coin icon"></i></div>
+<h4>
+<a href="" class="stretched-link">
+                                    Cost-Effective Solutions
+</a>
+</h4>
+</div>
+</div><!-- End Service Item -->
+ 
+                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="400">
+<div class="different-item position-relative">
+<div class="icon"><i class="bi bi-person-gear icon"></i></div>
+<h4>
+<a href="" class="stretched-link">
+                                    Dedicated Support
+</a>
+</h4>
+</div>
+</div><!-- End Service Item -->
+ 
+                </div>
+</div>
+ 
+        </section><!-- /How Different Section -->
+
+
         <!-- Skills Section -->
-        <section id="skills" class="skills section">
+        <section id="skills" class="skills section bg-light text-dark">
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -275,56 +394,7 @@
             </div>
 
         </section><!-- /Skills Section -->
-        <!-- Services Section -->
-        <section id="services" class="services section light-background">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Services</h2>
-                <p>We provide custom solutions designed to fit your business and help it grow.</p>
-            </div><!-- End Section Title -->
-
-            <div class="container">
-
-                <div class="row gy-4">
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="bi bi-code-slash icon"></i></div>
-                            <h4><a href="" class="stretched-link">IT Solution</a></h4>
-                            <p>VProviding innovative IT solutions tailored to optimize your business operations, streamline processes, and enhance overall performance.</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="bi bi-robot icon"></i></div>
-                            <h4><a href="" class="stretched-link">AI Solution</a></h4>
-                            <p>Harnessing the power of artificial intelligence to improve decision-making, automate tasks, and create smarter, more efficient business strategies.</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="bi bi-people-fill icon"></i></div>
-                            <h4><a href="" class="stretched-link">Resourece Provider</a></h4>
-                            <p>Supplying skilled resources to support your business needs, from technical expertise to project management, ensuring seamless operations and growth.</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                    <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="400">
-                        <div class="service-item position-relative">
-                            <div class="icon"><i class="bi bi-chat-dots-fill icon"></i></div>
-                            <h4><a href="" class="stretched-link">IT Consultant</a></h4>
-                            <p>Offering expert guidance to help you navigate complex IT challenges, optimize your infrastructure, and align technology with your business goals.</p>
-                        </div>
-                    </div><!-- End Service Item -->
-
-                </div>
-
-            </div>
-
-        </section><!-- /Services Section -->
+       
         <!-- Work Process Section -->
         <section id="work-process" class="work-process section">
 
@@ -445,6 +515,7 @@
             </div>
 
         </section><!-- /Call To Action Section -->
+
         <!-- Portfolio Section -->
         <section id="portfolio" class="portfolio section">
 
@@ -574,6 +645,7 @@
             </div>
 
         </section><!-- /Portfolio Section -->
+
         <!-- Team Section -->
         <section id="team" class="team section">
 
@@ -710,77 +782,77 @@
 
         </section><!-- /Team Section -->
        
-        <!-- Faq 2 Section -->
-        <section id="faq-2" class="faq-2 section light-background">
+      @*   <!-- Faq 2 Section --> *@
+        @* <section id="faq-2" class="faq-2 section light-background"> *@
 
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Frequently Asked Questions</h2>
-                <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-            </div><!-- End Section Title -->
+        @*     <!-- Section Title --> *@
+        @*     <div class="container section-title" data-aos="fade-up"> *@
+        @*         <h2>Frequently Asked Questions</h2> *@
+        @*         <p>Get the answers you need to understand how our tailored solutions can help optimize and grow your business.</p> *@
+        @*     </div><!-- End Section Title --> *@
 
-            <div class="container">
+        @*     <div class="container"> *@
 
-                <div class="row justify-content-center">
+        @*         <div class="row justify-content-center"> *@
 
-                    <div class="col-lg-10">
+        @*             <div class="col-lg-10"> *@
 
-                        <div class="faq-container">
+        @*                 <div class="faq-container"> *@
 
-                            <div class="faq-item faq-active" data-aos="fade-up" data-aos-delay="200">
-                                <i class="faq-icon bi bi-question-circle"></i>
-                                <h3>Non consectetur a erat nam at lectus urna duis?</h3>
-                                <div class="faq-content">
-                                    <p>Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor rhoncus dolor purus non.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
+        @*                     <div class="faq-item faq-active" data-aos="fade-up" data-aos-delay="200"> *@
+        @*                         <i class="faq-icon bi bi-question-circle"></i> *@
+        @*                         <h3>What IT solutions does your company provide?</h3> *@
+        @*                         <div class="faq-content"> *@
+        @*                             <p>We offer a wide range of IT solutions that are customized to optimize your business operations. Our services help streamline processes, improve performance, and enhance overall business productivity.</p> *@
+        @*                         </div> *@
+        @*                         <i class="faq-toggle bi bi-chevron-right"></i> *@
+        @*                     </div><!-- End Faq item--> *@
 
-                            <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
-                                <i class="faq-icon bi bi-question-circle"></i>
-                                <h3>Feugiat scelerisque varius morbi enim nunc faucibus a pellentesque?</h3>
-                                <div class="faq-content">
-                                    <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
+        @*                     <div class="faq-item" data-aos="fade-up" data-aos-delay="300"> *@
+        @*                         <i class="faq-icon bi bi-question-circle"></i> *@
+        @*                         <h3>How can your AI solutions benefit my business?</h3> *@
+        @*                         <div class="faq-content"> *@
+        @*                             <p>Our AI solutions leverage cutting-edge technology to improve decision-making, automate repetitive tasks, and enhance business strategies, making your company more efficient and competitive in the market.</p> *@
+        @*                         </div> *@
+        @*                         <i class="faq-toggle bi bi-chevron-right"></i> *@
+        @*                     </div><!-- End Faq item--> *@
 
-                            <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
-                                <i class="faq-icon bi bi-question-circle"></i>
-                                <h3>Dolor sit amet consectetur adipiscing elit pellentesque?</h3>
-                                <div class="faq-content">
-                                    <p>Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
+        @*                     <div class="faq-item" data-aos="fade-up" data-aos-delay="400"> *@
+        @*                         <i class="faq-icon bi bi-question-circle"></i> *@
+        @*                         <h3>What types of resources do you provide for businesses?</h3> *@
+        @*                         <div class="faq-content"> *@
+        @*                             <p>We supply highly skilled resources that cater to various business needs, including technical expertise and project management. Our resource provision ensures seamless business operations and growth.</p> *@
+        @*                         </div> *@
+        @*                         <i class="faq-toggle bi bi-chevron-right"></i> *@
+        @*                     </div><!-- End Faq item--> *@
 
-                            <div class="faq-item" data-aos="fade-up" data-aos-delay="500">
-                                <i class="faq-icon bi bi-question-circle"></i>
-                                <h3>Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla?</h3>
-                                <div class="faq-content">
-                                    <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
+        @*                     <div class="faq-item" data-aos="fade-up" data-aos-delay="500"> *@
+        @*                         <i class="faq-icon bi bi-question-circle"></i> *@
+        @*                         <h3>What kind of IT consulting services do you offer?</h3> *@
+        @*                         <div class="faq-content"> *@
+        @*                             <p>Our IT consultants provide expert guidance to help businesses navigate complex IT challenges, optimize existing infrastructure, and align technology with business goals, ensuring long-term success.</p> *@
+        @*                         </div> *@
+        @*                         <i class="faq-toggle bi bi-chevron-right"></i> *@
+        @*                     </div><!-- End Faq item--> *@
 
-                            <div class="faq-item" data-aos="fade-up" data-aos-delay="600">
-                                <i class="faq-icon bi bi-question-circle"></i>
-                                <h3>Tempus quam pellentesque nec nam aliquam sem et tortor consequat?</h3>
-                                <div class="faq-content">
-                                    <p>Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in</p>
-                                </div>
-                                <i class="faq-toggle bi bi-chevron-right"></i>
-                            </div><!-- End Faq item-->
+        @*                     <div class="faq-item" data-aos="fade-up" data-aos-delay="600"> *@
+        @*                         <i class="faq-icon bi bi-question-circle"></i> *@
+        @*                         <h3>How do your services help my business grow?</h3> *@
+        @*                         <div class="faq-content"> *@
+        @*                             <p>By offering tailored solutions that address your unique business challenges, we help you adopt technologies and strategies that streamline operations, improve efficiency, and ultimately drive business growth.</p> *@
+        @*                         </div> *@
+        @*                         <i class="faq-toggle bi bi-chevron-right"></i> *@
+        @*                     </div><!-- End Faq item--> *@
 
-                        </div>
+        @*                 </div> *@
 
-                    </div>
+        @*             </div> *@
 
-                </div>
+        @*         </div> *@
 
-            </div>
+        @*     </div> *@
 
-        </section><!-- /Faq 2 Section -->
+        @* </section><!-- /Faq 2 Section --> *@
        
         <!-- Recent Blog Postst Section -->
         <section id="recent-blog-postst" class="recent-blog-postst section light-background">
@@ -1102,7 +1174,7 @@
                                 <div>
                                     <h3>Address</h3>
                                     <p>
-                                        First-Link System and Engineering Sdn Bhd
+                                        Max System Solution Sdn Bhd
                                         No. 27, 1st Floor, Jalan Villa Tanjung, Villa Tanjung, 12300 Butterworth, Pulau Pinang
                                     </p>
                                 </div>
@@ -1123,8 +1195,7 @@
                                     <p>hr@maxsys.com.my</p>
                                 </div>
                             </div><!-- End Info Item -->
-
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15887.728804114042!2d100.36823719739911!3d5.427271008755994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ac512782c686d%3A0x1596409be924043f!2sFirst-Link%20System%20and%20Engineering%20Sdn%20Bhd!5e0!3m2!1sen!2sus!4v1743140629755!5m2!1sen!2sus" width="400" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            <<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.9322254553813!2d100.38625689999999!3d5.427267299999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ac5ed7013568f%3A0xdef060b81b4def67!2sMax%20System%20Solution%20Sdn%20Bhd!5e0!3m2!1sen!2smy!4v1744084335866!5m2!1sen!2smy" width="500" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
 
@@ -1216,11 +1287,8 @@
                 <div class="col-lg-4 col-md-12">
                     <h4>Follow Us</h4>
                     <p>Stay connected with us on social media for the latest updates and news.</p>
-                    <div class="social-links d-flex">
-                        <a href=""><i class="bi bi-twitter-x"></i></a>
-                        <a href=""><i class="bi bi-facebook"></i></a>
-                        <a href=""><i class="bi bi-instagram"></i></a>
-                        <a href=""><i class="bi bi-linkedin"></i></a>
+                    <div class="social-links d-flex">     
+                        <a href="https://www.facebook.com/people/Max-System-Solution-Sdn-Bhd/100089288231982/"><i class="bi bi-facebook"></i></a>
                     </div>
                 </div>
 
