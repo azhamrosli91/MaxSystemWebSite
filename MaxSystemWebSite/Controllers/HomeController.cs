@@ -21,6 +21,7 @@ using MaxSys.Helpers;
 using MaxSys.Interface;
 using MaxSys.Models;
 using LoginViewModel = Base.Model.LoginViewModel;
+using Org.BouncyCastle.Asn1.Crmf;
 
 namespace MaxSys.Controllers
 {
@@ -259,6 +260,45 @@ namespace MaxSys.Controllers
         public IActionResult Sidebar()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Chatbot([FromBody] ChatRequest request)
+        {
+            try
+            {
+                var client = new HttpClient();
+                string apiKey = _configuration["ChatGPT"];
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+                var body = new
+                {
+                    model = "gpt-3.5-turbo",
+                    messages = request.Messages,
+                    temperature = 0.7
+                };
+
+                var response = await client.PostAsync(
+                    "https://api.openai.com/v1/chat/completions",
+                    new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    dynamic data = JsonConvert.DeserializeObject(json);
+                    string reply = data.choices[0].message.content;
+                    return Ok(reply);
+                }
+
+                var errorBody = await response.Content.ReadAsStringAsync();
+                return StatusCode(500, $"OpenAI error: {errorBody}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+            
         }
 
         public async Task<IActionResult> AuditTrail(int ID = 0, string TableName = "", string ReturnURL = "")

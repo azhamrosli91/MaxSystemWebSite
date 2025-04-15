@@ -17,7 +17,7 @@
 <link href="~/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
 <link href="~/css/indexmain.css" rel="stylesheet" />
-
+<link href="~/css/chatbot.css" rel="stylesheet" />
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -47,10 +47,14 @@
     <!-- Favicon -->
 <link rel="icon" href="~/Images/Max_logo3.ico" type="image/x-icon">
  
-    <!-- Canonical Link -->
+<!-- Canonical Link -->
 <link rel="canonical" href="https://maxsys.com.my/">
- 
-    <!-- Structured Data JSON-LD -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/js/jquery-ui-1.12.1.js"></script>
+<script src="~/js/mainjs.js"></script>
+<!-- Structured Data JSON-LD -->
 <script type="application/ld+json">
     {
       "@@context": "https://schema.org",
@@ -67,7 +71,7 @@
 </head>
 
 <body class="index-page">
-
+   
     <header id="header" class="header d-flex align-items-center fixed-top">
 
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
@@ -97,7 +101,17 @@
     </header>
 
     <main class="main">
+        <div class="chbot-container position-fixed" style="bottom: 10px; right: 15px; z-index: 2000;">
+            <!-- Animated Text -->
+            <div id="chatbot_intro" class="chbot-color text-white rounded-pill px-3 py-2 mb-2 d-none">
+                <span id="chatbot_intro_text">Hello, I am Melissa</span>
+            </div>
 
+            <!-- Chatbot Icon -->
+            <div class="chbot-button chbot-color d-none" id="chatbot_btn" title="Chat with me for more information">
+                <i class="bi bi-robot fs-2"></i>
+            </div>
+        </div>
        <!-- Hero Section -->
 <section id="hero" class="hero section dark-background" style="position:relative; overflow:hidden;">
 <img src="~/Images/bg10.jpg"
@@ -640,7 +654,7 @@
                         <div class="col-lg-4 col-md-3 col-sm-12 portfolio-item isotope-item filter-branding">
                             <img src="~/Images/img/portfolio/mobile.jpg" class="img-fluid" alt="">
                             <div class="portfolio-info">
-                                <h4>Microsft 365 - HR Manamgement System</h4>
+                                <h4>Microsft 365 - HR Management System</h4>
                                 <p>HR solution integrated with Microsoft 365 to streamline employee records, leave management, payroll, and performance tracking.</p>
                                 <a href="~/Images/img/portfolio/mobile.jpg" title="Branding 2" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
                                 <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
@@ -1358,7 +1372,7 @@
     </footer>
 
     <!-- Scroll Top -->
-    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center d-none"><i class="bi bi-arrow-up-short"></i></a>
 
     <!-- Preloader -->
     <div id="preloader"></div>
@@ -1537,15 +1551,440 @@
         </div>
     </div>
 </div>
+<!--CHATBOT-->
+<div class="chbot-frame" id="chatbot_frame">
+    <div class="chbot-header">
+        <div class="chbot-uprofile">
+            <div class="chbot-uprofile-icon d-flex align-items-center justify-content-center text-white" style="font-size:8px;">
+                <img src="~/Images/Max_logo3.ico" alt="Max System Logo" class="logo-img" style="height: 23px; width: auto;">
+            </div>
+            <span class="chbot-uprofile-text">Ai Agent (Melissa)</span>
+        </div>
+        <div class="chbot-menu">
+            <div class="chbot-menu-btn" title="Hide" id="chatbot_hide_btn"><i class="bi bi-x-circle-fill"></i></div>
+        </div>
+    </div>
+    <div class="chbot-body">
+        <div class="chbot-conversation" id="chbot_conversation">
+            <div class="chbot-message">
+                <div class="chbot-date">Today</div>
+            </div>
 
+            <div class="chbot-message in">
+                <div class="chbot-message-content">Hello, I'm Melissa Max System AI chatbot. I'm happy to answer your questions. What brings you here?</div>
+            </div>
+
+            <div class="chbot-message d-none">
+                <div class="chbot-suggest">
+                    <div class="chbot-suggest-item">What is our service provided?</div>
+                    <div class="chbot-suggest-item">How to contact us?</div>
+                    <div class="chbot-suggest-item">How to join us?</div>
+                </div>
+            </div>
+
+            <div class="chbot-message out d-none">
+                <div class="chbot-message-content">What brings you here?</div>
+            </div>
+            <div class="chbot-message in d-none">
+                <div class="chbot-message-content">
+                    <div class="chbot-loader"><span></span><span></span><span></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chbot-footer">
+        <div class="chbot-input-zone">
+            <div class="chbot-input"><textarea id="chatbot_send_input"></textarea></div>
+            <div class="chbot-input-btn" id="chatbot_send_btn" title="sent message"><i class="bi bi-send-fill"></i></div>
+        </div>
+    </div>
+</div>
 <!-- jQuery Script to Show Modal -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const loginBtn = document.getElementById('loginBtn');
-      const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    // document.addEventListener('DOMContentLoaded', function () {
+    //   const loginBtn = document.getElementById('loginBtn');
+    //   const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
 
-      loginBtn.addEventListener('click', function () {
-        loginModal.show();
-      });
+    //   loginBtn.addEventListener('click', function () {
+    //     loginModal.show();
+    //   });
+    // });
+</script>
+<!--CHATBOT-->
+<script>
+        //ChatBot Positioning Handler
+        $(document).ready(function () {
+        const introTexts = ["Hello, I am Melissa", "I can assist you"];
+        let index = 0;
+
+        $('#chatbot_intro').removeClass('d-none').hide().fadeIn(600);
+
+        const interval = setInterval(() => {
+            index++;
+            if (index < introTexts.length) {
+                $('#chatbot_intro_text').fadeOut(300, function () {
+                    $(this).text(introTexts[index]).fadeIn(300);
+                });
+            } else {
+                clearInterval(interval);
+                $('#chatbot_intro').fadeOut(500, function () {
+                $(this).addClass('d-none');
+                $('#chatbot_btn').removeClass('d-none').hide().fadeIn(500, function () {
+                    // Automatically trigger click after showing the button
+                    $('#chatbot_btn').trigger('click');
+                });
+            });
+            }
+        }, 1800); // Change text every 1.8 seconds
     });
+
+    $(document).on('click', '#chatbot_btn', function (e) {
+        //console.log($(this).hasClass('active'));
+        const chatbot = $('#chatbot_frame');
+        if (!$(this).hasClass('active')) {
+            $(this).addClass('active');
+            chatbot.addClass('active');
+            chatbot.appendTo('.tr-tooltips-container');
+            $('#chbot_conversation').scrollTop($('#chbot_conversation')[0].scrollHeight);
+
+            const elementRect = this.getBoundingClientRect();
+
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            const isSpaceOnBottom = windowHeight - elementRect.bottom >= chatbot.outerHeight();
+            const isSpaceOnTop = elementRect.top >= chatbot.outerHeight();
+            const isSpaceOnRight = windowWidth - elementRect.left >= chatbot.outerWidth();
+            const isSpaceOnLeft = elementRect.left >= chatbot.outerWidth();
+
+            //console.log(windowWidth - elementRect.left);
+            //console.log(chatbot.outerWidth());
+            //console.log(isSpaceOnRight)
+
+            if (isSpaceOnBottom) {
+                //console.log('A');
+                chatbot.css({
+                    top: elementRect.bottom + 5 + 'px',
+                });
+            } else if (isSpaceOnTop) {
+                //console.log('B');
+                chatbot.css({
+                    top: (elementRect.top - chatbot.outerHeight() - 5) + 'px',
+                });
+            }
+
+            if (isSpaceOnRight) {
+                //console.log('C');
+                chatbot.css({
+                    left: elementRect.left + 'px',
+                });
+            } else {
+                //console.log('D');
+                chatbot.css({
+                    left: (elementRect.right - chatbot.outerWidth()) + 'px',
+                });
+            }
+
+        } else {
+            $(this).removeClass('active');
+            chatbot.removeClass('active');
+        }
+    });
+    //CHATBOT
+    var chbot_cookie_name;
+    var chbot_process = 0;
+    $(document).ready(function (e) {
+
+        chbot_cookie_name = "CSIRT_CHBOT_" + $('#txt_Usr_ID').val();
+        if (getCookie(chbot_cookie_name) != null) {
+            try {
+                var pos = getCookie(chbot_cookie_name);
+                pos = JSON.parse(pos);
+                $('#chatbot_btn').css({
+                    position: 'fixed',
+                    top: pos.top,
+                    left: pos.left
+                });
+                chbot_positioningAdjustment();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+      var originalPosition = {
+        top: $('#chatbot_btn').css('top'),
+        left: $('#chatbot_btn').css('left')
+    };
+
+    $('#chatbot_btn').draggable({
+        containment: [0, 0, $(window).width() - 50, $(window).height() - 50],
+        start: function () {
+            // Save the current position before dragging
+            originalPosition.top = $('#chatbot_btn').css('top');
+            originalPosition.left = $('#chatbot_btn').css('left');
+        },
+        drag: function (event, ui) {
+            $('#chatbot_btn').removeClass('active');
+            $('#chatbot_frame').removeClass('active');
+        },
+        stop: function (event, ui) {
+            var topValue = parseInt($('#chatbot_btn').css('top'), 10);
+            var leftValue = parseInt($('#chatbot_btn').css('left'), 10);
+            var windowHeight = $(window).height();
+
+            // If dragged too low (e.g., bottom out of viewport)
+            if (topValue + 50 > windowHeight) {
+                // Revert to original position
+                $('#chatbot_btn').css({
+                    top: originalPosition.top,
+                    left: originalPosition.left
+                });
+            } else {
+                // Save new position
+                createCookie(chbot_cookie_name, JSON.stringify({
+                    top: topValue + 'px',
+                    left: leftValue + 'px'
+                }), 1);
+            }
+        }
+    });
+
+        // $('#chatbot_btn').draggable({
+        //     containment: [0, 0, $(window).width() - 50, $(window).height() - 50], // [x1, y1, x2, y2]
+        //     drag: function (event, ui) {
+        //         $('#chatbot_btn').removeClass('active');
+        //         $('#chatbot_frame').removeClass('active');
+        //     },
+        //     stop: function (event, ui) {
+        //         var topValue = $('#chatbot_btn').css('top');
+        //         var leftValue = $('#chatbot_btn').css('left');
+        //         var bottomValue = $('#chatbot_btn').css('bottom');
+        //         if (topValue > 0 && leftValue > 0 && bottomValue > 0){
+                
+        //             createCookie(chbot_cookie_name, JSON.stringify({ top: topValue, left: leftValue }), 1);
+        //         }
+        //     }
+        // });
+
+        $(window).on('resize', function () {
+            $('#chatbot_btn').draggable('option', 'containment', [0, 0, $(window).width() - 50, $(window).height() - 50]);
+            chbot_positioningAdjustment();
+        });
+
+        test_addSuggest();
+
+        // $('#chatbot_btn').click(function (e) {
+        //    $(this).toggleClass('active');
+        //    $('#chatbot_frame').toggleClass('active');
+        // });
+
+        $('#chatbot_hide_btn').click(function (e) {
+            $('#chatbot_btn').removeClass('active');
+            $('#chatbot_frame').removeClass('active');
+        });
+
+        $('#chatbot_send_btn').click(function (e) {
+            var question = $('#chatbot_send_input').val();
+            chbot_sendQuestion(question);
+            $('#chatbot_send_input').val('');
+        });
+        $('#chatbot_send_input').keydown(function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                chbot_sendQuestion($(this).val());
+                $(this).val('');
+            }
+        });
+    });
+
+    function chbot_positioningAdjustment() {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const elementRect = $('#chatbot_btn')[0].getBoundingClientRect();
+        //console.log(elementRect);
+        if (elementRect.top < 0) {
+            $('#chatbot_btn').css('top', 0);
+        }
+        if ((elementRect.top + elementRect.height) > windowHeight) {
+            $('#chatbot_btn').css('top', (windowHeight - elementRect.height) + 'px');
+        }
+        if (elementRect.left < 0) {
+            $('#chatbot_btn').css('left', 0);
+        }
+        if ((elementRect.left + elementRect.width) > windowWidth) {
+            $('#chatbot_btn').css('left', (windowWidth - elementRect.width) + 'px');
+        }
+    }
+
+    function chbot_loading(load = true) {
+        if (load) {
+            chbot_process = 1;
+            const containerDiv = $('<div>').addClass('chbot-message chbot-message-loader in');
+            const contentDiv = $('<div>').addClass('chbot-message-content');
+            const loaderDiv = $('<div>').addClass('chbot-loader');
+            for (let i = 0; i < 3; i++) {
+                $('<span>').appendTo(loaderDiv);
+            }
+            loaderDiv.appendTo(contentDiv);
+            contentDiv.appendTo(containerDiv);
+            containerDiv.appendTo('#chbot_conversation');
+            $('#chbot_conversation').scrollTop($('#chbot_conversation')[0].scrollHeight);
+        } else {
+            chbot_process = 0;
+            $('#chbot_conversation .chbot-message-loader').remove();
+        }
+    }
+    function chbot_rmvSuggest() {
+        $('#chbot_conversation .chbot-message-suggest').remove();
+    }
+    function chbot_addMessage(type, data) {
+        switch (type) {
+            case 'msg-date':
+                $('#chbot_conversation').append(`
+                    <div class="chbot-message">
+                        <div class="chbot-date">${data.msg}</div>
+                    </div>
+                `);
+                break;
+            case 'msg-in':
+                $('#chbot_conversation').append(`
+                    <div class="chbot-message in">
+                        <div class="chbot-message-content">${data.msg}</div>
+                    </div>
+                `);
+                break;
+            case 'msg-out':
+                $('#chbot_conversation').append(`
+                    <div class="chbot-message out">
+                        <div class="chbot-message-content">${data.msg}</div>
+                    </div>
+                `);
+                break;
+            case 'suggest':
+                var suggest_item = '';
+                for (var i = 0; i < data.length; i++) {
+                    var suggest = data[i];
+                    suggest_item += `<div class="chbot-suggest-item" data-msg="${suggest.msg}">${suggest.msg}</div>`;
+                }
+                $('#chbot_conversation').append(`
+                    <div class="chbot-message chbot-message-suggest">
+                        <div class="chbot-suggest">${suggest_item}</div>
+                    </div>
+                `);
+                $('.chbot-suggest .chbot-suggest-item').each(function (index) {
+                    var delay = 0.2 * index; // Adjust the delay as needed
+                    $(this)[0].offsetHeight;
+                    $(this).css('transition-delay', delay + 's');
+                    $(this).addClass('cbs-fade-in');
+                });
+                break;
+            default:
+                break;
+        }
+        $('#chbot_conversation').scrollTop($('#chbot_conversation')[0].scrollHeight);
+    }
+
+    $(document).on('click', '#chbot_conversation .chbot-suggest-item', function (e) {
+        var data_msg = $(this).data('msg');
+        $(this).parent().parent().remove();
+        chbot_sendQuestion(data_msg);
+    });
+
+        function chbot_sendQuestion(question) {
+        var cont = true;
+        var msg = "";
+
+        if (chbot_process == 1) {
+            cont = false;
+            msg = "Previous response is ongoing. Please wait.";
+        }
+        if (cont && question.trim() === "") {
+            cont = false;
+            msg = "Message cannot be empty.";
+        }
+
+        if (cont) {
+            chbot_process = 1;
+
+            chbot_rmvSuggest();
+            chbot_addMessage('msg-out', { msg: question });
+            chbot_loading();
+
+            // Get previous messages
+            var messages = [];
+
+            $("#chbot_conversation .chbot-message").each(function () {
+                var isIn = $(this).hasClass("in");
+                var content = $(this).find(".chbot-message-content").text().trim();
+
+                if (content !== "") {
+                    messages.push({
+                        role: isIn ? "assistant" : "user",
+                        content: content
+                    });
+                }
+            });
+
+            // Add current question
+            messages.push({ role: "user", content: question });
+
+            // Call ASP.NET Core controller
+            $.ajax({
+                url: "/Home/Chatbot",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ messages: messages }),
+                success: function (response) {
+                    chbot_loading(false);
+                    chbot_addMessage('msg-in', { msg: response });
+                    test_addSuggest();
+                    chbot_process = 0;
+                },
+                error: function () {
+                    chbot_loading(false);
+                    chbot_addMessage('msg-in', { msg: "Sorry, something went wrong." });
+                    chbot_process = 0;
+                }
+            });
+
+        } else {
+            toastError("Invalid Action", msg);
+        }
+    }
+
+
+
+    // function chbot_sendQuestion(question) {
+    //     var cont = true;
+    //     var msg = "";
+
+    //     if (chbot_process == 1) {
+    //         cont = false;
+    //         msg = "Previous response is ongoing. Please wait.";
+    //     }
+    //     if (cont && question.trim() == "") {
+    //         cont = false;
+    //         msg = "Message cannot be empty.";
+    //     }
+
+    //     if (cont) {
+    //         //TEMPORARY
+    //         chbot_rmvSuggest();
+    //         chbot_addMessage('msg-out', { msg: question });
+    //         chbot_loading();
+
+    //         setTimeout(function () {
+    //             chbot_loading(false);
+    //             chbot_addMessage('msg-in', { msg: 'Sorry, i cant quite understand your question.' });
+    //             test_addSuggest();
+    //         }, 2000);
+
+    //     } else {
+    //         toastError("Invalid Action", msg);
+    //     }
+    // }
+    function test_addSuggest() {
+        chbot_addMessage('suggest', [{ msg: 'What is our services provided?' }, { msg: 'How to contact us' }, { msg: 'How to join us?' }]);
+        $('#chbot_conversation').scrollTop($('#chbot_conversation')[0].scrollHeight);
+    }
 </script>

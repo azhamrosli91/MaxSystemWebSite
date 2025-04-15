@@ -11,9 +11,9 @@ using MaxSys.Interface;
 using MaxSys.Helpers;
 using E_Template.Helpers;
 using System.Text;
+using MaxSys.Models.MM;
 using Base.Model;
 using Microsoft.AspNet.Identity.EntityFramework;
-using MaxSys.Models.MM;
 
 namespace MaxSys.Controllers
 {

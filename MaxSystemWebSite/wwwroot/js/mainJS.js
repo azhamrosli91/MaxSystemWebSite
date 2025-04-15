@@ -1,13 +1,33 @@
-﻿function createCookies(key, value,expiredMinutes)
-{
-    var currentTime = new Date();
-
-    var expirationTime = new Date(currentTime.getTime() + expiredMinutes + 60000);
-    $.cookie(key, value, { expires: expirationTime });
+﻿//COOKIE HANDLER
+function createCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
 }
-function deleteCookies(key) {
-    $.cookie(key, null, { expires: -1, path: '/' });
 
+// Function to get a cookie value
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1, cookie.length);
+        }
+        if (cookie.indexOf(nameEQ) === 0) {
+            return cookie.substring(nameEQ.length, cookie.length);
+        }
+    }
+    return null;
+}
+
+// Function to remove a cookie
+function removeCookie(name) {
+    createCookie(name, "", -1);
 }
 function validateForm()
 {
