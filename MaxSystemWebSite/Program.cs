@@ -150,6 +150,17 @@ builder.Services.AddRazorPages().AddMvcOptions(options =>
     options.Filters.Add(new AuthorizeFilter(policy));
 });
 
+// Add CORS service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy
+            .AllowAnyOrigin() // or .WithOrigins("https://example.com")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 // Set default culture to "en-US"
 var defaultCulture = new CultureInfo("en-US");

@@ -269,14 +269,19 @@ namespace MaxSys.Controllers
             try
             {
                 var client = new HttpClient();
-                string apiKey = _configuration["ChatGPT"];
+                string apiKey = _configuration["ChatGPT:SecretKey"];
+                string modelType = _configuration["ChatGPT:Model"];
+                double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
+
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+                request.Messages.Add(new MessageChatBot("system", "You are a helpful support assistant for Max System Solution"));
 
                 var body = new
                 {
-                    model = "gpt-3.5-turbo",
+                    model = modelType,
                     messages = request.Messages,
-                    temperature = 0.7
+                    temperature = temperature
                 };
 
                 var response = await client.PostAsync(
