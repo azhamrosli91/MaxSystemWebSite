@@ -6,6 +6,7 @@ MaxSystemWebsite/appsettings.json
 .vs/MaxSystemWebsite/v17/
 *.v2
 MaxSystemWebSite/bin/Debug/net8.0/MaxSystemWebSite.deps.json
+MaxSystemWebSite/bin/Release
 MaxSystemWebSite/bin/Debug/net8.0/MaxSystemWebSite.dll
 MaxSystemWebSite/bin/Debug/net8.0/MaxSystemWebSite.exe
 MaxSystemWebSite/bin/Debug/net8.0/MaxSystemWebSite.pdb
