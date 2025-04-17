@@ -17,6 +17,9 @@ using E_Template.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using MaxSystemWebSite.Services;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,8 @@ builder.Services.AddSingleton<IConfiguration>(provider => builder.Configuration)
 builder.Services.AddScoped<UserProfileService>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<CommonMethod>();
+builder.Services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+builder.Services.AddTransient<IBot, ChatBot>();
 
 builder.Services.AddControllersWithViews(options =>
 {

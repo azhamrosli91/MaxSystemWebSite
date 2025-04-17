@@ -22,6 +22,8 @@ using MaxSys.Interface;
 using MaxSys.Models;
 using LoginViewModel = Base.Model.LoginViewModel;
 using Org.BouncyCastle.Asn1.Crmf;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder;
 
 namespace MaxSys.Controllers
 {
@@ -36,9 +38,12 @@ namespace MaxSys.Controllers
         private readonly IDapper_Oracle _dapper_Oracle;
         private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _environment;
+        private readonly IBotFrameworkHttpAdapter _adapter;
+        private readonly IBot _bot;
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IWebApi webApi, 
             IDapper dapper, IJWTToken jWTToken, ISQL sql, 
-            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, IEmailService emailService, IWebHostEnvironment environment)
+            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, IEmailService emailService, IWebHostEnvironment environment,
+            IBotFrameworkHttpAdapter adapter, IBot bot)
         : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
@@ -48,6 +53,8 @@ namespace MaxSys.Controllers
             _dapper_Oracle = dapper_Oracle;
             _emailService = emailService;
             _environment = environment;
+            _adapter = adapter;
+            _bot = bot;
         }
 
         [HttpGet]
@@ -305,7 +312,11 @@ namespace MaxSys.Controllers
             }
             
         }
-
+        [HttpPost, HttpGet]
+        public async Task ChatbotTeamAsync()
+        {
+            await _adapter.ProcessAsync(Request, Response, _bot);
+        }
         public async Task<IActionResult> AuditTrail(int ID = 0, string TableName = "", string ReturnURL = "")
         {
             if (string.IsNullOrEmpty(TableName)) {
