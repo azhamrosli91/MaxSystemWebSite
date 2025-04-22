@@ -881,7 +881,7 @@ input[type='file'] {
 }
 
 .tr-navbar {
-    background-color: #52698e;
+    background-color: #f8f9fa;
     min-height: 70px;
 }
 
@@ -907,7 +907,7 @@ input[type='file'] {
     border:1px solid #54575A;
 }
 .tr-navbar-logout {
-    color: #fff !important;
+   /* color: #fff !important;*/
     text-decoration: none;
     padding-right: 2em;
     font: 16px Roboto, sans-serif;
@@ -1085,7 +1085,7 @@ label {
     }
 
     .tr-navbar {
-        background-color: #004098;
+        background-color: #f8f9fa;
         min-height: 55px;
     }
 
@@ -1115,7 +1115,7 @@ label {
     }
 
     .tr-navbar-logout {
-        color: #fff !important;
+        /*color: #fff !important;*/
         text-decoration: none;
         padding-right: 0.5em;
         font: 12px Roboto, sans-serif;

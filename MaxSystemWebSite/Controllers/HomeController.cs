@@ -312,6 +312,9 @@ namespace MaxSys.Controllers
             }
             
         }
+
+        [AllowAnonymous]
+        [Route("api/messages")]
         [HttpPost, HttpGet]
         public async Task ChatbotTeamAsync()
         {

@@ -40,15 +40,15 @@ builder.Services.AddSingleton<CommonMethod>();
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 builder.Services.AddTransient<IBot, ChatBot>();
 
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<SessionExpireAttribute>();
-});
+//builder.Services.AddControllersWithViews(options =>
+//{
+//    options.Filters.Add<SessionExpireAttribute>();
+//});
 // Register EmailService
 builder.Services.AddSingleton<IEmailService, EmailService_STMP>();
 
 
-builder.Services.AddScoped<SessionExpireAttribute>(); // Register the custom filter
+//builder.Services.AddScoped<SessionExpireAttribute>(); // Register the custom filter
 builder.Services.AddHttpContextAccessor();
 
 var provider = builder.Services.BuildServiceProvider();

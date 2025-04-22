@@ -62,7 +62,6 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
 </head>
 @{
     var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"];
@@ -77,94 +76,162 @@
     // var code = HttpContextAccessor.HttpContext.Request.Cookies["COMPANY_CODE"];
     // var level = HttpContextAccessor.HttpContext.Request.Cookies["ACCESS_LEVEL"];
 }
-<style>
-    .b-example-divider {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-    }
 
-    .bi {
-        vertical-align: -.125em;
-        pointer-events: none;
-        fill: currentColor;
-    }
-
-    .dropdown-toggle {
-        outline: 0;
-    }
-
-    .nav-flush .nav-link {
-        border-radius: 0;
-    }
-
-    .btn-toggle {
-        display: inline-flex;
-        align-items: center;
-        padding: .25rem .5rem;
-        font-weight: 600;
-        color: rgba(0, 0, 0, .65);
-        background-color: transparent;
-        border: 0;
-    }
-
-        .btn-toggle:hover,
-        .btn-toggle:focus {
-            color: rgba(0, 0, 0, .85);
-            background-color: #d2f4ea;
+<body>
+    <style>
+        .b-example-divider {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
         }
 
-        .btn-toggle::before {
-            width: 1.25em;
-            line-height: 0;
-            content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
-            transition: transform .35s ease;
-            transform-origin: .5em 50%;
+        .bi {
+            vertical-align: -.125em;
+            pointer-events: none;
+            fill: currentColor;
         }
 
-        .btn-toggle[aria-expanded="true"] {
-            color: rgba(0, 0, 0, .85);
+        .dropdown-toggle {
+            outline: 0;
         }
 
-            .btn-toggle[aria-expanded="true"]::before {
-                transform: rotate(90deg);
+        .nav-flush .nav-link {
+            border-radius: 0;
+        }
+
+        .btn-toggle {
+            display: inline-flex;
+            align-items: center;
+            padding: .25rem .5rem;
+            font-weight: 600;
+            color: rgba(0, 0, 0, .65);
+            background-color: transparent;
+            border: 0;
+        }
+
+            .btn-toggle:hover,
+            .btn-toggle:focus {
+                color: rgba(0, 0, 0, .85);
+                background-color: #d2f4ea;
             }
 
-    .btn-toggle-nav a {
-        display: inline-flex;
-        padding: .1875rem .5rem;
-        margin-top: .125rem;
-        margin-left: 1.25rem;
-        text-decoration: none;
-    }
+            .btn-toggle::before {
+                width: 1.25em;
+                line-height: 0;
+                content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+                transition: transform .35s ease;
+                transform-origin: .5em 50%;
+            }
 
-        .btn-toggle-nav a:hover,
-        .btn-toggle-nav a:focus {
-            background-color: #d2f4ea;
+            .btn-toggle[aria-expanded="true"] {
+                color: rgba(0, 0, 0, .85);
+            }
+
+                .btn-toggle[aria-expanded="true"]::before {
+                    transform: rotate(90deg);
+                }
+
+        .btn-toggle-nav a {
+            display: inline-flex;
+            padding: .1875rem .5rem;
+            margin-top: .125rem;
+            margin-left: 1.25rem;
+            text-decoration: none;
         }
 
-    .scrollarea {
-        overflow-y: auto;
-    }
+            .btn-toggle-nav a:hover,
+            .btn-toggle-nav a:focus {
+                background-color: #d2f4ea;
+            }
 
-    .fw-semibold {
-        font-weight: 600;
-    }
+        .scrollarea {
+            overflow-y: auto;
+        }
 
-    .lh-tight {
-        line-height: 1.25;
-    }
+        .fw-semibold {
+            font-weight: 600;
+        }
 
-</style>
-<body>
-    <header class="navbar navbar-dark navbar-expand-lg shadow tr-navbar">
-        <div class="container-fluid">
-            <a href="" class="col ">
-                @* <img class="p-0 text-white text-decoration-none" src="~/Images/Max_logo.png" style="width:45px; object-fit: contain;" /> <span class="text-white text-decoration-none">@Configuration["ProjectName"].ToString().ToUpper() - @companyName</span>
+        .lh-tight {
+            line-height: 1.25;
+        }
+
+    </style>
+    @* resizable-container *@
+    <style>
+        :root {
+            --resizable-container-width: 450px;
+            --sidebar-width: 4.5rem;
+        }
+
+        .row.flex-nowrap {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar-icons {
+            width: 4.5rem;
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+
+        .resizable-container {
+            display: flex;
+            width: var(--resizable-container-width);
+            min-width: 300px;
+            max-width: var(--resizable-container-width);
+            overflow: hidden;
+            flex-shrink: 0;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .resizable-menu {
+            width: 180px;
+            overflow-y: auto;
+            background-color: #fff;
+            padding: 1rem;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .resizable-listing {
+           /*  overflow-y: auto; */
+            background-color: #fff;
+            flex: 1 1 auto;
+           /*  min-width: 0; */
+            padding: 0;
+        }
+
+        .resizer {
+            width: 5px;
+            cursor: ew-resize;
+            background: #ccc;
+        }
+
+
+        .detail-frame {
+            flex-grow: 1;
+            min-width: 0;
+            overflow-y: auto;
+            width: calc(100% - var(--sidebar-width) - var(--resizable-container-width));
+        }
+
+        .spanner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+    </style>
+    <header class="navbar navbar-dark navbar-expand-lg shadow-sm tr-navbar mb-1">
+        <div class="container-fluid ">
+            <a href="" class="col" style="color:unset;text-decoration:none;">
+                <img class="p-0 text-decoration-none" src="~/Images/Max_logo_2.png" style="width:35px; object-fit: contain;" /> <span class="text-decoration-none">@Configuration["ProjectName"].ToString().ToUpper()</span>
+                @* 
                 <input type="hidden" value="@useremail" id="txtUserEmail" />
                 <input type="hidden" value="@userID" id="txtUserID" /> *@
               @*   <input type="hidden" value="@employeeID" id="txtUserEmployeeID" />
@@ -210,7 +277,7 @@
                         @if (profileImage == null || string.IsNullOrEmpty(profileImage))
                         {
                             <img src="~/Images/user-avatar.png" id="img-userprofile" alt="user profile" class="rounded-circle" style="width: 2.5em; height: 2.5em; object-fit: cover;" />
-                            <span class="ms-2">Anonymous</span>
+                            <span class="ms-2">ANONYMOUS</span>
                         }
                         else
                         {
@@ -221,12 +288,12 @@
 
                     <!-- Logout Form -->
                     <form method="post" asp-controller="Home" asp-action="Logout" class="d-flex align-items-center ms-3">
-                       @*  <input type="hidden" name="authenticationType" id="txtauthenticationType" value="@authenticationType" /> *@
-                        <button type="submit" class="btn btn-link nav-link text-white">
-                            <i class="fa fa-sign-out"></i> LOGOUT
+                        <button type="submit" class="btn btn-link nav-link">
+                            <i class="fa fa-sign-out"></i> LOG OUT
                         </button>
                     </form>
                 </div>
+
 
             </div>
 
@@ -235,111 +302,67 @@
     </header>
     <div class="container-fluid d-flex flex-column">
         <div class="row flex-nowrap">
-            <div class="d-flex flex-column flex-shrink-0 bg-light" style="width: 4.5rem;">
-                <!-- Sidebar -->
-                <a href="#" class="d-block p-3 link-dark text-decoration-none" title="Home" data-bs-toggle="tooltip" data-bs-placement="right" id="home-link">
-                    <i class="fa fa-star"></i>
-                    <span class="visually-hidden">Home</span>
+            <!-- Vertical Icon Sidebar -->
+            <div class="d-flex flex-column sidebar-icons align-items-center border-end">
+                <a href="#" class="p-3 link-dark text-decoration-none" title="Home">
+                    <i class="fa fa-home"></i>
                 </a>
                 <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active py-3 border-bottom" aria-current="page" title="User Profile" data-bs-toggle="tooltip" data-bs-placement="right" id="profile-link">
-                            <i class="fa fa-user"></i>
-                        </a>
+                        <a href="#" class="nav-link active py-3 border-bottom" title="User Profile"><i class="fa fa-user"></i></a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link py-3 border-bottom" title="Leave Application" data-bs-toggle="tooltip" data-bs-placement="right" id="leave-link">
-                            <i class="fa fa-calendar"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link py-3 border-bottom" title="Appraiser Form" data-bs-toggle="tooltip" data-bs-placement="right" id="appraiser-link">
-                            <i class="fa fa-pencil-alt"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link py-3 border-bottom" title="HR / Hiring Process" data-bs-toggle="tooltip" data-bs-placement="right" id="hr-link">
-                            <i class="fa fa-briefcase"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link py-3 border-bottom" title="Recognition" data-bs-toggle="tooltip" data-bs-placement="right" id="recognition-link">
-                            <i class="fa fa-trophy"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link py-3 border-bottom" title="Claim" data-bs-toggle="tooltip" data-bs-placement="right" id="claim-link">
-                            <i class="fa fa-file-invoice"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="flex-shrink-0 p-3 bg-white border-start shadow-sm" style="width: 280px;">
-                <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                    <svg class="bi me-2" width="30" height="24"><use xlink:href="#bootstrap" /></svg>
-                    <span class="fs-5 fw-semibold">Collapsible</span>
-                </a>
-                <ul class="list-unstyled ps-0">
-                    <li class="mb-1">
-                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                            Home
-                        </button>
-                        <div class="collapse show" id="home-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="link-dark rounded">Overview Overview Overview Overview Overview Overview Overview</a></li>
-                                <li><a href="#" class="link-dark rounded">Updates</a></li>
-                                <li><a href="#" class="link-dark rounded">Reports</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                            Dashboard
-                        </button>
-                        <div class="collapse" id="dashboard-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="link-dark rounded">Overview</a></li>
-                                <li><a href="#" class="link-dark rounded">Weekly</a></li>
-                                <li><a href="#" class="link-dark rounded">Monthly</a></li>
-                                <li><a href="#" class="link-dark rounded">Annually</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                            Orders
-                        </button>
-                        <div class="collapse" id="orders-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="link-dark rounded">New</a></li>
-                                <li><a href="#" class="link-dark rounded">Processed</a></li>
-                                <li><a href="#" class="link-dark rounded">Shipped</a></li>
-                                <li><a href="#" class="link-dark rounded">Returned</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="border-top my-3"></li>
-                    <li class="mb-1">
-                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-                            Account
-                        </button>
-                        <div class="collapse" id="account-collapse">
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="link-dark rounded">New...</a></li>
-                                <li><a href="#" class="link-dark rounded">Profile</a></li>
-                                <li><a href="#" class="link-dark rounded">Settings</a></li>
-                                <li><a href="#" class="link-dark rounded">Sign out</a></li>
-                            </ul>
-                        </div>
+                        <a href="#" class="nav-link py-3 border-bottom" title="Leave Application"><i class="fa fa-calendar"></i></a>
                     </li>
                 </ul>
             </div>
 
-            <main class="col ps-md-2 mx-2 detail-frame">
+            <!-- Resizable Panel: Menu + Table (Side-by-side inside a fixed-width box) -->
+            <div class="resizable-container">
+                <!-- Left: Sidebar Menu -->
+                <div class="resizable-menu">
+                    <ul class="list-unstyled ps-0">
+                        <li class="mb-1">
+                            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+                                Home
+                            </button>
+                            <div class="collapse show" id="home-collapse">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    <li><a href="#" class="link-dark rounded">Overview Overview Overview</a></li>
+                                    <li><a href="#" class="link-dark rounded">Updates</a></li>
+                                    <li><a href="#" class="link-dark rounded">Reports</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Drag Resizer -->
+                <div class="resizer"></div>
+                <!-- Right: Listing Table -->
+                <div class="resizable-listing">
+                    <table class="table mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th scope="col"><input type="checkbox" /></th>
+                                <th scope="col">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><input type="checkbox" /></td><td>Hello World</td></tr>
+                            <tr><td><input type="checkbox" /></td><td>Hello Everyone</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+              
+            </div>
+
+            <!-- Main Content Area -->
+            <main class="detail-frame">
                 @RenderBody()
 
-                <!-- Loading -->
-                <div class="spanner align-self-center">
+                <!-- Loading Spinner -->
+                <div class="spanner">
                     <img src="~/Images/loading12.gif" alt="Loading" style="width: 85px; height: auto" />
                 </div>
             </main>
@@ -402,5 +425,35 @@
         </div>
     </div>
     @RenderSection("Scripts", required: false)
+    <script>
+        $(function () {
+            const $resizer = $('.resizer');
+            const $left = $('.resizable-menu');
+            const $right = $('.resizable-listing');
+            let isDragging = false;
+
+            $resizer.on('mousedown', function (e) {
+                isDragging = true;
+                $('body').css('cursor', 'ew-resize');
+            });
+
+            $(document).on('mousemove', function (e) {
+                if (!isDragging) return;
+
+                const containerOffsetLeft = $('.resizable-container').offset().left;
+                const newWidth = e.pageX - containerOffsetLeft;
+
+                // Clamp width between 150px and 400px
+                if (newWidth > 150 && newWidth < 400) {
+                    $left.css('width', newWidth);
+                }
+            });
+
+            $(document).on('mouseup', function () {
+                isDragging = false;
+                $('body').css('cursor', 'default');
+            });
+        });
+    </script>
 </body>
 </html>
