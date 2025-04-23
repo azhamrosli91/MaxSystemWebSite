@@ -161,5 +161,13 @@ namespace MaxSys.Controllers.DE
             // Return error response if no files were selected
             return Json(new { success = false, message = "No files selected." });
         }
+
+
+
+        public IActionResult Detail2()
+        {
+            return View();
+        }
+
     }
 }

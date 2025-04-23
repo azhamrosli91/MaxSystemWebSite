@@ -468,3 +468,296 @@ table.tr-responsive-table.active.dataTable:not(.inc-ml):not(.inc-ml2):not(.inc-m
         font-size: 22px !important;
     }
 }
+
+
+/**JH250423 - BOOTSTRAP OVERWRITE -SOME FREQUENT USED ONLY**/
+/**SMALL SCREEN SM**/
+.boostrap-sm .col-sm {
+    flex: 1 0 0%;
+}
+
+.boostrap-sm .col-sm-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+}
+
+.boostrap-sm .col-sm-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
+}
+
+.boostrap-sm .col-sm-3 {
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+.boostrap-sm .col-sm-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+
+.boostrap-sm .col-sm-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+}
+
+.boostrap-sm .col-sm-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
+
+.boostrap-sm .col-sm-7 {
+    flex: 0 0 auto;
+    width: 58.33333333%;
+}
+
+.boostrap-sm .col-sm-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+}
+
+.boostrap-sm .col-sm-9 {
+    flex: 0 0 auto;
+    width: 75%;
+}
+
+.boostrap-sm .col-sm-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+}
+
+.boostrap-sm .col-sm-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+}
+
+.boostrap-sm .col-sm-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+/*Small Screen Table*/
+.boostrap-sm .layout-listing-table thead {
+    display: none;
+}
+.boostrap-sm .layout-listing-table tbody tr {
+    display: grid;
+    grid-template-columns: auto;
+    padding: 5px 15px;
+}
+
+.boostrap-sm .layout-listing-table tbody td {
+    margin-bottom: 0px;
+}
+
+    .boostrap-sm .layout-listing-table tbody td.mv-d-none {
+        display: none;
+    }
+
+    .boostrap-sm .layout-listing-table tbody td {
+        grid-column: 1 / span 1; /* spans 1 column */
+        padding: 0px;
+        border: none;
+    }
+
+    .boostrap-sm .layout-listing-table tbody td.dataTables_empty {
+        grid-row: 1;
+        grid-column: 1 / span 1; /* spans 1 column */
+        justify-content: center;
+    }
+
+
+/**MEDIUM SCREEN MD**/
+.boostrap-md .col-md {
+    flex: 1 0 0%;
+}
+
+.boostrap-md .col-md-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+}
+
+.boostrap-md .col-md-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
+}
+
+.boostrap-md .col-md-3 {
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+.boostrap-md .col-md-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+
+.boostrap-md .col-md-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+}
+
+.boostrap-md .col-md-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
+
+.boostrap-md .col-md-7 {
+    flex: 0 0 auto;
+    width: 58.33333333%;
+}
+
+.boostrap-md .col-md-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+}
+
+.boostrap-md .col-md-9 {
+    flex: 0 0 auto;
+    width: 75%;
+}
+
+.boostrap-md .col-md-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+}
+
+.boostrap-md .col-md-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+}
+
+.boostrap-md .col-md-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+/**LARGE SCREEN LG**/
+.boostrap-lg .col-lg {
+    flex: 1 0 0%;
+}
+
+.boostrap-lg .col-lg-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+}
+
+.boostrap-lg .col-lg-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
+}
+
+.boostrap-lg .col-lg-3 {
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+.boostrap-lg .col-lg-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+
+.boostrap-lg .col-lg-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+}
+
+.boostrap-lg .col-lg-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
+
+.boostrap-lg .col-lg-7 {
+    flex: 0 0 auto;
+    width: 58.33333333%;
+}
+
+.boostrap-lg .col-lg-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+}
+
+.boostrap-lg .col-lg-9 {
+    flex: 0 0 auto;
+    width: 75%;
+}
+
+.boostrap-lg .col-lg-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+}
+
+.boostrap-lg .col-lg-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+}
+
+.boostrap-lg .col-lg-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+/**EXTRA LARGE SCREEN XL**/
+.boostrap-xl .col-xl {
+    flex: 1 0 0%;
+}
+
+.boostrap-xl .col-xl-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+}
+
+.boostrap-xl .col-xl-2 {
+    flex: 0 0 auto;
+    width: 16.66666667%;
+}
+
+.boostrap-xl .col-xl-3 {
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+.boostrap-xl .col-xl-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+
+.boostrap-xl .col-xl-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+}
+
+.boostrap-xl .col-xl-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
+
+.boostrap-xl .col-xl-7 {
+    flex: 0 0 auto;
+    width: 58.33333333%;
+}
+
+.boostrap-xl .col-xl-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+}
+
+.boostrap-xl .col-xl-9 {
+    flex: 0 0 auto;
+    width: 75%;
+}
+
+.boostrap-xl .col-xl-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+}
+
+.boostrap-xl .col-xl-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+}
+
+.boostrap-xl .col-xl-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}

@@ -70,9 +70,9 @@ body {
 }
 
 /*to override lucid card css*/
-.card {
+/*.card {
     margin-bottom: 10px;
-}
+}*/
 
 .listing-height {
     height: 100px;
@@ -113,10 +113,11 @@ body {
     background-color: #057FE5 !important;
 }
 
-.btn.btn-sm {
+/*.btn.btn-sm {
+    JH250423
     min-width: 100px;
 }
-
+*/
 .dropdown-toggle::after {
     display: none;
 }
@@ -127,8 +128,7 @@ body {
 }
 
 .btn-primary, .bg-primary {
-    /*   background-color: #004098;*/
-    background-color: #05285E !important;
+    background-color: #05285E;
 }
 .text-primary {
     color: #05285E !important;
@@ -955,11 +955,10 @@ input[type='file'] {
 }
 
 .tr-listing-header {
-   min-height: 62px;
-    padding-bottom:6px;
+    padding: 15px 15px;
+    border-bottom: 1px solid #ccc;
 }
 .tr-listing-header2 {
-
     padding-bottom: 6px;
 }
 .tr-listing-header-title {
@@ -977,9 +976,18 @@ input[type='file'] {
 }
 
 .detail-frame {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    min-height: calc(100vh - 70px - 25px);
+    /*min-height: calc(100vh - 35px - 25px);*/
+    height: 100%;
 }
+
+    .detail-frame > form {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
 
 .customDTButton2 {
     float: right;
@@ -1132,13 +1140,7 @@ label {
         font-size: 16px;
     }
 
-    .detail-frame {
-        position: relative;
-        min-height: calc(100vh - 35px - 25px);
-        padding-bottom: 30px !important;
-    }
-
-    .card-height {
+    /*.card-height {
         height: calc(100vh - 55px - 55px - 50px - 25px);
         overflow-y: scroll;
     }
@@ -1146,7 +1148,7 @@ label {
     .card-height-without-btn {
         height: calc(100vh - 55px - 55px - 35px);
         overflow-y: scroll;
-    }
+    }*/
 
     .tr-date {
         border-right: none;
@@ -1396,6 +1398,7 @@ label {
     overflow: auto;
     padding: 1rem;
     padding-bottom: 0.5rem;
+    height: 100%;
 }
 .ui-resizable-handle {
     background-color:transparent !important;
@@ -1409,3 +1412,42 @@ label {
     justify-content: center;
     align-items: center;
 }
+
+
+/**JH250423**/
+.minh-100 {
+    min-height: 100% !important;
+}
+.h-fit-content {
+    height: fit-content !important;
+}
+.btn-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.minw-100px {
+    min-width: 100px;
+}
+
+.layout-listing-table thead tr {
+    color: #fff;
+    font-weight: bold;
+    background: #3c4142;
+    border: 1px solid #3c4142;
+}
+.layout-listing-table tbody tr {
+    border: 1px solid #ccc;
+}
+    .layout-listing-table tbody tr:nth-child(even) {
+        background-color: #f0f0f0; /* Light grey */
+    }
+
+    .layout-listing-table tbody tr:hover {
+        background: #D1F6ff;
+        cursor: pointer;
+    }
+    .layout-listing-table tbody tr.active {
+        background: lightblue;
+        cursor: pointer;
+    }
