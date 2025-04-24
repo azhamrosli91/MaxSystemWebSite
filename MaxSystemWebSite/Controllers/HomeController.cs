@@ -2,7 +2,6 @@ using Base.Model;
 using BaseSQL.Interface;
 using BaseWebApi.Interface;
 using MaxSys.Interface;
-using MaxSys.Models.MM;
 using E_Template.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,16 +13,16 @@ using SmartTemplateCore.Models.Common;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using MaxSys.Helpers;
-using MaxSys.Interface;
 using MaxSys.Models;
 using LoginViewModel = Base.Model.LoginViewModel;
-using Org.BouncyCastle.Asn1.Crmf;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder;
+using Microsoft.Graph.Models;
+using MaxSystemWebSite.Models.SETTING;
+using Microsoft.Graph.Models.TermStore;
 
 namespace MaxSys.Controllers
 {
@@ -36,14 +35,15 @@ namespace MaxSys.Controllers
         private readonly IJWTToken _jwtToken;
         private readonly ISQL _SQL;
         private readonly IDapper_Oracle _dapper_Oracle;
-        private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _environment;
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
+        private readonly IEmail _emailService;
+
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IWebApi webApi, 
             IDapper dapper, IJWTToken jWTToken, ISQL sql, 
-            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, IEmailService emailService, IWebHostEnvironment environment,
-            IBotFrameworkHttpAdapter adapter, IBot bot)
+            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, IWebHostEnvironment environment,
+            IBotFrameworkHttpAdapter adapter, IBot bot,IEmail emailService)
         : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
@@ -313,6 +313,145 @@ namespace MaxSys.Controllers
             
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> ApplyJob(IFormCollection form)
+        {
+            var name = form["applicant-name"];
+            var tel = form["applicant-tel"];
+            var email = form["applicant-email"];
+            var position = form["applicant-position"];
+            var salary = form["expected-salary"];
+            var description = form["applicant-description"];
+            var resume = form.Files["applicant-resume"];
+
+            byte[] fileBytes = null;
+            string fileName = null;
+
+            if (resume != null && resume.Length > 0)
+            {
+                var allowedExtensions = new[] { ".pdf", ".docx", ".jpg", ".jpeg", ".png" };
+                var fileExtension = Path.GetExtension(resume.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return BadRequest("Unsupported file format.");
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    await resume.CopyToAsync(ms);
+                    fileBytes = ms.ToArray();
+                    fileName = resume.FileName;
+                }
+            }
+            var modelTemp = new Emai_TemplateSent
+            {
+                Recipient = new List<Recipient>
+                {
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "hr@maxsys.com.my",
+                             Name = "Muhammad Azham Bin Rosli"
+                         }
+                     }
+                 },
+                CC = new List<Recipient>
+                {
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "azham@maxsys.com.my",
+                             Name = "Muhammad Azham Bin Rosli"
+                         }
+                     },
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "shazwanie@maxsys.com.my",
+                             Name = "Shazwanie (HR)"
+                         }
+                     },
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "afina@maxsys.com.my",
+                             Name = "Afina (HR)"
+                         }
+                     }
+                 },
+                Subject = $"Application Job for {position} - {name}",
+                 subTemplate = $"<p>Applicant Name: {name}</p>" +
+                        $"<p>Telephone: {tel}</p>" +
+                        $"<p>Email: {email}</p>" +
+                        $"<p>Position Applied: {position}</p>" +
+                        $"<p>Expected Salary: {salary}</p>" +
+                        $"<p>Description: {description}</p>",
+                 WORD_REPLACE = new List<(string ori, string replace)>
+                 {
+                     ("[NAME]", name),
+                     ("[EMAIL]", email),
+                     ("[POSITION]", position),
+                     ("[SALARY]", salary),
+                     ("[DESCRIPTION]", description)
+                 },
+                Attachments = new List<Emai_TemplateSent.EmailAttachment>()
+            };
+
+            if (fileBytes != null && fileName != null)
+            {
+                modelTemp.Attachments.Add(new Emai_TemplateSent.EmailAttachment
+                {
+                    FileName = fileName,
+                    FileContent = fileBytes,
+                    ContentType = resume.ContentType
+                });
+            }
+
+            modelTemp.mainTemplate = await modelTemp.EmailBodyTemplate();
+            modelTemp.bodyContent = modelTemp.mainTemplate.Replace("[BODY]", modelTemp.subTemplate);
+            var wordResult = modelTemp.WordReplacer(modelTemp.bodyContent);
+            if (wordResult.Item1)
+            {
+                modelTemp.bodyContent = wordResult.Item2;
+            }
+
+            SETTING_EMAIL settingEmail = new SETTING_EMAIL();
+
+            settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
+            settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
+            settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
+            settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+
+
+
+            modelTemp.Setting_Setup = new Setting_Setup();
+            modelTemp.Setting_Setup.SMTP_ACCOUNT = "hr@maxsys.com.my";
+            modelTemp.WORD_REPLACE = new List<(string ori, string replace)>();
+            modelTemp.WORD_REPLACE.Add(("[NAME]", ""));
+            modelTemp.WORD_REPLACE.Add(("[HELP_DESK_EMAIL]", "hr@maxsys.com.my"));
+            modelTemp.WORD_REPLACE.Add(("[APPLICATION_NAME]", "JOB APPLICATION"));
+            modelTemp.WORD_REPLACE.Add(("[URL]", $"www.azhamrosli.com"));
+
+            _emailService.InitGraph(settingEmail);
+
+            bool result = await _emailService.SendEmailAsync(modelTemp);
+
+            if (!result)
+            {
+                return Json(new { success = false, message = "Failed to send email." });
+            }
+
+            return Json(new { success = true, message = "Application submitted and email sent." });
+  
+        }
+
+
         [AllowAnonymous]
         [Route("api/messages")]
         [HttpPost, HttpGet]
@@ -515,10 +654,7 @@ namespace MaxSys.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        void InitializeGraph(E_Template.Helpers.Settings settings)
-        {
-            GraphHelper.InitializeGraphForAppAuth(settings);
-        }
+       
 
         [AllowAnonymous]
         public async Task<string> GetSettingSetup()

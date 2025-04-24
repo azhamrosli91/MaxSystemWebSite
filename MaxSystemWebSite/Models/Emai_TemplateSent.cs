@@ -59,7 +59,7 @@ namespace MaxSys.Models
         }
 
     }
-    public class Emai_Template
+    public class Emai_TemplateSent
     {
         public List<Recipient> Recipient { get; set; }
         public List<Recipient> CC { get; set; }
@@ -70,7 +70,11 @@ namespace MaxSys.Models
         public string mainTemplate { get; set; }
         public string subTemplate { get; set; }
         public Setting_Setup Setting_Setup { get; set; }
-        public (bool,string) WordReplacer(string template)
+
+        // New Attachments Property
+        public List<EmailAttachment> Attachments { get; set; }
+
+        public (bool, string) WordReplacer(string template)
         {
             try
             {
@@ -88,15 +92,19 @@ namespace MaxSys.Models
             }
             catch (Exception ex)
             {
-                return (false,template);
+                return (false, template);
             }
-            
+        }
+        public class EmailAttachment
+        {
+            public string FileName { get; set; }
+            public byte[] FileContent { get; set; }
+            public string ContentType { get; set; } // e.g., "application/pdf", "image/png"
         }
         public async Task<string> EmailBodyTemplate()
         {
             try
             {
-                // Use Path.Combine to ensure proper path handling
                 string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Template", "template_email.html");
 
                 string emailBody = "";
@@ -112,8 +120,8 @@ namespace MaxSys.Models
                 return null;
             }
         }
-
     }
+
     public class Recipient_STMP {
         public string EmailAddress { get; set; }
         public string Name { get; set; }

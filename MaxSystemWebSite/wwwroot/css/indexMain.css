@@ -1725,6 +1725,9 @@ section,
 	padding: 60px 40px;
 	height: 100%;
 	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .pricing h3 {
@@ -1756,6 +1759,7 @@ section,
 	color: color-mix(in srgb, var(--default-color), transparent 30%);
 	text-align: left;
 	line-height: 20px;
+	flex-grow: 1;
 }
 
 	.pricing ul li {
@@ -1781,6 +1785,12 @@ section,
 		.pricing ul .na span {
 			text-decoration: line-through;
 		}
+.pricing-item .button-group {
+	display: flex;
+/*	justify-content: space-between;*/
+	gap: 10px;
+	margin-top: 20px;
+}
 
 .pricing .buy-btn {
 	color: var(--accent-color);
@@ -1798,6 +1808,25 @@ section,
 	.pricing .buy-btn:hover {
 		background: var(--accent-color);
 		color: var(--contrast-color);
+	}
+
+.pricing .buy-btn-apply {
+	color: var(--contrast-color);
+	display: inline-block;
+	padding: 8px 35px 10px 35px;
+	border-radius: 50px;
+	transition: none;
+	font-size: 16px;
+	font-weight: 500;
+	font-family: var(--heading-font);
+	transition: 0.3s;
+	border: 1px solid var(--accent-color);
+	background: var(--accent-color);
+}
+
+	.pricing .buy-btn-apply:hover {
+		background: white;
+		color: var(--accent-color);
 	}
 
 .pricing .featured {

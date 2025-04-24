@@ -222,9 +222,9 @@ namespace MaxSys.Controllers
             return View(model);
         }
 
-        void InitializeGraph(E_Template.Helpers.Settings settings)
-        {
-            GraphHelper.InitializeGraphForAppAuth(settings);
-        }
+        //void InitializeGraph(E_Template.Helpers.Settings settings)
+        //{
+        //    GraphHelper.InitializeGraphForAppAuth(settings);
+        //}
     }
 }

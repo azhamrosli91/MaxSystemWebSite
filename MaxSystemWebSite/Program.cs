@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using MaxSystemWebSite.Services;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder;
+using E_Template.Helpers;
+using System.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<CommonMethod>();
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 builder.Services.AddTransient<IBot, ChatBot>();
+builder.Services.AddSingleton<IEmail, GraphHelper>();
 
 //builder.Services.AddControllersWithViews(options =>
 //{
