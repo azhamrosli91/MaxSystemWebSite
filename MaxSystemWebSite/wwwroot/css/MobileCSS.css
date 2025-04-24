@@ -1,16 +1,10 @@
-﻿.min-height-0 {
-    min-height: 0 !important;
-}
+﻿/** -------------------------------------------------
+    MAXSYSTEM SDN BHD © ARR
+    MAIN RESPONSIVE UI CONTROL - mobilecss.css
+----------------------------------------------------- **/
 
-.tr-scrolledDataTable {
-    overflow: auto;
-}
 
-.dataTables_wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
+
 /**--RESPONSIVE DATA TABLE LISTING-------------------------------------------------**/
 .tr-responsive-table.active {
 }
