@@ -317,6 +317,9 @@
 
 <script>
     $('#btnSubmit').click(function(){
+        var cont = true;
+        var message = "";
+
         var name = $('#txtName').val().trim();
         var desc = $('#txtDesc').val().trim();
 
@@ -337,7 +340,12 @@
             }
         });
 
-        if (name != ""){
+        if (name === ""){
+            cont = false;
+            message = "Name cannot be empty.";
+        }
+
+        if (cont){
 
             const today = new Date();
             const dd = String(today.getDate()).padStart(2, '0');
@@ -369,7 +377,9 @@
             resetAll();
 
         } else {
-            alert("Name is empty.");
+            if(message != ""){
+                toastMessage(message, 'error');
+            }
         }
     });
 

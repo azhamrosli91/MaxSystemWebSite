@@ -168,6 +168,111 @@ function toastSuccess(title, message, callback) {
     }
 }
 
+
+
+function toastMessage(message, type = "success", title, callback) {
+    const timeout = 5000; // Time it takes for the toast to disappear, in ms
+    // NOTE: Be sure to edit the css animation as well for the progress bar
+
+    const toastContainer = document.querySelector(".ms-toast-container");
+
+    if (!title || title === "") {
+        if (type == "error") {
+            title = "Invalid Action";
+        } else {
+            title = type.charAt(0).toUpperCase() + type.slice(1);
+        }
+    }
+
+    const toast = document.createElement("div");
+    toast.classList.add("ms-toast", type);
+
+    toast.innerHTML = `
+    <div class="toast-content">
+        <i class="icon fa-2xl ${getToastIcon(type)}"></i>
+        <div class="message">
+        <span class="text text-1">${title}</span>
+        <span class="text text-2">${message}</span>
+        </div>
+    </div>
+    <i class="fa-solid fa-x close"></i>
+    <div class="progress active"></div>
+    `;
+
+    toastContainer.prepend(toast);
+    let showToast = setTimeout(() => {
+    void toast.offsetHeight;
+    toast.classList.add("active");
+    }, 1);
+
+    // Activate toast on next tick
+    let showToastTimer = setTimeout(() => {
+        void toast.offsetHeight;
+        toast.classList.add("active");
+    }, 1);
+
+    const progress = toast.querySelector(".progress");
+    const closeIcon = toast.querySelector(".close");
+
+    let timer1, timer2;
+
+    const removeToast = () => {
+        toast.remove();
+        if (typeof callback === "function") {
+            callback(); // Call the callback if it's a function
+        }
+    };
+
+    const startTimers = () => {
+        timer1 = setTimeout(() => {
+            toast.classList.remove("active");
+        }, timeout);
+
+        timer2 = setTimeout(() => {
+            progress.classList.remove("active");
+            setTimeout(removeToast, 400);
+        }, timeout + 300);
+    };
+
+    const clearTimers = () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+    };
+
+    startTimers();
+
+    // Manual close
+    closeIcon.addEventListener("click", () => {
+        toast.classList.remove("active");
+        clearTimers();
+        clearTimeout(showToastTimer);
+        setTimeout(removeToast, 400);
+    });
+
+    // Hover to pause
+    toast.addEventListener("mouseenter", () => {
+        clearTimers();
+        progress.classList.remove("active"); // Optional: pause progress animation
+    });
+
+    toast.addEventListener("mouseleave", () => {
+        progress.classList.add("active"); // Optional: resume progress animation
+        startTimers();
+    });
+}
+
+function getToastIcon(type) {
+    switch (type) {
+        case "success": return "fa-solid fa-circle-check";
+        case "error": return "fa-solid fa-circle-xmark";
+        case "warning": return "fa-solid fa-triangle-exclamation";
+        case "info": return "fa-solid fa-circle-info";
+        default: return "fa-solid fa-circle-check";
+    }
+}
+
+
+
 function getFormattedDate(date) {
     var year = date.getFullYear();
     var month = ('0' + (date.getMonth() + 1)).slice(-2); // Adding 1 because month is zero based
