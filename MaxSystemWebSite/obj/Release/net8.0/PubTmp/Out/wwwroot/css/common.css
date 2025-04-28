@@ -1,36 +1,12 @@
-﻿.list-group {
-    box-shadow: none !important;
-}
+﻿/** -------------------------------------------------
+    MAXSYSTEM SDN BHD © ARR
+    EXTRA CUSTOM CSS - common.css
+----------------------------------------------------- **/
 
-input::placeholder {
-    color: #A9A9AC !important;
-}
 
-.input-group-text {
-    color: #FFFFFF !important;
-}
-
-.form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem rgba(52, 89, 230, 0.25);
-}
-
-.multiselect-option.dropdown-item:hover {
-    background-color: #ECECEC !important; /* Set your desired hover background color */
-    color: #54575A !important;
-    /* Additional styling properties for hover */
-}
-.colorpicker {
-    min-height: 40px;
-}
-
-.pill {
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    /*border: 1px solid #acacac;*/
-    border-radius: 10px;
-}
+/** -------------------------------------------------
+    CUSTOM EXTRA GENERAL CLASS 1
+----------------------------------------------------- **/
 .isHide {
     display: none;
 }
@@ -39,45 +15,28 @@ input::placeholder {
     display: none;
 }
 
+.fw-semibold {
+    font-weight: 600;
+}
+
+.scrollarea {
+    overflow-y: auto;
+}
+
+.list-group {
+    box-shadow: none !important;
+}
+
 .tr-input-group {
     background-color: #057EE6;
     border-color: #057EE6;
 }
-
-.multiselect-container.dropdown-menu {
-    max-height: 400px;
-    overflow: auto;
+.input-group-text {
+    color: #FFFFFF !important;
 }
 
-.table-control {
-    width: 100%;
-    overflow: auto;
-}
-
-.table {
-    box-shadow: none !important;
-}
-
-.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-.dataTables_length .multiselect.dropdown-toggle {
-    border-top-left-radius: 0px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-}
-
-.multiselect-container {
-    --bs-dropdown-min-width: 84px;
-    margin-top: -3px !important;
-    border-top-left-radius: 0px !important;
-    border-top-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
+.colorpicker {
+    min-height: 40px;
 }
 
 .overlay-dropdown .dropdown-menu {
@@ -92,60 +51,91 @@ input::placeholder {
     display: block;
 }
 
-.btn-primary, .btn-secondary, .btn-danger {
-    border: 0px;
-}
-
 .form-check-input {
     border-color: #707070;
-}
-
-.form-control:not(.tr-date) {
-    box-shadow: 0 0 0 0.01rem #c2cdf6 !important;
 }
 
 .file-caption-name {
     pointer-events: none;
 }
 
-/**Overwrite site.css**/
-body {
-    overflow: hidden;
+
+.input-phonenumber select {
+    height: 100%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-btnRight button {
+    height: 100%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.disabled {
+    background-color: #F0F0F0 !important;
 }
 
 
-.detail-frame {
-    overflow: hidden;
+/** -------------------------------------------------
+    GENERAL TABLE WRAPPER
+----------------------------------------------------- **/
+.tr-scrolledDataTable {
+    overflow: auto;
 }
 
-select.form-control {
-    -webkit-appearance: menulist !important;
-    -moz-appearance: menulist !important;
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
-.toasts {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    z-index: 999;
+
+/** -------------------------------------------------
+    CUSTOM EXTRA GENERAL CLASS 2
+----------------------------------------------------- **/
+.min-height-0 {
+    min-height: 0 !important;
 }
 
-#chgpassword_btn {
-    color: inherit !important;
-    font-weight: bold;
-    position: fixed;
-    bottom: 68px;
-    margin-top: auto;
-    width: 330px;
-    padding: 10px;
-    text-decoration: none;
+.max-d-120 {
+    max-width: 120px;
 }
 
-    #chgpassword_btn:hover {
-        color: dodgerblue !important;
-        cursor: pointer;
-    }
+.minh-0 {
+    min-height: 0% !important;
+}
 
+.minh-100 {
+    min-height: 100% !important;
+}
+
+.minw-0 {
+    min-width: 0% !important;
+}
+
+.minw-100 {
+    min-width: 100% !important;
+}
+
+.h-fit-content {
+    height: fit-content !important;
+}
+
+.btn-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.minw-100px {
+    min-width: 100px;
+}
+
+
+/** -------------------------------------------------
+    CUSTOM ANIMATION
+----------------------------------------------------- **/
 @keyframes shake-anim {
     0% {
         transform: rotate(-35deg);
@@ -166,72 +156,4 @@ select.form-control {
     100% {
         transform: rotate(0deg);
     }
-}
-
-@media only screen and (min-device-width: 1280px) and (max-device-width: 1599px) {
-    .multiselect-container {
-        --bs-dropdown-min-width: 75px;
-        margin-top: -3px !important;
-        border-top-left-radius: 0px !important;
-        border-top-right-radius: 0px !important;
-        border-bottom-left-radius: 0px !important;
-        border-bottom-right-radius: 0px !important;
-    }
-
-    .dataTables_length .multiselect.dropdown-toggle {
-        width: 75px;
-        padding-right: 40px !important;
-    }
-
-    #chgpassword_btn {
-        width: 200px;
-    }
-}
-
-.nav-tabs {
-    --bs-nav-tabs-border-width: 0px;
-}
-
-.tr-tab .nav-link {
-    min-width: 250px;
-    text-align: left;
-    background-color: #F0F0F0 !important;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-
-    .tr-tab .nav-link:not(:first-child) {
-        margin-left: 5px;
-    }
-
-.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-    box-shadow: inset 0 0px 0 transparent !important;
-}
-
-.tr-tab .nav-link.active {
-    color: #54575A !important;
-    background-color: #EBF3FF !important;
-    font-weight: bold;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-}
-
-.nav-tabs .nav-link {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    border-width: 0px !important;
-}
-.input-phonenumber select {
-    height: 100%;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-.input-btnRight button {
-    height: 100%;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.disabled {
-    background-color: #F0F0F0 !important;
 }

@@ -48,6 +48,9 @@ namespace MaxSys.Helpers
                 EMAIL = User.Identity?.Name;
             }
 
+            connectionString = _configuration["ConnectionString_Dummy"] ?? "";
+            _dapper.SetConnectionString(connectionString);
+            _authenticator.SetConnectionString(connectionString);
         }
         public async void setBaseConnectionString(string SystemName, string URL, bool isDummy = false)
         {

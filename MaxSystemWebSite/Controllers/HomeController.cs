@@ -23,6 +23,9 @@ using Microsoft.Bot.Builder;
 using Microsoft.Graph.Models;
 using MaxSystemWebSite.Models.SETTING;
 using Microsoft.Graph.Models.TermStore;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace MaxSys.Controllers
 {
@@ -39,11 +42,12 @@ namespace MaxSys.Controllers
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
         private readonly IEmail _emailService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration, IWebApi webApi, 
             IDapper dapper, IJWTToken jWTToken, ISQL sql, 
             IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, IWebHostEnvironment environment,
-            IBotFrameworkHttpAdapter adapter, IBot bot,IEmail emailService)
+            IBotFrameworkHttpAdapter adapter, IBot bot,IEmail emailService, IHttpClientFactory httpClientFactory)
         : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
@@ -55,6 +59,7 @@ namespace MaxSys.Controllers
             _environment = environment;
             _adapter = adapter;
             _bot = bot;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet]
@@ -280,9 +285,17 @@ namespace MaxSys.Controllers
                 string modelType = _configuration["ChatGPT:Model"];
                 double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
 
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Template", "MelissaPrompt.txt");
+
+                string strPromtAi = "";
+                if (System.IO.File.Exists(filePath))
+                {
+                    strPromtAi = await System.IO.File.ReadAllTextAsync(filePath);
+                }
+
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
-                request.Messages.Add(new MessageChatBot("system", "You are a helpful and knowledgeable support assistant for Max System Solutions. Your name is Melissa Ai Assistant. If asked about something that is not related just that you are only tasked to answer about Max System Solutions. You provide clear, friendly, and accurate answers based on the following company information:\r\n\r\nOffice hour:\r\n8:30 am to 5:30 pm\r\n\r\nContact & Location:\r\nadress: No. 27, 1st Floor, Jalan Villa Tanjung, Villa Tanjung, 12300 Butterworth, Pulau Pinang\r\nmaps: https://maps.app.goo.gl/kJ7o2gwgUXpjvWPbA\r\nphone: +60 4 3137612\r\nemail: hr@maxsys.com.my\r\n\r\nOur Client:\r\nAmphenol, First-Link, Plexus, AZRA GREEN, ASE Electronic Malaysia, and Toray Malaysia Systems.\r\n\r\nAbout Max System Solutions:\r\nMax System Solutions provides innovative IT services to help businesses optimize operations, streamline processes, and improve overall performance. We focus on:\r\nIT Solutions : Providing innovative IT solutions tailored to optimize your business operations, streamline processes, and enhance overall performance.\r\nAI Solutions : Harnessing the power of artificial intelligence to improve decision-making, automate tasks, and create smarter, more efficient business strategies.\r\nOutsources Services : Supplying skilled resources to support your business needs, from technical expertise to project management, ensuring seamless operations and growth.\r\nSoftware Consult : Offering expert guidance to help you navigate complex IT challenges, optimize your infrastructure, and align technology with your business goals.\r\nWe deliver industry best practices through practical, cost-effective solutions and leading technologies—enhanced by a personal touch. As digital transformation becomes a top priority, we help businesses adopt effective strategies to stay competitive and future-ready. \r\nWe offer local support, customized solutions, cost-effective strategies, and dedicated service to keep businesses competitive and future-ready.\r\n\r\nWork Process:\r\nResearch & Analysis : Requirements gathering, needs assessment, and user feedback\r\nDesign & Planning : UI/UX design, wireframes, and prototyping\r\nDevelopment & Delivery : Full development, testing, and smooth deployment\r\n\r\nKey Solutions & Products:\r\nAI Solutions:\r\nFace Recognition : Identifies and groups individuals using facial feature patterns\r\nDefect Detection (Ai) : Using power of computer vision to track defect of the product.\r\nChat Bot Power Agent : Power agent is internal chatbot for maxsystem staff to know about standard operation, rule and on boarding process.\r\nChat Bot Power Agent : This chatbot interface, branded as \"AI Agent (Melissa),\" is designed to assist clients or users in accessing company information and HR-related queries. It serves as a virtual assistant for Max System, helping visitors learn about services provided, contact methods, and job application procedures. The clean, white-background layout enhances readability and professionalism, making it ideal for corporate use on websites or internal portals..\r\nWeb-Based Systems:\r\nTicketing Helpdesk : A real-time alert system for detecting emergencies, notifying relevant personnel, and ensuring quick response actions.\r\nePenduduk : Designed to streamline the management and tracking of resident information. It enables users to efficiently view and manage resident data.\r\nMobile and Microsoft 365 Solutions:\r\nHR Management System : HR solution integrated with Microsoft 365 to streamline employee records, leave management, payroll, and performance tracking.\r\n\r\nFor job application and partnership enquiry you can tell them to contact hr at hr@maxsys.com.my\r\n\r\nTeam Members:\r\nLee Eng Hwa, the leader for this company and his position is General Manager\r\nShazwanie, HR Manager\r\nAzham, Technical Leader\r\nTeh Jia Yan, Assistant Manager\r\nYuen Wei Hong, Assistant Manager\r\nFoo Sze Khai, Assistant Manager\r\noutside of these name just answer \"Sorry i dont have information about this name\""));
+                request.Messages.Add(new MessageChatBot("system", strPromtAi));
 
                 var body = new
                 {
@@ -313,7 +326,110 @@ namespace MaxSys.Controllers
             
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ContactSubmit(IFormCollection form)
+        {
+            var name = form["name"];
+            var email = form["email"];
+            var subject = form["subject"];
+            var message = form["message"];
 
+            var emailBody = $"<p><strong>Name:</strong> {name}</p>" +
+                            $"<p><strong>Email:</strong> {email}</p>" +
+                            $"<p><strong>Message:</strong></p><p>{message}</p>";
+
+            var modelTemp = new Emai_TemplateSent
+            {
+                Recipient = new List<Recipient>
+                {
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "hr@maxsys.com.my",
+                             Name = "Muhammad Azham Bin Rosli"
+                         }
+                     }
+                 },
+                CC = new List<Recipient>
+                {
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "azham@maxsys.com.my",
+                             Name = "Muhammad Azham Bin Rosli"
+                         }
+                     },
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "shazwanie@maxsys.com.my",
+                             Name = "Shazwanie (HR)"
+                         }
+                     },
+                     new Recipient
+                     {
+                         EmailAddress = new EmailAddress
+                         {
+                             Address = "afina@maxsys.com.my",
+                             Name = "Afina (HR)"
+                         }
+                     }
+                 },
+                Subject = $"Contact From : {name} {subject}",
+                subTemplate = $"<p>Subject: {subject}</p>" +
+                        $"<p>Contact Name: {name}</p>" +
+                        $"<p>Email: {email}</p>" +
+                        $"<p>Message: {message}</p>",
+                WORD_REPLACE = new List<(string ori, string replace)>
+                 {
+                     ("[NAME]", name),
+                     ("[EMAIL]", email),
+                 },
+                Attachments = new List<Emai_TemplateSent.EmailAttachment>()
+            };
+
+
+            modelTemp.mainTemplate = await modelTemp.EmailBodyTemplate();
+            modelTemp.bodyContent = modelTemp.mainTemplate.Replace("[BODY]", modelTemp.subTemplate);
+            var wordResult = modelTemp.WordReplacer(modelTemp.bodyContent);
+            if (wordResult.Item1)
+            {
+                modelTemp.bodyContent = wordResult.Item2;
+            }
+            SETTING_EMAIL settingEmail = new SETTING_EMAIL();
+
+            settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
+            settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
+            settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
+            settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+
+
+
+            modelTemp.Setting_Setup = new Setting_Setup();
+            modelTemp.Setting_Setup.SMTP_ACCOUNT = "hr@maxsys.com.my";
+            modelTemp.WORD_REPLACE = new List<(string ori, string replace)>();
+            modelTemp.WORD_REPLACE.Add(("[NAME]", ""));
+            modelTemp.WORD_REPLACE.Add(("[HELP_DESK_EMAIL]", "hr@maxsys.com.my"));
+            modelTemp.WORD_REPLACE.Add(("[APPLICATION_NAME]", "CONTACT FROM CUSTOMER"));
+            modelTemp.WORD_REPLACE.Add(("[URL]", $"www.azhamrosli.com"));
+
+            _emailService.InitGraph(settingEmail);
+
+            (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
+
+            if (!result.status)
+            {
+                return Json(new { success = false, message = $"Failed to send message. {result.message}" });
+            }
+
+            return Json(new { success = true, message = "Your message has been sent. Thank you!" });
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ApplyJob(IFormCollection form)
         {
@@ -323,6 +439,8 @@ namespace MaxSys.Controllers
             var position = form["applicant-position"];
             var salary = form["expected-salary"];
             var description = form["applicant-description"];
+            var transportation = form["transportation"];
+            var noticeperiod = form["notice-period"];
             var resume = form.Files["applicant-resume"];
 
             byte[] fileBytes = null;
@@ -391,6 +509,8 @@ namespace MaxSys.Controllers
                         $"<p>Email: {email}</p>" +
                         $"<p>Position Applied: {position}</p>" +
                         $"<p>Expected Salary: {salary}</p>" +
+                        $"<p>Transporation: {transportation}</p>" +
+                        $"<p>Notice Period: {noticeperiod}</p>" +
                         $"<p>Description: {description}</p>",
                  WORD_REPLACE = new List<(string ori, string replace)>
                  {
@@ -440,17 +560,68 @@ namespace MaxSys.Controllers
 
             _emailService.InitGraph(settingEmail);
 
-            bool result = await _emailService.SendEmailAsync(modelTemp);
+            (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
 
-            if (!result)
+            if (!result.status)
             {
-                return Json(new { success = false, message = "Failed to send email." });
+                return Json(new { success = false, message = $"Failed to send email. {result.message}" });
             }
 
             return Json(new { success = true, message = "Application submitted and email sent." });
   
         }
 
+
+        [HttpGet]
+        [NoSessionExpire]
+        [AllowAnonymous]
+        public async Task<IActionResult> EmailSummarize()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> SummarizeEmail(string emailBody)
+        {
+            string apiKey = _configuration["ChatGPT:SecretKey"];
+            string modelType = _configuration["ChatGPT:Model"];
+            double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var payload = new
+            {
+                model = modelType,
+                messages = new[]
+                {
+                    new { role = "system", content = "You are an assistant that specializes in summarizing emails in a clear and concise way. Extract the key points, action items, and important information from the following email. The summary should be brief, professional, and easy to understand." },
+                    new { role = "user", content = "Please summarize the following email. Focus on the main points, key decisions, action items, and any important dates or names. The summary should be concise and suitable for someone who needs a quick understanding of the email content.\n\nEmail:\n\n" + emailBody }
+                },
+                temperature = temperature
+            };
+
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+            var response = await client.PostAsync("https://api.openai.com/v1/chat/completions",
+                new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest(new { error = "Failed to summarize email." });
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(result);
+            var summary = doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            return Ok(new { summary }); // Return JSON like { "summary": "..." }
+        }
+ 
 
         [AllowAnonymous]
         [Route("api/messages")]

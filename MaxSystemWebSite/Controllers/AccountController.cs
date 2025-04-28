@@ -76,8 +76,8 @@ namespace MaxSys.Controllers
             string email = claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ??
                                            claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            (bool success, string message, EMPLOYEE emp) employee = _dapper.PSP_COMMON_DAPPER_SINGLE_SYNC<EMPLOYEE>
-                                  ("PSP_EMPLOYEE_BYEMAIL", CommandType.StoredProcedure, new { EMAIL = email });
+            (bool success, string message, MM_USER emp) employee = _dapper.PSP_COMMON_DAPPER_SINGLE_SYNC<MM_USER>
+                                  ("PSP_USER_BYEMAIL", CommandType.StoredProcedure, new { EMAIL = email });
 
             if (employee.success == false || employee.emp == null)
             {
@@ -117,9 +117,6 @@ namespace MaxSys.Controllers
             Response.Cookies.Append("USER_ID", identityUser.Id, cookieOptions);
             Response.Cookies.Append("ID_MM_USER", identityUser.Id, cookieOptions);
             Response.Cookies.Append("NAME", employee.emp.NAME, cookieOptions);
-            Response.Cookies.Append("ID_MM_COMPANY", employee.emp.EMPLOYEE_ID.ToString(), cookieOptions);
-            Response.Cookies.Append("WORK_NO", employee.emp.WORK_NO.ToString(), cookieOptions);
-            Response.Cookies.Append("ACCESS_LEVEL", employee.emp.ACCESS_LEVEL.ToString(), cookieOptions);
             Response.Cookies.Append("AUTH_TYPE", "OPENID", cookieOptions);
 
             // Trigger the OpenID Connect authentication process and pass the return URL

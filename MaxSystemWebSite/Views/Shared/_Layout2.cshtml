@@ -195,7 +195,7 @@
                         @if (profileImage == null || string.IsNullOrEmpty(profileImage))
                         {
                             <img src="~/Images/user-avatar.png" id="img-userprofile" alt="user profile" class="rounded-circle" style="width: 2.5em; height: 2.5em; object-fit: cover;" />
-                            <span class="ms-2">ANONYMOUS</span>
+                            <span class="ms-2">@username.ToUpper()</span>
                         }
                         else
                         {

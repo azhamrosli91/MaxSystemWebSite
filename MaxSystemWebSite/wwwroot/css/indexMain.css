@@ -203,6 +203,9 @@ h6 {
 	}
 }
 
+.btn-microsoft-small {
+	width:100px;
+}
 /* Index Page Header
 ------------------------------*/
 .index-page .header {
@@ -1714,7 +1717,150 @@ section,
 	.team .team-member .social a + a {
 		margin-left: 8px;
 	}
+/*--------------------------------------------------------------
+# career Section
+--------------------------------------------------------------*/
+.career .career-item {
+	background-color: var(--surface-color);
+	box-shadow: 0 3px 20px -2px rgba(0, 0, 0, 0.1);
+	border-top: 4px solid var(--background-color);
+	padding: 60px 40px;
+	height: 100%;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
 
+.career h3 {
+	font-weight: 600;
+	margin-bottom: 15px;
+	font-size: 20px;
+}
+
+.career h4 {
+	color: var(--accent-color);
+	font-size: 48px;
+	font-weight: 400;
+	font-family: var(--heading-font);
+	margin-bottom: 0;
+}
+
+	.career h4 sup {
+		font-size: 28px;
+	}
+
+	.career h4 span {
+		color: color-mix(in srgb, var(--default-color), transparent 50%);
+		font-size: 18px;
+	}
+
+.career ul {
+	padding: 20px 0;
+	list-style: none;
+	color: color-mix(in srgb, var(--default-color), transparent 30%);
+	text-align: left;
+	line-height: 20px;
+	flex-grow: 1;
+}
+
+	.career ul li {
+		padding: 10px 0;
+		display: flex;
+		align-items: center;
+	}
+
+	.career ul i {
+		color: #059652;
+		font-size: 24px;
+		padding-right: 3px;
+	}
+
+	.career ul .na {
+		color: color-mix(in srgb, var(--default-color), transparent 60%);
+	}
+
+		.career ul .na i {
+			color: color-mix(in srgb, var(--default-color), transparent 60%);
+		}
+
+		.career ul .na span {
+			text-decoration: line-through;
+		}
+
+.career-item .button-group {
+	display: flex;
+	/*	justify-content: space-between;*/
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.career .buy-btn {
+	color: var(--accent-color);
+	display: inline-block;
+	padding: 8px 35px 10px 35px;
+	border-radius: 50px;
+	transition: none;
+	font-size: 16px;
+	font-weight: 500;
+	font-family: var(--heading-font);
+	transition: 0.3s;
+	border: 1px solid var(--accent-color);
+}
+
+	.career .buy-btn:hover {
+		background: var(--accent-color);
+		color: var(--contrast-color);
+	}
+
+.career .buy-btn-apply {
+	color: var(--contrast-color);
+	display: inline-block;
+	padding: 8px 35px 10px 35px;
+	border-radius: 50px;
+	transition: none;
+	font-size: 16px;
+	font-weight: 500;
+	font-family: var(--heading-font);
+	transition: 0.3s;
+	border: 1px solid var(--accent-color);
+	background: var(--accent-color);
+}
+
+	.career .buy-btn-apply:hover {
+		background: white;
+		color: var(--accent-color);
+	}
+
+.career .featured {
+	border-top-color: var(--accent-color);
+}
+
+	.career .featured .buy-btn {
+		background: var(--accent-color);
+		color: var(--contrast-color);
+	}
+
+@media (max-width: 992px) {
+	.career .box {
+		max-width: 60%;
+		margin: 0 auto 30px auto;
+	}
+}
+
+@media (max-width: 767px) {
+	.career .box {
+		max-width: 80%;
+		margin: 0 auto 30px auto;
+	}
+}
+
+@media (max-width: 420px) {
+	.career .box {
+		max-width: 100%;
+		margin: 0 auto 30px auto;
+	}
+}
 /*--------------------------------------------------------------
 # Pricing Section
 --------------------------------------------------------------*/

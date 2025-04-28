@@ -2,7 +2,7 @@
 @model MaxSys.Models.AuthenticatorModel
 @inject IConfiguration Configuration
 @{
-    ViewBag.Title = Configuration["ProjectName"] + "| Main Page";
+    ViewBag.Title = Configuration["ProjectName"] +  "| Main Page";
     // Layout = "~/Views/Shared/_Layout_Empty.cshtml";
     Layout = null;
     var ProjectName = Configuration["ProjectName"];
@@ -93,12 +93,12 @@
                         @* <li><a href="#pricing">Pricing</a></li> *@
                         <li><a href="#recent-blog-postst">Blog</a></li>
                         <li><a href="#contact">Contact</a></li>
-                    <li><a href="#pricing">Career</a></li>
+                        <li><a href="#career">Career</a></li>
                     </ul>
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
 
-                @* <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a> *@
+                <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a>
 
             </div>
         </header>
@@ -471,7 +471,7 @@
                                 <div class="steps-content">
                                     <div class="steps-number">01</div>
                                     <h3>Research &amp; Analyse</h3>
-                                    <p>Meet customer and the requirement. Analyse all requirements needed.</p>
+                                    <p>Meet customer and analyse requirements needed.</p>
                                     <div class="steps-features">
                                         <div class="feature-item">
                                             <i class="bi bi-check-circle"></i>
@@ -594,7 +594,7 @@
 
                         <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
 
-                            <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
+                           @*  <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
                                 <img src="~/Images/img/portfolio/Helpdesk.png" class="img-fluid" alt="Ticketing system helpdesk" apple>
                                 <div class="portfolio-info">
                                     <h4>Web - Ticketing System Helpdesk</h4>
@@ -602,7 +602,7 @@
                                     <a href="~/Images/img/portfolio/Helpdesk.png" title="Ticketing System Helpdesk" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
                                     <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                 </div>
-                            </div><!-- End Portfolio Item -->
+                            </div><!-- End Portfolio Item --> *@
 
                             <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
                                 <img src="~/Images/img/portfolio/AI.png" class="img-fluid" alt="Ai face recongition" apple>
@@ -683,7 +683,15 @@
                                     <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                 </div>
                             </div>
-                        
+                        <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-product">
+                            <img src="~/Images/img/portfolio/detection_v.png" class="img-fluid" alt="Vehicle Detection" apple>
+                            <div class="portfolio-info">
+                                <h4>Vehicle Detection</h4>
+                                <p>Vehicle detection allow the business to track the movement of the lorry or tracking vehicle from existing cctv.</p>
+                                <a href="~/Images/img/portfolio/detection_v.png" title="Vehicle Detection" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+                                <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+                            </div>
+                        </div>
                             <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-product">
                                 <img src="~/Images/img/portfolio/poweragent.png" class="img-fluid" alt="Power Agent" apple>
                                 <div class="portfolio-info">
@@ -702,6 +710,7 @@
                                     <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
                                 </div>
                             </div>
+                           
                             <!-- End Portfolio Item -->
 
                             @* <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product"> *@
@@ -1066,7 +1075,10 @@
                             <!-- Carousel -->
                             <div id="carouselTeamBuilding" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
-                                    <div class="carousel-item active">
+                                     <div class="carousel-item active">
+                                        <img src="~/Images/img/blog/team9.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
+                                    </div>
+                                    <div class="carousel-item">
                                         <img src="~/Images/img/blog/team8.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
                                     </div>
                                     <div class="carousel-item">
@@ -1130,6 +1142,9 @@
                             <div id="carouselRamadan" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
+                                        <img src="~/Images/img/blog/Ramadan8.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
+                                    </div>
+                                    <div class="carousel-item">
                                         <img src="~/Images/img/blog/Ramadan7.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
                                     </div>
                                     <div class="carousel-item">
@@ -1187,6 +1202,9 @@
                             <div id="carouselGifts" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
+                                      <img src="~/Images/img/blog/recognition.jpeg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
+                                    </div>
+                                    <div class="carousel-item">
                                       <img src="~/Images/img/blog/Gift (9).jpg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
                                     </div>
                                     <div class="carousel-item">
@@ -1280,32 +1298,32 @@
                                         <p>hr@maxsys.com.my</p>
                                     </div>
                                 </div><!-- End Info Item -->
-                                <<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.9322254553813!2d100.38625689999999!3d5.427267299999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ac5ed7013568f%3A0xdef060b81b4def67!2sMax%20System%20Solution%20Sdn%20Bhd!5e0!3m2!1sen!2smy!4v1744084335866!5m2!1sen!2smy" width="500" height="450" style="border:0;" allowfullscreen="" apple referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.9322254553813!2d100.38625689999999!3d5.427267299999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304ac5ed7013568f%3A0xdef060b81b4def67!2sMax%20System%20Solution%20Sdn%20Bhd!5e0!3m2!1sen!2smy!4v1744084335866!5m2!1sen!2smy" width="500" height="450" style="border:0;" allowfullscreen="" apple referrerpolicy="no-referrer-when-downgrade"></iframe>
                             </div>
                         </div>
 
                         <div class="col-lg-7">
-                            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                            <form id="form-contactSubmit" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
                                 <div class="row gy-4">
 
                                     <div class="col-md-6">
                                         <label for="name-field" class="pb-2">Your Name</label>
-                                        <input type="text" name="name" id="name-field" class="form-control" required="">
+                                        <input type="text" name="name" id="name-field" class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6">
                                         <label for="email-field" class="pb-2">Your Email</label>
-                                        <input type="email" class="form-control" name="email" id="email-field" required="">
+                                        <input type="email" class="form-control" name="email" id="email-field" required>
                                     </div>
 
                                     <div class="col-md-12">
                                         <label for="subject-field" class="pb-2">Subject</label>
-                                        <input type="text" class="form-control" name="subject" id="subject-field" required="">
+                                        <input type="text" class="form-control" name="subject" id="subject-field" required>
                                     </div>
 
                                     <div class="col-md-12">
                                         <label for="message-field" class="pb-2">Message</label>
-                                        <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
+                                        <textarea class="form-control" name="message" rows="10" id="message-field" required></textarea>
                                     </div>
 
                                     <div class="col-md-12 text-center">
@@ -1326,243 +1344,243 @@
 
             </section><!-- /Contact Section -->
 
-            <!-- Carrer -->
-        <section id="pricing" class="pricing section light-background">
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Career Growth With us</h2>
-                <p>Join a team that values innovation, growth, and your future. Explore opportunities to develop your skills, take on exciting challenges, and build a rewarding career with us.</p>
-            </div><!-- End Section Title -->
-            <div class="container">
+               <!-- Carrer -->
+<section id="career" class="career section light-background">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Career Growth With us</h2>
+        <p>Join a team that values innovation, growth, and your future. Explore opportunities to develop your skills, take on exciting challenges, and build a rewarding career with us.</p>
+    </div><!-- End Section Title -->
+    <div class="container">
 
-                <div class="row gy-4">
+        <div class="row gy-4">
 
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="100">
-                        <div class="pricing-item">
-                            <h3>Software Engineer (AI)</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Gather and produce specifications for new or modified features.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Research, develop, test, and deploy machine learning algorithms and predictive models.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Create and enhance scalable machine learning algorithms and predictive models using
-                                        AI tools
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Transform machine learning models into APIs and integrate them with other
-                                        applications
-                                    </span>
-                                </li>
-                                <li><i class="bi bi-check"></i> <span>Test, tune, monitor, and support AI-related models and APIs</span></li>
-                            </ul>
-                            <div class="button-group">
-                                <a href="~/document/jd/(maxsys) jd-ai engineer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Software Engineer (AI)">Apply Now</a>
-                            </div>
-                            
-                        </div>
-                    </div><!-- End Pricing Item -->
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="100">
+                <div class="career-item">
+                    <h3>Software Engineer (AI)</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Gather and produce specifications for new or modified features.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Research, develop, test, and deploy machine learning algorithms and predictive models.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Create and enhance scalable machine learning algorithms and predictive models using
+                                AI tools
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Transform machine learning models into APIs and integrate them with other
+                                applications
+                            </span>
+                        </li>
+                        <li><i class="bi bi-check"></i> <span>Test, tune, monitor, and support AI-related models and APIs</span></li>
+                    </ul>
+                    <div class="button-group">
+                        <a href="~/document/jd/(maxsys) jd-ai engineer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Software Engineer (AI)">Apply Now</a>
+                    </div>
 
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="200">
-                        <div class="pricing-item">
-                            <h3>IT Technical Support</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Serve as the first point of contact for customers seeking technical assistance over the phone or
-                                        email.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Perform remote troubleshooting through diagnostic techniques and pertinent questions.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Determine the best solution based on the issue and details provided by customers
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Attend to customer’s queries, support, services and issues.
-                                    </span>
-                                </li>
-                                <li><i class="bi bi-check"></i> <span>Prioritize and manage several open issues at one time</span></li>
-                            </ul>
-                            <div class="button-group">
-                                <a href="~/document/jd/(MaxSys) JD - IT Technical Support.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Technical Support">Apply Now</a>
-                            </div>
-                        </div>
-                    </div><!-- End Pricing Item -->
-
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="pricing-item">
-                            <h3>IT Engineer (Network)</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Design, implement, and manage network infrastructure and services, including servers, routers,
-                                        switches, firewalls, and other network devices.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Configure and maintain network devices, ensuring that they operate efficiently.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Proactively monitor, troubleshoot, and resolve network issue, outages, and cloud
-                                        infrastructure/ services implementing corrective measures in a timely and effective manner.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Ensure high availability, scalability, and security of server infrastructure, cloud-based
-                                        applications, systems, and data.
-                                    </span>
-                                </li>
-                                <li><i class="bi bi-check"></i> <span>Implement and maintain backup solutions for network, server, and cloud infrastructures.</span></li>
-                            </ul>
-                            <div class="button-group">
-                                <a href="~/document/jd/(MaxSys) JD - IT Engineer (Network).pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Engineer (Network)">Apply Now</a>
-                            </div>
-                        </div>
-                    </div><!-- End Pricing Item -->
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="pricing-item">
-                            <h3>Software Developer</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Study, analyse, design, develop, enhance, or maintain the systems in accordance with the
-                                        design and its requirements.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Set up system architecture, system visualization and unit testing based on project
-                                        requirements
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Ensure technology standard are implemented as part of the deliverables.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Ensure coding quality and follow company policies.
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Developing code documentation and functional specification to support programme
-                                        development and operation support.
-                                    </span>
-                                </li>
-                            </ul>
-                             <div class="button-group">
-                                <a href="~/document/jd/(MaxSys) JD - Software Developer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Software Developer">Apply Now</a>
-                            </div>
-                        </div>
-                    </div><!-- End Pricing Item -->
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="pricing-item">
-                            <h3>IT Engineer (Cloud)</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Maintain of daily network operation (network, server) which including but not limited
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Network routine performance assessment, troubleshoot the network issues and outages
-                                        (LAN & WAN)
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Administer firewall settings in line with IT security policy
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Implementation of new technologies and platforms for supporting on premise network and
-                                        connectivity to cloud environment (AWS & Azure).
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Server & Storage performance, Server Backup Plan, propose & manage new network related
-                                        project with proper project management
-                                    </span>
-                                </li>
-                            </ul>
-                            <div class="button-group">
-                                <a href="~/document/jd/(MaxSys) JD IT Engineer (Cloud).pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Engineer (Cloud)">Apply Now</a>
-                            </div>
-                        </div>
-                    </div><!-- End Pricing Item -->
-                    <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="pricing-item">
-                            <h3>Mobile Developer</h3>
-                            <ul>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Developing application programming interfaces (APIs) to support mobile functionality
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Keeping up to date with the terminology, concepts and best practices for coding mobile
-                                        apps
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Using and adapting existing web applications for apps
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Fixing bugs and performance problems
-                                    </span>
-                                </li>
-                                <li>
-                                    <i class="bi bi-check"></i> <span>
-                                        Cooperating with back-end developers, designers, and the rest of the team to deliver
-                                        well architected and high-quality solutions
-                                    </span>
-                                </li>
-                            </ul>
-                            <div class="button-group">
-                                <a href="~/document/jd/(MaxSys) JD Mobile Developer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
-                                <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Mobile Developer">Apply Now</a>
-                            </div>
-                        </div>
-                    </div><!-- End Pricing Item -->
                 </div>
+            </div><!-- End career Item -->
 
-            </div>
-            </section>
-         <!-- Carrer -->
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="200">
+                <div class="career-item">
+                    <h3>IT Technical Support</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Serve as the first point of contact for customers seeking technical assistance over the phone or
+                                email.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Perform remote troubleshooting through diagnostic techniques and pertinent questions.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Determine the best solution based on the issue and details provided by customers
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Attend to customer’s queries, support, services and issues.
+                            </span>
+                        </li>
+                        <li><i class="bi bi-check"></i> <span>Prioritize and manage several open issues at one time</span></li>
+                    </ul>
+                    <div class="button-group">
+                        <a href="~/document/jd/(MaxSys) JD - IT Technical Support.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Technical Support">Apply Now</a>
+                    </div>
+                </div>
+            </div><!-- End career Item -->
+
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
+                <div class="career-item">
+                    <h3>IT Engineer (Network)</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Design, implement, and manage network infrastructure and services, including servers, routers,
+                                switches, firewalls, and other network devices.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Configure and maintain network devices, ensuring that they operate efficiently.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Proactively monitor, troubleshoot, and resolve network issue, outages, and cloud
+                                infrastructure/ services implementing corrective measures in a timely and effective manner.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Ensure high availability, scalability, and security of server infrastructure, cloud-based
+                                applications, systems, and data.
+                            </span>
+                        </li>
+                        <li><i class="bi bi-check"></i> <span>Implement and maintain backup solutions for network, server, and cloud infrastructures.</span></li>
+                    </ul>
+                    <div class="button-group">
+                        <a href="~/document/jd/(MaxSys) JD - IT Engineer (Network).pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Engineer (Network)">Apply Now</a>
+                    </div>
+                </div>
+            </div><!-- End career Item -->
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
+                <div class="career-item">
+                    <h3>Software Developer</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Study, analyse, design, develop, enhance, or maintain the systems in accordance with the
+                                design and its requirements.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Set up system architecture, system visualization and unit testing based on project
+                                requirements
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Ensure technology standard are implemented as part of the deliverables.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Ensure coding quality and follow company policies.
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Developing code documentation and functional specification to support programme
+                                development and operation support.
+                            </span>
+                        </li>
+                    </ul>
+                     <div class="button-group">
+                        <a href="~/document/jd/(MaxSys) JD - Software Developer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Software Developer">Apply Now</a>
+                    </div>
+                </div>
+            </div><!-- End career Item -->
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
+                <div class="career-item">
+                    <h3>IT Engineer (Cloud)</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Maintain of daily network operation (network, server) which including but not limited
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Network routine performance assessment, troubleshoot the network issues and outages
+                                (LAN & WAN)
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Administer firewall settings in line with IT security policy
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Implementation of new technologies and platforms for supporting on premise network and
+                                connectivity to cloud environment (AWS & Azure).
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Server & Storage performance, Server Backup Plan, propose & manage new network related
+                                project with proper project management
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="button-group">
+                        <a href="~/document/jd/(MaxSys) JD IT Engineer (Cloud).pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="IT Engineer (Cloud)">Apply Now</a>
+                    </div>
+                </div>
+            </div><!-- End career Item -->
+            <div class="col-lg-4 aos-init aos-animate" data-aos="zoom-in" data-aos-delay="300">
+                <div class="career-item">
+                    <h3>Mobile Developer</h3>
+                    <ul>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Developing application programming interfaces (APIs) to support mobile functionality
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Keeping up to date with the terminology, concepts and best practices for coding mobile
+                                apps
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Using and adapting existing web applications for apps
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Fixing bugs and performance problems
+                            </span>
+                        </li>
+                        <li>
+                            <i class="bi bi-check"></i> <span>
+                                Cooperating with back-end developers, designers, and the rest of the team to deliver
+                                well architected and high-quality solutions
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="button-group">
+                        <a href="~/document/jd/(MaxSys) JD Mobile Developer.pdf" class="buy-btn" target="_blank" rel="noopener noreferrer">More Info</a>
+                        <a href="#applyModal" class="buy-btn-apply" data-bs-toggle="modal" data-bs-target="#applyModal" data-position="Mobile Developer">Apply Now</a>
+                    </div>
+                </div>
+            </div><!-- End career Item -->
+        </div>
+
+    </div>
+    </section>
+ <!-- Carrer -->
         </main>
 
         <footer id="footer" class="footer bg-light">
@@ -1685,10 +1703,15 @@
                             <button type="submit" class="btn btn-primary w-100">Sign In</button>
                         </form>
                         <hr />
-                        <a class="btn btn-outline-primary btn-microsoft-small" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="Sign">
-                            <img src="~/Images/Microsoft_logo.svg" alt="Microsoft Logo">
-                            Microsoft Sign In
+                    <div class="text-center mt-3">
+                        <a class="btn btn-outline-primary btn-microsoft-small d-flex align-items-center justify-content-center w-100" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="Sign">
+                            <img src="~/Images/Microsoft_logo.svg" alt="Microsoft Logo" style="height: 20px; margin-right: 8px;">
+                            <span>Microsoft Sign In</span>
                         </a>
+                    </div>
+
+
+                       
                         @*  <button type="submit" class="btn btn-outline-primary w-100">Microsoft Sign In</button> *@
 
                         <div class="text-center mt-3">
@@ -1751,59 +1774,85 @@
     <!-- Modal Apply Job -->
     <!-- Modal -->
     <div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="applyModalLabel">Apply for Position</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="application-form">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="applicant-name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="applicant-name" name="applicant-name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="applicant-tel" class="form-label">Tel No</label>
-                                    <input type="tel" class="form-control" id="applicant-tel" name="applicant-tel" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="applicant-email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="applicant-email" name="applicant-email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="applicant-resume" class="form-label">Upload Resume</label>
-                                    <input type="file" class="form-control" id="applicant-resume" name="applicant-resume" accept=".pdf, .docx, image/*" required>
-                                </div>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applyModalLabel">Apply for Position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="application-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="applicant-name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="applicant-name" name="applicant-name" required>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="applicant-position" class="form-label">Position Applied</label>
-                                    <input type="text" class="form-control" id="applicant-position" name="applicant-position" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="expected-salary" class="form-label">Expected Salary</label>
-                                    <input type="number" class="form-control" id="expected-salary" name="expected-salary" required value="0">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="applicant-description" class="form-label">Short Description</label>
-                                    <textarea class="form-control" id="applicant-description" name="applicant-description" rows="5" placeholder="Tell us briefly why you are suitable for this role."></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label for="applicant-tel" class="form-label">Tel No</label>
+                                <input type="tel" class="form-control" id="applicant-tel" name="applicant-tel" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="applicant-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="applicant-email" name="applicant-email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="applicant-resume" class="form-label">Upload Resume</label>
+                                <input type="file" class="form-control" id="applicant-resume" name="applicant-resume" accept=".pdf, .docx, image/*" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="transportation" class="form-label">Have Transportation?</label>
+                                <select class="form-select" id="transportation" name="transportation" required>
+                                    <option value="">Select</option>
+                                    <option value="No transportation">No Transportation</option>
+                                    <option value="Car">Car</option>
+                                    <option value="Motorcycle">Motorcycle</option>
+                                    <option value="Both">Both</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="d-none d-md-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="applicant-position" class="form-label">Position Applied</label>
+                                <input type="text" class="form-control" id="applicant-position" name="applicant-position" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="expected-salary" class="form-label">Expected Salary</label>
+                                <input type="number" class="form-control" id="expected-salary" name="expected-salary" required value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label for="notice-period" class="form-label">Notice Period</label>
+                                <select class="form-select" id="notice-period" name="notice-period" required>
+                                    <option value="">Select</option>
+                                    <option value="Can Start Immediately">Can Start Immediately</option>
+                                    <option value="1 Month">1 Month</option>
+                                    <option value="2 Months">2 Months</option>
+                                    <option value="3 Months">3 Months</option>
+                                    <option value="4 Months">4 Months</option>
+                                    <option value="5 Months">5 Months</option>
+                                    <option value="6 Months">6 Months</option>
+                                    <option value="More than 6">More than 6 Months</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="applicant-description" class="form-label">Short Description</label>
+                                <textarea class="form-control" id="applicant-description" name="applicant-description" rows="5" placeholder="Tell us briefly why you are suitable for this role."></textarea>
+                            </div>
                         </div>
-                        <div class="d-md-none">
-                            <button type="submit" class="btn btn-primary w-100">Submit Application</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="d-none d-md-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </div>
+                    <div class="d-md-none">
+                        <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
         <!-- jQuery Script to Show Modal -->
         <script>
             // document.addEventListener('DOMContentLoaded', function () {
@@ -2233,6 +2282,7 @@
               success: function(response) {
                 alert('Application submitted successfully!');
                 $('#applyModal').modal('hide');
+                console.log(response.message)
               },
               error: function() {
                 alert('There was an error submitting your application. Please try again.');
@@ -2240,7 +2290,67 @@
             });
           }
         });
+         $(document).ready(function () {
+            $("#form-contactSubmit").on("submit", function (e) {
+                e.preventDefault();
+
+                // Clear previous messages
+                $(".error-message").hide().text("");
+                $(".sent-message").hide().text("");
+
+                var name = $("#name-field").val().trim();
+                var email = $("#email-field").val().trim();
+                var subject = $("#subject-field").val().trim();
+                var message = $("#message-field").val().trim();
+                var error = "";
+
+                // Simple validation
+                if (name === "") {
+                    error = "Please enter your name.";
+                } else if (email === "") {
+                    error = "Please enter your email.";
+                } else if (!validateEmail(email)) {
+                    error = "Please enter a valid email address.";
+                } else if (subject === "") {
+                    error = "Please enter the subject.";
+                } else if (message === "") {
+                    error = "Please enter your message.";
+                }
+
+                if (error !== "") {
+                    $(".error-message").show().text(error);
+                    return;
+                }
+
+                var formData = $(this).serialize();
+
+                $(".loading").show(); 
+
+                $.ajax({
+                    type: "POST", 
+                    url: "/Home/ContactSubmit", // Adjust route if needed
+                    data: formData,
+                    success: function (response) {
+                        $(".loading").hide();
+                        if (response.success) {
+                            $(".sent-message").show().text(response.message);
+                            $(".error-message").hide();
+                            $("#form-contactSubmit")[0].reset();
+                        } else {
+                            $(".error-message").show().text(response.message);
+                              console.log(response.message)
+                        }
+                    },
+                  });
+            });
+            function validateEmail(email) {
+                var re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                return re.test(email);
+            }
+         });
+
     </script>
+
 
     </body>
 </html>

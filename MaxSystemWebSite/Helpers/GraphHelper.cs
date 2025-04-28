@@ -757,7 +757,7 @@ namespace E_Template.Helpers
 
         #endregion
 
-        public async Task<bool> SendEmailAsync(Emai_TemplateSent model)
+        public async Task<(bool success, string message)> SendEmailAsync(Emai_TemplateSent model)
         {
             try
             {
@@ -767,7 +767,7 @@ namespace E_Template.Helpers
 
                 if (model == null)
                 {
-                    return false;
+                    return (false, "Graph has not been initialized for app auth");
                 }
 
                 model.mainTemplate = await model.EmailBodyTemplate();
@@ -775,7 +775,7 @@ namespace E_Template.Helpers
                 (bool success, string template) returnTemp = model.WordReplacer(model.bodyContent);
                 if (returnTemp.success == false)
                 {
-                    return false;
+                    return (false, "Failed on word replacer");
                 }
                 model.bodyContent = returnTemp.template;
 
@@ -822,15 +822,15 @@ namespace E_Template.Helpers
                 if (model.Setting_Setup != null && !string.IsNullOrEmpty(model.Setting_Setup.SMTP_ACCOUNT))
                 {
                     await _appClient.Users[model.Setting_Setup.SMTP_ACCOUNT].SendMail.PostAsync(requestBody);
-                    return true;
+                    return (true, "ok");
                 }
 
-                return false;
+                return (false, "setting setup not found");
             }
             catch (Exception ex)
             {
                 // Log ex.Message if needed
-                return false;
+                return (false, $"failed {ex.Message}");
             }
         }
 

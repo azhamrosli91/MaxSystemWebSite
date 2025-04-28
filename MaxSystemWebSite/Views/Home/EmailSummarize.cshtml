@@ -1,0 +1,87 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Summarizer</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        #summarizeBtn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #summarizeBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #summary {
+            margin-top: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            color: black;
+            min-height: 100px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <h3>Email Summary</h3>
+    <button id="summarizeBtn">Summarize Email</button>
+    <div id="summary">The summary will appear here...</div>
+
+    <script>
+        Office.onReady(function(info) {
+            if (info.host === Office.HostType.Outlook) {
+                $('#summarizeBtn').on('click', function () {
+                    $('#summary').text("Summarizing...");
+                    summarizeEmail();
+                });
+            }
+        });
+
+        function summarizeEmail() {
+            Office.context.mailbox.item.body.getAsync("text", function(result) {
+                if (result.status === Office.AsyncResultStatus.Succeeded) {
+                    var emailBody = result.value;
+
+                    $.ajax({
+                        url: '/Home/SummarizeEmail',
+                        method: 'POST',
+                        data: { emailBody: emailBody },
+                        success: function(response) {
+                            $('#summary').text(response.summary);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error:", error);
+                            $('#summary').text("Failed to summarize email.");
+                        }
+                    });
+                } else {
+                    $('#summary').text("Unable to retrieve email content.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
