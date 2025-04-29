@@ -9,10 +9,12 @@ using MaxSystemWebSite.Models.EMAIL;
 using MaxSystemWebSite.Models.SETTING;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using static System.Formats.Asn1.AsnWriter;
+using System.Net.Http.Headers;
 
 namespace E_Template.Helpers
 {
-    public class GraphHelper : IEmail
+    public class GraphHelper : IEmail, ISharePoint
     {
         // Settings object
         private static Settings? _settings;
@@ -57,14 +59,14 @@ namespace E_Template.Helpers
             }
 
             // Initialize the credential using client secret
-            var clientSecretCredential = new ClientSecretCredential(
+            _clientSecretCredential = new ClientSecretCredential(
                 settings.TENANT_ID,
                 settings.CLIENT_ID,
                 settings.CLIENT_SECRET
             );
 
             // Initialize Graph client with the credential and desired scopes
-            _appClient = new GraphServiceClient(clientSecretCredential, new[] { settings.GRAPH_USER });
+            _appClient = new GraphServiceClient(_clientSecretCredential, new[] { settings.GRAPH_USER });
         }
         public async Task<(bool success, string message, List<EmailContent_Response>? data)> GetEmailBodyContentByConversationID(string userID, string conversationId)
         {
@@ -754,9 +756,64 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+        //public static async Task<bool> SendEmailAsync(Emai_Template model)
+        //{
+        //    try
+        //    {
+        //        // Ensure client isn't null
+        //        _ = _appClient ??
+        //            throw new NullReferenceException("Graph has not been initialized for app auth");
 
-        #endregion
+        //        if (model == null)
+        //        {
+        //            return false;
+        //        }
 
+        //        model.mainTemplate = await model.EmailBodyTemplate();
+        //        model.bodyContent = model.mainTemplate.ToString().Replace("[BODY]", model.subTemplate);
+        //        (bool success, string template) returnTemp = model.WordReplacer(model.bodyContent);
+        //        if (returnTemp.success == false)
+        //        {
+        //            return false;
+        //        }
+        //        model.bodyContent = returnTemp.template;
+
+        //        // Create the email message
+        //        var message = new Message
+        //        {
+        //            Subject = model.Subject,
+        //            Body = new ItemBody
+        //            {
+        //                ContentType = BodyType.Html, // Change to HTML content type
+        //                Content = model.bodyContent
+        //            },
+        //            ToRecipients = model.Recipient ?? new List<Recipient>(),
+        //            CcRecipients = model.CC ?? new List<Recipient>(),
+        //            BccRecipients = model.BCC ?? new List<Recipient>()
+        //        };
+
+
+        //        // Create the request body
+        //        var requestBody = new SendMailPostRequestBody
+        //        {
+        //            Message = message,
+        //            SaveToSentItems = false
+        //        };
+
+        //        // Send the email
+        //        if (model.Setting_Setup != null && !string.IsNullOrEmpty(model.Setting_Setup.SMTP_ACCOUNT)) {  
+        //            await _appClient.Users[model.Setting_Setup.SMTP_ACCOUNT].SendMail.PostAsync(requestBody);
+        //            return true;
+        //        }
+
+        //        return false;
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //}
         public async Task<(bool success, string message)> SendEmailAsync(Emai_TemplateSent model)
         {
             try
@@ -833,66 +890,124 @@ namespace E_Template.Helpers
                 return (false, $"failed {ex.Message}");
             }
         }
+        #endregion
+        #region "SP Employee Information"
+        public async Task<(bool success, string message, ListCollectionResponse? data)> GetList(string _siteID)
+        {
+            try
+            {
+                _ = _appClient ??
+                        throw new NullReferenceException("Graph has not been initialized for app auth");
 
-        //public static async Task<bool> SendEmailAsync(Emai_Template model)
-        //{
-        //    try
-        //    {
-        //        // Ensure client isn't null
-        //        _ = _appClient ??
-        //            throw new NullReferenceException("Graph has not been initialized for app auth");
+                var lists = await _appClient.Sites[_siteID].Lists
+                              .GetAsync();
 
-        //        if (model == null)
-        //        {
-        //            return false;
-        //        }
+                return (true, "OK", lists);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+            
+        }
 
-        //        model.mainTemplate = await model.EmailBodyTemplate();
-        //        model.bodyContent = model.mainTemplate.ToString().Replace("[BODY]", model.subTemplate);
-        //        (bool success, string template) returnTemp = model.WordReplacer(model.bodyContent);
-        //        if (returnTemp.success == false)
-        //        {
-        //            return false;
-        //        }
-        //        model.bodyContent = returnTemp.template;
+        public Task<(bool success, string message, SP_EmployeeInformation data)> GetEmployeeInformationDetail()
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<(bool success, string message, List<SP_EmployeeInformation> data)> GetEmployeeInformation(string _siteID, string listID)
+        {
+            try
+            {
+                _ = _appClient ??
+                    throw new NullReferenceException("Graph has not been initialized for app auth");
+                var recordList = await _appClient.Sites[_siteID].Lists[listID].Items.GetAsync(requestConfiguration =>
+                {
+                    requestConfiguration.QueryParameters.Expand = ["fields"];
+                    requestConfiguration.QueryParameters.Top = 10000;
+                });
 
-        //        // Create the email message
-        //        var message = new Message
-        //        {
-        //            Subject = model.Subject,
-        //            Body = new ItemBody
-        //            {
-        //                ContentType = BodyType.Html, // Change to HTML content type
-        //                Content = model.bodyContent
-        //            },
-        //            ToRecipients = model.Recipient ?? new List<Recipient>(),
-        //            CcRecipients = model.CC ?? new List<Recipient>(),
-        //            BccRecipients = model.BCC ?? new List<Recipient>()
-        //        };
+                List<SP_EmployeeInformation> dataModel = new List<SP_EmployeeInformation>();
+
+                foreach (var record in recordList.Value)
+                {
+                    if (record.Fields?.AdditionalData != null)
+                    {
+                        var data = record.Fields.AdditionalData;
+
+                        // Helper Functions
+                        string GetString(string key) => data.TryGetValue(key, out var val) ? val?.ToString() : null;
+                        int GetInt(string key) => int.TryParse(GetString(key), out var v) ? v : 0;
+                        double GetDouble(string key) => double.TryParse(GetString(key), out var v) ? v : 0.0;
+                        DateTime? GetDate(string key)
+                        {
+                            if (data.TryGetValue(key, out var val) && DateTime.TryParse(val?.ToString(), out var dt))
+                            {
+                                return dt.ToLocalTime();
+                            }
+                            return null;
+                        }
+                        bool GetBool(string key) => bool.TryParse(GetString(key), out var v) ? v : false;
+
+                        int GetEmpId()
+                        {
+                            if (data.TryGetValue("EmployeeID", out var val) && int.TryParse(val?.ToString(), out var id))
+                            {
+                                return id;
+                            }
+                            return 0;
+                        }
+
+                        // Get photo URL
+                        string photoUrl = GetString("EmployeeImage");
 
 
-        //        // Create the request body
-        //        var requestBody = new SendMailPostRequestBody
-        //        {
-        //            Message = message,
-        //            SaveToSentItems = false
-        //        };
 
-        //        // Send the email
-        //        if (model.Setting_Setup != null && !string.IsNullOrEmpty(model.Setting_Setup.SMTP_ACCOUNT)) {  
-        //            await _appClient.Users[model.Setting_Setup.SMTP_ACCOUNT].SendMail.PostAsync(requestBody);
-        //            return true;
-        //        }
-
-        //        return false;
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return false;
-        //    }
-        //}
+                        // 🛠 Get ETag as EMP_ID
+                        string empId = record.AdditionalData.TryGetValue("@odata.etag", out var etagValue) ? etagValue?.ToString() : "";
 
 
+                        var item = new SP_EmployeeInformation(
+                            empId,
+                            GetString("Title"),
+                            GetString("field_1"),
+                            GetString("field_2"),
+                            GetInt("field_3"),
+                            GetString("field_4"),
+                            GetString("field_5"),
+                            GetDate("field_11"),
+                            GetString("field_6"),
+                            GetString("field_7"),
+                            GetString("field_8"),
+                            GetDate("field_9"),
+                            GetDate("field_10"),
+                            GetDate("field_14"),
+                            photoUrl,
+                            GetString("field_15"),
+                            GetString("field_16"),
+                            GetString("field_17"),
+                            GetString("field_18"),
+                            GetString("field_19"),
+                            GetDouble("field_20"),
+                            GetDouble("field_21"),
+                            GetBool("field_22")
+                        );
+
+                        dataModel.Add(item);
+                    }
+                }
+
+
+                return (true, "OK", dataModel);
+            }
+            catch (Exception ex)
+            {
+
+                return (false, ex.Message, null);
+            }
+            
+        }
+        #endregion
     }
+
 }

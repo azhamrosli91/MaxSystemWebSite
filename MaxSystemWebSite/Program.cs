@@ -9,10 +9,8 @@ using BaseWebApi.Repository;
 using Component_TableListing.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using MaxSys.Helpers;
 using System.Globalization;
 using Component_TableListing.Services;
-using MaxSys.Interface;
 using E_Template.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Identity.Web;
@@ -21,7 +19,6 @@ using MaxSystemWebSite.Services;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder;
 using E_Template.Helpers;
-using System.Web.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +39,8 @@ builder.Services.AddSingleton<CommonMethod>();
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 builder.Services.AddTransient<IBot, ChatBot>();
 builder.Services.AddSingleton<IEmail, GraphHelper>();
+builder.Services.AddTransient<ISharePoint, GraphHelper>();
+
 
 //builder.Services.AddControllersWithViews(options =>
 //{

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using MaxSys.Helpers;
 using MaxSys.Interface;
+using MaxSystemWebSite.Models.EMAIL;
+using Microsoft.Graph.Models;
+using MaxSystemWebSite.Models.SETTING;
 
 namespace MaxSys.Controllers.DE
 {
@@ -18,9 +21,11 @@ namespace MaxSys.Controllers.DE
         private readonly IJWTToken _jwtToken;
         private readonly ISQL _SQL;
         private readonly IWebHostEnvironment _environment;
+        private readonly ISharePoint sharePoint;
+
         public DE_EmployeeController(ILogger<DE_EmployeeController> logger, IConfiguration configuration, IWebApi webApi,
             IDapper dapper, IJWTToken jWTToken, ISQL sql,
-            HtmlEncoder htmlEncoder, IAuthenticator authenticator, IWebHostEnvironment environment)
+            HtmlEncoder htmlEncoder, IAuthenticator authenticator, IWebHostEnvironment environment, ISharePoint sharePoint)
         : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
@@ -28,6 +33,7 @@ namespace MaxSys.Controllers.DE
             _SQL = sql;
             _htmlEncoder = htmlEncoder;
             _environment = environment;
+            this.sharePoint = sharePoint;
         }
 
         public IActionResult Index()
@@ -37,24 +43,19 @@ namespace MaxSys.Controllers.DE
         }
         public async Task<IActionResult> Detail(int id = 0) 
         {
+            SETTING_EMAIL settingEmail = new SETTING_EMAIL();
 
-            DE_EMPLOYEE model = new DE_EMPLOYEE();
-            model.Page_Type = BaseModel.Enum.BaseEnumType.Page_Type.New;
-            model.POSTCODE = "14000";
-            model.GENDER = 0;
-            model.STATE = "Pulau Pinang";
-            model.COUNTRY = "MY";
-            model.PHONE_1_CODE = "+60";
-            model.PHONE_2_CODE = "+60";
-            model.ddlSTATE = await GetAll_Dropdown<Setting_DropDown>("STATE_MY");
-            model.ddlCOUNTRY = await GetAll_Dropdown<Setting_DropDown>("COUNTRY");
-            model.ddlSTATUS = await GetAll_Dropdown<Setting_DropDown>("STATUS");
-            model.ddlPHONE_CODE = await GetAll_Dropdown<Setting_DropDown>("PHONE_CODE");
-            model.ddlRACE = await GetAll_Dropdown<Setting_DropDown>("RACE");
-            model.ddlRELIGION = await GetAll_Dropdown<Setting_DropDown>("RELIGION");
-            model.ddlGENDER = await GetAll_Dropdown<Setting_DropDown>("GENDER");
+            settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
+            settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
+            settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
+            settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+            sharePoint.InitGraph(settingEmail);
 
-            return View(model);
+            (bool success,string message, List<SP_EmployeeInformation> model) returnModel = await sharePoint.GetEmployeeInformation("maxsyscommy090.sharepoint.com,b35314ed-c437-468f-a360-2f6f2833a268,5173c789-0427-4df2-92c8-3f74e4d480e7", "ee7b1313-ba3d-4467-b188-fd1c3e334032");
+
+
+            
+            return View();
         }
         [HttpPost]
         public async Task<IActionResult> Post(DE_EMPLOYEE model)
