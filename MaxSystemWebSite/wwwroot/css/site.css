@@ -153,12 +153,12 @@ a[disabled],button[disabled] {
 ----------------------------------------------------- **/
 .ms-toast-container {
     position: fixed;
-    top: 25px;
+    top: 75px;
     right: 30px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 1000;
+    z-index: 1051;
 }
 
 .ms-toast {
@@ -299,7 +299,7 @@ a[disabled],button[disabled] {
     text-align: center;
     height: 100vh;
     color: #FFF;
-    z-index: 1010;
+    z-index: 1050;
 }
 
     .spanner img {
@@ -731,6 +731,10 @@ table.detailTable td {
     background: #3c4142;
     border: 1px solid #3c4142;
 }
+    .layout-listing-table thead tr th {
+        color: #fff;
+        padding: 5px 10px !important;
+    }
 .layout-listing-table tbody tr {
     border: 1px solid #ccc;
 }
@@ -745,4 +749,8 @@ table.detailTable td {
     .layout-listing-table tbody tr.active {
         background: lightblue;
         cursor: pointer;
+    }
+
+    .layout-listing-table tbody tr td {
+        padding: 5px 10px !important;
     }

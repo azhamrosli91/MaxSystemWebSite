@@ -64,7 +64,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 </head>
 @{
-    var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"];
+    var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"] ?? "";
     var profileImage = HttpContextAccessor.HttpContext.Request.Cookies["PROFILE_IMAGE"];
     var useremail = HttpContextAccessor.HttpContext.Request.Cookies["EMAIL"];
     var userID = HttpContextAccessor.HttpContext.Request.Cookies["USER_ID"];
@@ -526,16 +526,27 @@
             $(container).addClass(bsClass);
         }
 
+        let sb_timeoutId;
         function sideBarControl(pageload = false){
             if($('#sidebar-toggle-btn').prop("checked")){
                 $('.sub-resizable-container .resizable-menu').removeClass("inactive").removeClass("hiding");
                 $('.sub-resizable-container .resizer').show();
+
+                clearTimeout(sb_timeoutId);
+                bsContainerAdjust('.main-resizable-right');
+                bsContainerAdjust('.resizable-listing');
             }else{
                 if(pageload){
                     $('.sub-resizable-container .resizable-menu').addClass("inactive");
                 }
                 $('.sub-resizable-container .resizable-menu').addClass("hiding");
                 $('.sub-resizable-container .resizer').hide();
+
+                clearTimeout(sb_timeoutId);
+                sb_timeoutId = setTimeout(() => {
+                    bsContainerAdjust('.main-resizable-right');
+                    bsContainerAdjust('.resizable-listing');
+                }, 300);
             }
         }
 
