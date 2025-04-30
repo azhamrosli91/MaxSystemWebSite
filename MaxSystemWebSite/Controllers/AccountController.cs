@@ -14,6 +14,7 @@ using System.Text;
 using MaxSys.Models.MM;
 using Base.Model;
 using Microsoft.AspNet.Identity.EntityFramework;
+using MaxSystemWebSite.Models.SETTING;
 
 namespace MaxSys.Controllers
 {
@@ -30,10 +31,11 @@ namespace MaxSys.Controllers
         private readonly IDapper_Oracle _dapper_Oracle;
         private readonly UserProfileService _userProfileService;
         private readonly IEmailService _emailService;
+        private readonly IUserProfile _userProfile;
 
         public AccountController(ILogger<AccountController> logger, IConfiguration configuration, IWebApi webApi,
             IDapper dapper, IJWTToken jWTToken, ISQL sql,
-            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, UserProfileService userProfileService, IEmailService emailService)
+            IDapper_Oracle dapper_Oracle, HtmlEncoder htmlEncoder, IAuthenticator authenticator, UserProfileService userProfileService, IEmailService emailService, IUserProfile userProfile)
         : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
@@ -43,6 +45,7 @@ namespace MaxSys.Controllers
             _dapper_Oracle = dapper_Oracle;
             _userProfileService = userProfileService;
             _emailService = emailService;
+            _userProfile = userProfile;
         }
 
         [AllowAnonymous]
@@ -93,16 +96,6 @@ namespace MaxSys.Controllers
             string token = _authenticator.GenerateToken(identityUser);
 
 
-            Response.Cookies.Delete("ACL_JSON");
-            Response.Cookies.Delete("USER_ID");
-            Response.Cookies.Delete("USER_NAME");
-            Response.Cookies.Delete("COMPANY_CODE");
-            Response.Cookies.Delete("USER_EMAIL");
-            Response.Cookies.Delete("USER_ID_NAME");
-            Response.Cookies.Delete("JWTToken");
-            Response.Cookies.Delete("JWTRefreshToken");
-            Response.Cookies.Delete("AUTH_TYPE");
-            Response.Cookies.Delete("ACCESS_LEVEL");
             Response.Cookies.Append("ReturnUrl", "", new CookieOptions { Expires = DateTime.Now.AddMinutes(-1) });
 
 
@@ -114,13 +107,12 @@ namespace MaxSys.Controllers
 
             Response.Cookies.Append("USER_TOKEN", token, cookieOptions);
             Response.Cookies.Append("EMAIL", employee.emp.EMAIL, cookieOptions);
-            Response.Cookies.Append("USER_ID", identityUser.Id, cookieOptions);
             Response.Cookies.Append("ID_MM_USER", identityUser.Id, cookieOptions);
             Response.Cookies.Append("NAME", employee.emp.NAME, cookieOptions);
             Response.Cookies.Append("AUTH_TYPE", "OPENID", cookieOptions);
 
             // Trigger the OpenID Connect authentication process and pass the return URL
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToAction("Index", "MM_UserProfile");
         }
 
         [HttpGet]
@@ -144,15 +136,15 @@ namespace MaxSys.Controllers
         {
             var photoBytes = await _userProfileService.GetUserPhotoAsync(email);
 
-            if (photoBytes == null) {
+            if (photoBytes == null)
+            {
                 return Json(new { success = false, msg = "no profile photo." });
             }
             // Convert photo bytes to Base64
             var base64String = Convert.ToBase64String(photoBytes);
+            string base64Image = $"data:image/jpeg;base64,{base64String}";
 
-
-            // Prepend the Base64 header for the JPEG image
-            return Json(new { success = true, msg = "profile photo", data = base64String });
+            return Json(new { success = true, msg = "Profile photo retrieved.", data = base64Image });
         }
 
 

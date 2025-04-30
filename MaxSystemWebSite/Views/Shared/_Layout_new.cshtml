@@ -48,20 +48,14 @@
     </script>
      <script src="~/lib/select2-4.1.0/js/select2.min.js"></script>
     <link href="~/css/common.css" rel="stylesheet" asp-append-version="true" />
-   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 @{
     var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"];
     var profileImage = HttpContextAccessor.HttpContext.Request.Cookies["PROFILE_IMAGE"];
     var useremail = HttpContextAccessor.HttpContext.Request.Cookies["EMAIL"];
     var userID = HttpContextAccessor.HttpContext.Request.Cookies["USER_ID"];
-    var employeeID = HttpContextAccessor.HttpContext.Request.Cookies["ID_MM_COMPANY"];
-    var companyName = HttpContextAccessor.HttpContext.Request.Cookies["MM_COMPANY_NAME"];
-    var workNO = HttpContextAccessor.HttpContext.Request.Cookies["WORK_NO"];
     var authenticationType = HttpContextAccessor.HttpContext.Request.Cookies["AUTH_TYPE"];
-    var solat_zone = HttpContextAccessor.HttpContext.Request.Cookies["SOLAT_ZONE"];   
-    var code = HttpContextAccessor.HttpContext.Request.Cookies["COMPANY_CODE"];
-    var level = HttpContextAccessor.HttpContext.Request.Cookies["ACCESS_LEVEL"];
 }
 
 <body>
@@ -87,7 +81,7 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="../index.html">
                                                 <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">E commerce</span>
+                                                    <span class="nav-link-text">Profile</span>
                                                 </div>
                                             </a>
                                             <!-- more inner pages-->
@@ -95,39 +89,7 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="../dashboard/project-management.html">
                                                 <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">Project management</span>
-                                                </div>
-                                            </a>
-                                            <!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="../dashboard/crm.html">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">CRM</span>
-                                                </div>
-                                            </a>
-                                            <!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="../dashboard/travel-agency.html">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">Travel agency</span>
-                                                </div>
-                                            </a>
-                                            <!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="../dashboard/stock.html">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">Stock</span><span class="badge ms-2 badge badge-phoenix badge-phoenix-warning ">new</span>
-                                                </div>
-                                            </a>
-                                            <!-- more inner pages-->
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="../apps/social/feed.html">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="nav-link-text">Social feed</span>
+                                                    <span class="nav-link-text">Dashboard</span>
                                                 </div>
                                             </a>
                                             <!-- more inner pages-->
@@ -508,7 +470,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                             <div class="avatar avatar-l ">
-                                <img class="rounded-circle " src="~/Images/user-avatar.png" alt="user image" title="@username" />
+                                <img class="rounded-circle img-userprofile" src="~/Images/user-avatar.png" alt="user image" title="@username" />
                             </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border" aria-labelledby="navbarDropdownUser">
@@ -519,13 +481,15 @@
                                             
                                             @if (profileImage == null || string.IsNullOrEmpty(profileImage))
                                             {
-                                                <img class="rounded-circle " src="~/Images/user-avatar.png" alt="user image" />
+                                                <img class="rounded-circle img-userprofile" src="~/Images/user-avatar.png" alt="user image" />
                                             }
                                             else
                                             {
-                                                <img src="@profileImage" id="img-userprofile" alt="user profile" class="rounded-circle" style="width: 2.5em; height: 2.5em; object-fit: cover;" />
+                                                <img src="@profileImage" id="img-userprofile" alt="user profile" class="img-userprofile rounded-circle" style="width: 2.5em; height: 2.5em; object-fit: cover;" />
                                             }
                                         </div>
+                                        <input type="hidden" value="@useremail" id="txtuseremail" />
+                                        <input type="hidden" value="" id="txtimageprofile" />
                                         <h6 class="mt-2 text-body-emphasis">@username</h6>
                                     </div>
                                 </div>
@@ -537,7 +501,7 @@
                                     </ul>
                                 </div>
                                 <div class="card-footer p-0 border-top border-translucent">
-                                    <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>Sign out</a></div>
+                                    <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="Home/Index"> <span class="me-2" data-feather="log-out"> </span>Sign out</a></div>
                                     <div class="my-2 text-center fw-bold fs-10 text-body-quaternary"><a class="text-body-quaternary me-1" href="#!">Privacy policy</a>&bull;<a class="text-body-quaternary mx-1" href="#!">Terms</a>&bull;<a class="text-body-quaternary ms-1" href="#!">Cookies</a></div>
                                 </div>
                             </div>
@@ -724,6 +688,7 @@
     <!-- ===============================================-->
     <!--    JavaScripts-->
     <!-- ===============================================-->
+    
     <script src="~/vendor/popper/popper.min.js"></script>
     <script src="~/vendor/bootstrap/bootstrap.min.js"></script>
     <script src="~/vendor/anchorjs/anchor.min.js"></script>
@@ -734,6 +699,8 @@
     <script src="~/vendor/feather-icons/feather.min.js"></script>
     <script src="~/vendor/dayjs/dayjs.min.js"></script>
     <script src="~/js/phoenix.js"></script>
+    <script src="~/js/userprofile.js"></script>
+    <script src="~/js/mainjs.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -11,10 +11,11 @@ using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
 using static System.Formats.Asn1.AsnWriter;
 using System.Net.Http.Headers;
+using E_Template.Helpers;
 
-namespace E_Template.Helpers
+namespace MaxSystemWebSite.Helpers.Graph
 {
-    public class GraphHelper : IEmail, ISharePoint
+    public class GH_Email : IEmail
     {
         // Settings object
         private static Settings? _settings;
@@ -68,6 +69,8 @@ namespace E_Template.Helpers
             // Initialize Graph client with the credential and desired scopes
             _appClient = new GraphServiceClient(_clientSecretCredential, new[] { settings.GRAPH_USER });
         }
+
+        #region "EMAIL"
         public async Task<(bool success, string message, List<EmailContent_Response>? data)> GetEmailBodyContentByConversationID(string userID, string conversationId)
         {
             try
@@ -215,6 +218,7 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+
         public async Task<(bool success, string message, List<EmailContent_Response>? data)> GetEmailBodyContentByMessageID(string userID, string messageId)
         {
             try
@@ -362,6 +366,7 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+
         public async Task<(bool success, string message, EmailContent_Response? data)> GetEmailBodyContentByV1MessageID(string userID, string messageId)
         {
             try
@@ -479,6 +484,7 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+
         public async Task<(bool success, string message, List<EmailList> data)> GetEmailListShort(
             string userID,
             string foldername = "inbox",
@@ -573,6 +579,7 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+
         public async Task<(bool success, string message, MessageCollectionResponse data)> GetEmailList(
             string userID,
             string foldername = "inbox",
@@ -629,6 +636,8 @@ namespace E_Template.Helpers
                 return (false, $"Error: {ex.Message}", null);
             }
         }
+
+        #endregion
         #region "TEAMS"
         // ---------------------------------------------------------------------------------
         // 1. Get List of Teams (Returns Team IDs)
@@ -891,123 +900,6 @@ namespace E_Template.Helpers
             }
         }
         #endregion
-        #region "SP Employee Information"
-        public async Task<(bool success, string message, ListCollectionResponse? data)> GetList(string _siteID)
-        {
-            try
-            {
-                _ = _appClient ??
-                        throw new NullReferenceException("Graph has not been initialized for app auth");
 
-                var lists = await _appClient.Sites[_siteID].Lists
-                              .GetAsync();
-
-                return (true, "OK", lists);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message, null);
-            }
-            
-        }
-
-        public Task<(bool success, string message, SP_EmployeeInformation data)> GetEmployeeInformationDetail()
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<(bool success, string message, List<SP_EmployeeInformation> data)> GetEmployeeInformation(string _siteID, string listID)
-        {
-            try
-            {
-                _ = _appClient ??
-                    throw new NullReferenceException("Graph has not been initialized for app auth");
-                var recordList = await _appClient.Sites[_siteID].Lists[listID].Items.GetAsync(requestConfiguration =>
-                {
-                    requestConfiguration.QueryParameters.Expand = ["fields"];
-                    requestConfiguration.QueryParameters.Top = 10000;
-                });
-
-                List<SP_EmployeeInformation> dataModel = new List<SP_EmployeeInformation>();
-
-                foreach (var record in recordList.Value)
-                {
-                    if (record.Fields?.AdditionalData != null)
-                    {
-                        var data = record.Fields.AdditionalData;
-
-                        // Helper Functions
-                        string GetString(string key) => data.TryGetValue(key, out var val) ? val?.ToString() : null;
-                        int GetInt(string key) => int.TryParse(GetString(key), out var v) ? v : 0;
-                        double GetDouble(string key) => double.TryParse(GetString(key), out var v) ? v : 0.0;
-                        DateTime? GetDate(string key)
-                        {
-                            if (data.TryGetValue(key, out var val) && DateTime.TryParse(val?.ToString(), out var dt))
-                            {
-                                return dt.ToLocalTime();
-                            }
-                            return null;
-                        }
-                        bool GetBool(string key) => bool.TryParse(GetString(key), out var v) ? v : false;
-
-                        int GetEmpId()
-                        {
-                            if (data.TryGetValue("EmployeeID", out var val) && int.TryParse(val?.ToString(), out var id))
-                            {
-                                return id;
-                            }
-                            return 0;
-                        }
-
-                        // Get photo URL
-                        string photoUrl = GetString("EmployeeImage");
-
-
-
-                        // 🛠 Get ETag as EMP_ID
-                        string empId = record.AdditionalData.TryGetValue("@odata.etag", out var etagValue) ? etagValue?.ToString() : "";
-
-
-                        var item = new SP_EmployeeInformation(
-                            empId,
-                            GetString("Title"),
-                            GetString("field_1"),
-                            GetString("field_2"),
-                            GetInt("field_3"),
-                            GetString("field_4"),
-                            GetString("field_5"),
-                            GetDate("field_11"),
-                            GetString("field_6"),
-                            GetString("field_7"),
-                            GetString("field_8"),
-                            GetDate("field_9"),
-                            GetDate("field_10"),
-                            GetDate("field_14"),
-                            photoUrl,
-                            GetString("field_15"),
-                            GetString("field_16"),
-                            GetString("field_17"),
-                            GetString("field_18"),
-                            GetString("field_19"),
-                            GetDouble("field_20"),
-                            GetDouble("field_21"),
-                            GetBool("field_22")
-                        );
-
-                        dataModel.Add(item);
-                    }
-                }
-
-
-                return (true, "OK", dataModel);
-            }
-            catch (Exception ex)
-            {
-
-                return (false, ex.Message, null);
-            }
-            
-        }
-        #endregion
     }
-
 }

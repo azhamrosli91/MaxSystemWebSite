@@ -56,5 +56,57 @@
         public double FORECAST_TOTAL_DAYS { get; set; }
         public bool SURVEY_SUBMISSION { get; set; }
 
+        private string _JOINED_DATE_DESC;
+
+        public string JOINED_DATE_DESC
+        {
+            get { 
+                    return GetServiceDuration(JOIN_DATE); 
+            }
+            set { _JOINED_DATE_DESC = value; }
+        }
+        public static string GetServiceDuration(DateTime? JOIN_DATE)
+        {
+            if (JOIN_DATE == null)
+            {
+                return "Join date not available";
+            }
+
+            DateTime joinDate = JOIN_DATE.Value.Date;
+            DateTime now = DateTime.Now.Date;
+
+            // Calculate the difference
+            int years = now.Year - joinDate.Year;
+            int months = now.Month - joinDate.Month;
+            int days = now.Day - joinDate.Day;
+
+            if (days < 0)
+            {
+                months -= 1;
+                var prevMonth = now.AddMonths(-1);
+                days += DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month);
+            }
+
+            if (months < 0)
+            {
+                years -= 1;
+                months += 12;
+            }
+
+            // Format the output
+            if (years > 0 && months > 0 && days > 0)
+                return $"{years} years {months} months {days} days";
+            else if (years > 0 && months > 0)
+                return $"{years} years {months} months";
+            else if (years > 0)
+                return $"{years} years";
+            else if (months > 0 && days > 0)
+                return $"{months} months {days} days";
+            else if (months > 0)
+                return $"{months} months";
+            else
+                return $"{days} days";
+        }
+
     }
 }

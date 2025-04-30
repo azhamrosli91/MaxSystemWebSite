@@ -41,32 +41,5 @@ namespace MaxSys.Controllers.Dashboard
             ViewBag.ID = 2;
             return View();
         }
-
-        public async Task<string> Get(string search = "-")
-        {
-            try
-            {
-                if (search == "-")
-                {
-                    var currentDate = DateTime.Now;
-                    search = $"{currentDate.Year}-{currentDate.Month:D2}";
-                }
-                else if (search == "all")
-                {
-                    search = "";
-                }
-
-
-                (bool status, string message, List<DE_EMPLOYEE> model) manager = await _dapper.PSP_COMMON_DAPPER<DE_EMPLOYEE>("PSP_DE_EMPLOYEE", System.Data.CommandType.StoredProcedure, new { USER_ID, ID_MM_COMPANY });
-
-                return JsonConvert.SerializeObject(new { success = manager.status, message = manager.message, data = manager.model });
-
-            }
-            catch (Exception ex)
-            {
-                return JsonConvert.SerializeObject(new { success = false, message = ex.Message });
-            }
-
-        }
     }
 }

@@ -21,18 +21,11 @@ namespace MaxSys.Helpers
         public string NAME { get; set; }
         public string EMAIL { get; set; }
         public string USER_TOKEN { get; set; }
-        public int ID_MM_COMPANY { get; set; }
-        public string MM_COMPANY_NAME { get; set; }
-        public string COMPANY_CODE { get; set; }
-        public int ACCESS_LEVEL { get; set; }
-        public string WORK_NO { get; set; }
+
         public string PIC_PROFILE { get; set; }
-        public string POSTCODE { get; set; }
-        public string CITY { get; set; }
-        public string STATE { get; set; }
-        public string COUNTRY { get; set; }
-        public string SOLAT_ZONE { get; set; }
+
         public string PROFILE_IMAGE { get; set; }
+        public string AUTH_TYPE { get; set; }
         public string connectionString { get; set; }
 
         public BaseController(IConfiguration configuration, IWebApi webApi, IDapper dapper, IAuthenticator authenticator)

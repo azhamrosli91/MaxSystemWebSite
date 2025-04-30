@@ -1,11 +1,19 @@
-﻿@using Microsoft.Extensions.Configuration
-@model MaxSys.Models.AuthenticatorModel
+﻿@model MaxSys.Models.AuthenticatorModel
+@using Microsoft.Extensions.Configuration
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject IConfiguration Configuration
 @{
     ViewBag.Title = Configuration["ProjectName"] +  "| Main Page";
     // Layout = "~/Views/Shared/_Layout_Empty.cshtml";
     Layout = null;
     var ProjectName = Configuration["ProjectName"];
+}
+@{
+    var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"];
+    var profileImage = HttpContextAccessor.HttpContext.Request.Cookies["PROFILE_IMAGE"];
+    var useremail = HttpContextAccessor.HttpContext.Request.Cookies["EMAIL"];
+    var userID = HttpContextAccessor.HttpContext.Request.Cookies["USER_ID"];
+    var authenticationType = HttpContextAccessor.HttpContext.Request.Cookies["AUTH_TYPE"];
 }
 <!DOCTYPE html>
 <html lang="en"> 
@@ -98,7 +106,11 @@
                     <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
                 </nav>
 
-                <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a>
+                @if (string.IsNullOrEmpty(username)){
+                    <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a>
+                }else{
+                <a class="btn-getstarted" href="/MM_UserProfile/index">Go To Portal - @username</a>
+                }
 
             </div>
         </header>

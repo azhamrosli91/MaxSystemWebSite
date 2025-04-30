@@ -19,6 +19,7 @@ using MaxSystemWebSite.Services;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder;
 using E_Template.Helpers;
+using MaxSystemWebSite.Helpers.Graph;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,14 +39,16 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<CommonMethod>();
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 builder.Services.AddTransient<IBot, ChatBot>();
-builder.Services.AddSingleton<IEmail, GraphHelper>();
-builder.Services.AddTransient<ISharePoint, GraphHelper>();
+builder.Services.AddSingleton<IEmail, GH_Email>();
+builder.Services.AddTransient<ISharePoint, GH_SharePoint>();
+builder.Services.AddTransient<IUserProfile, GH_UserProfile>();
 
 
-//builder.Services.AddControllersWithViews(options =>
-//{
-//    options.Filters.Add<SessionExpireAttribute>();
-//});
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<SessionExpireAttribute>();
+});
+
 // Register EmailService
 builder.Services.AddSingleton<IEmailService, EmailService_STMP>();
 

@@ -1,4 +1,11 @@
 ﻿//COOKIE HANDLER
+$(document).ready(function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
 function createCookie(name, value, days) {
     var expires = "";
     if (days) {

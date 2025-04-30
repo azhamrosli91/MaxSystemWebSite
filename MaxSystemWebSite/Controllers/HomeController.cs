@@ -661,66 +661,66 @@ namespace MaxSys.Controllers
             return View();
         }
 
-        [AllowAnonymous]
-        public async Task<IActionResult> GetSidebar()
-        {
-            List<AclResource> sidebarItems = null;
-            (bool success, string message, List<AclResource> item) side_bar = await _dapper.PSP_COMMON_DAPPER<AclResource>("PSP_ACL_RESOURCE", CommandType.StoredProcedure, new { USER_ID  , ID_MM_COMPANY });
+        //[AllowAnonymous]
+        //public async Task<IActionResult> GetSidebar()
+        //{
+        //    //List<AclResource> sidebarItems = null;
+        //    //(bool success, string message, List<AclResource> item) side_bar = await _dapper.PSP_COMMON_DAPPER<AclResource>("PSP_ACL_RESOURCE", CommandType.StoredProcedure, new { USER_ID  , ID_MM_COMPANY });
 
-            if (side_bar.success == true && side_bar.item != null)
-            {
-                sidebarItems = side_bar.item;
-            }
-            else
-            {
-                string filePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\json\\sidebar.json";
-                string jsonText = "";
-                if (System.IO.File.Exists(filePath))
-                {
-                    jsonText = System.IO.File.ReadAllText(filePath);
-                }
+        //    //if (side_bar.success == true && side_bar.item != null)
+        //    //{
+        //    //    sidebarItems = side_bar.item;
+        //    //}
+        //    //else
+        //    //{
+        //    //    string filePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\json\\sidebar.json";
+        //    //    string jsonText = "";
+        //    //    if (System.IO.File.Exists(filePath))
+        //    //    {
+        //    //        jsonText = System.IO.File.ReadAllText(filePath);
+        //    //    }
 
-                // Deserialize JSON to a list of objects
-                sidebarItems = JsonConvert.DeserializeObject<List<AclResource>>(jsonText);
-            }
+        //    //    // Deserialize JSON to a list of objects
+        //    //    sidebarItems = JsonConvert.DeserializeObject<List<AclResource>>(jsonText);
+        //    //}
 
-            // Filter based on userAccessLevel
-            var filteredSidebar = sidebarItems
-                .Where(item => item.ACCESS_LEVEL <= ACCESS_LEVEL && item.LAYER == 1)
-                .OrderBy(item => item.SEQ)
-                .ToList();
+        //    //// Filter based on userAccessLevel
+        //    //var filteredSidebar = sidebarItems
+        //    //    .Where(item => item.ACCESS_LEVEL <= ACCESS_LEVEL && item.LAYER == 1)
+        //    //    .OrderBy(item => item.SEQ)
+        //    //    .ToList();
 
-            if (filteredSidebar != null)
-            {
-                foreach (var item in filteredSidebar)
-                {
-                    if (item.ListChild == null)
-                    {
-                        item.ListChild = new List<AclResource>();
+        //    //if (filteredSidebar != null)
+        //    //{
+        //    //    foreach (var item in filteredSidebar)
+        //    //    {
+        //    //        if (item.ListChild == null)
+        //    //        {
+        //    //            item.ListChild = new List<AclResource>();
 
-                        var childSidebar = sidebarItems
-                            .Where(data => data.ACCESS_LEVEL <= ACCESS_LEVEL && data.RESOURCE_PARENT_ID == item.ID_ACL_RESOURCE)
-                            .OrderBy(data => data.SEQ)
-                            .ToList();
+        //    //            var childSidebar = sidebarItems
+        //    //                .Where(data => data.ACCESS_LEVEL <= ACCESS_LEVEL && data.RESOURCE_PARENT_ID == item.ID_ACL_RESOURCE)
+        //    //                .OrderBy(data => data.SEQ)
+        //    //                .ToList();
 
-                        if (childSidebar != null && childSidebar.Count > 0)
-                        {
-                            item.ListChild = childSidebar;
-                        }
-                    }
-                }
-            }
+        //    //            if (childSidebar != null && childSidebar.Count > 0)
+        //    //            {
+        //    //                item.ListChild = childSidebar;
+        //    //            }
+        //    //        }
+        //    //    }
+        //    //}
 
-            // Serialize back to JSON
-            var settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
+        //    //// Serialize back to JSON
+        //    //var settings = new JsonSerializerSettings
+        //    //{
+        //    //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //    //};
 
-            var filteredJson = JsonConvert.SerializeObject(filteredSidebar, settings);
+        //    //var filteredJson = JsonConvert.SerializeObject(filteredSidebar, settings);
 
-            return Json(filteredJson);
-        }
+        //    return "";
+        //}
 
         //public async Task<IActionResult> GetSidebar()
         //{

@@ -1,14 +1,11 @@
-﻿using Base.Model;
-using BaseSQL.Interface;
+﻿using BaseSQL.Interface;
 using BaseWebApi.Interface;
-using E_Template.Controllers.MM;
 using MaxSys.Models.DE;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using MaxSys.Helpers;
 using MaxSys.Interface;
 using MaxSystemWebSite.Models.EMAIL;
-using Microsoft.Graph.Models;
 using MaxSystemWebSite.Models.SETTING;
 
 namespace MaxSys.Controllers.DE
