@@ -7,6 +7,12 @@ using MaxSys.Helpers;
 using MaxSys.Interface;
 using MaxSystemWebSite.Models.EMAIL;
 using MaxSystemWebSite.Models.SETTING;
+using Base.Model;
+
+using System.Data;
+using System.Data.SqlClient;
+using Dapper;
+using System.Web.Helpers;
 
 namespace MaxSys.Controllers.DE
 {
@@ -167,5 +173,78 @@ namespace MaxSys.Controllers.DE
             return View();
         }
 
+
+
+        public IActionResult SampleListing()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetData(string searchTerm = "", string tableName = "MM_EMPLOYEE", string columnsToSearch = "FIRST_NAME,LAST_NAME,POSITION", int start = 0, int length = 10)
+        {
+            List<MM_EMPLOYEE> ListModel = new List<MM_EMPLOYEE>();
+            int totalRecords = 0;
+
+            string sortColumn = Request.Form[$"columns[{Request.Form["order[0][column]"]}][data]"];
+            string sortDirection = Request.Form["order[0][dir]"]; // "asc" or "desc"
+
+            try
+            {
+                var obj = new
+                {
+                    TableName = tableName,
+                    SearchColumns = columnsToSearch,
+                    SearchTerm = searchTerm,
+                    Start = start,
+                    Length = length,
+                    SortColumn = sortColumn,
+                    SortDirection = sortDirection
+                };
+
+                // Create SQL connection
+                using (var connection = new SqlConnection("Server=(LocalDb)\\MSSQLLocalDB;Database=PracticeDB;Integrated Security=True;"))
+                {
+                    await connection.OpenAsync();
+
+                    // Execute stored procedure with QueryMultiple
+                    var result = await connection.QueryMultipleAsync(
+                        "PSP_COMMON_LIST",
+                        obj,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    // Read the paginated data
+                    ListModel = result.Read<MM_EMPLOYEE>().ToList();
+
+                    // Read the total record count as integer
+                    totalRecords = result.ReadFirstOrDefault<int>();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception or handle it accordingly
+                // For now, we will not return the exception details for security reasons
+            }
+
+            return Json(new
+            {
+                data = ListModel,
+                recordsTotal = totalRecords,
+                recordsFiltered = totalRecords
+            });
+        }
+
+
     }
+}
+
+
+public class MM_EMPLOYEE
+{
+    public int ID_MM_EMPLOYEE { get; set; }
+    public string FIRST_NAME { get; set; }
+    public string LAST_NAME { get; set; }
+    public string POSITION { get; set; }
+    public DateTime JOIN_DATE { get; set; }
 }

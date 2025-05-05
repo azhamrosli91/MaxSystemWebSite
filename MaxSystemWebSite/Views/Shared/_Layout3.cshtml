@@ -31,10 +31,17 @@
     <link href="~/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">
     <link href="~/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
 
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <!-- ✅ Core DataTables JS (MUST come before the Bootstrap adapter) -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <!-- DataTables Bootstrap 5 integration -->
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
     <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/common.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/mobilecss.css" rel="stylesheet" />
-    <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/js/mainJS.js"></script>
 
     <script>
@@ -1365,7 +1372,7 @@
 
             function bsContainerAdjust(container){
                 var cwidth = $(container).innerWidth();
-                var bsClass = "boostrap-sm";
+                var bsClass = "boostrap-none";
                 if (cwidth > 1200) {
                     bsClass = "boostrap-xl";
                 } else if (cwidth > 992) {
@@ -1376,7 +1383,7 @@
                     bsClass = "boostrap-sm";
                 }
 
-                $(container).removeClass("boostrap-sm").removeClass("boostrap-md").removeClass("boostrap-lg").removeClass("boostrap-xl");
+                $(container).removeClass("boostrap-none").removeClass("boostrap-sm").removeClass("boostrap-md").removeClass("boostrap-lg").removeClass("boostrap-xl");
                 $(container).addClass(bsClass);
             }
 

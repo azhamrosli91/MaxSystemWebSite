@@ -511,7 +511,7 @@
 
         function bsContainerAdjust(container){
             var cwidth = $(container).innerWidth();
-            var bsClass = "boostrap-sm";
+            var bsClass = "boostrap-none";
             if (cwidth > 1200) {
                 bsClass = "boostrap-xl";
             } else if (cwidth > 992) {
@@ -522,7 +522,7 @@
                 bsClass = "boostrap-sm";
             }
 
-            $(container).removeClass("boostrap-sm").removeClass("boostrap-md").removeClass("boostrap-lg").removeClass("boostrap-xl");
+            $(container).removeClass("boostrap-none").removeClass("boostrap-sm").removeClass("boostrap-md").removeClass("boostrap-lg").removeClass("boostrap-xl");
             $(container).addClass(bsClass);
         }
 

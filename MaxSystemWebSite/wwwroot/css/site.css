@@ -329,6 +329,7 @@ a[disabled],button[disabled] {
     padding: 1rem;
     padding-bottom: 0.5rem;
     height: 100%;
+    background: unset !important;
 }
 
 .detail-frame {
@@ -666,9 +667,7 @@ table.border-secondary {
 table.dataTable th,
 table.dataTable td {
     padding: 10px 10px;
-    font-size: 16px;
     vertical-align: middle;
-    color: #54575A !important;
 }
 
 .dataTables_wrapper {
