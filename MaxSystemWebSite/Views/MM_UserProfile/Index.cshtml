@@ -8,9 +8,9 @@
         </div>
         <div class="col-auto">
             <div class="row g-3">
-                <div class="col-auto">
-                    <button class="btn btn-phoenix-secondary"><span class="fas fa-key me-2"></span>Reset password</button>
-                </div>
+                @* <div class="col-auto">
+                    <button class="btn btn-phoenix-secondary"><span class="fas fa-key me-2"></span>Apply Leave</button>
+                </div> *@
             </div>
         </div>
     </div>
@@ -121,28 +121,19 @@
                 <div class="scrollspy-example rounded-2" data-bs-spy="scroll" data-bs-offset="0" data-bs-target="#navbar-deals-detail" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
                     <div class="mb-8">
                         <h3 class="mb-4">Leave History <span class="text-body-tertiary fw-normal">(97)</span></h3>
-                        <div class="border-top border-bottom border-translucent" id="customerOrdersTable" data-list='{"valueNames":["typE_LEAVE","datE_START","datE_END"],"page":10,"pagination":true}'>
+                        <div class="border-top border-bottom border-translucent" id="customerOrdersTable" data-list='{"valueNames":["TYPE_LEAVE","DATE_START_DESC","DATE_END_DESC"],"page":10,"pagination":true}'>
                             <div class="table-responsive scrollbar">
                                 <table class="table table-sm fs-9 mb-0">
                                     <thead>
                                         <tr>
-                                            <th class="sort align-middle white-space-nowrap text-start" scope="col" data-sort="typE_LEAVE">Status</th>
-                                            <th class="sort align-middle text-start pe-7" scope="col" data-sort="datE_START">Date Start</th>
-                                            <th class="sort align-middle text-start pe-3" scope="col" data-sort="datE_END">Date End</th>
+                                            <th class="sort align-middle white-space-nowrap text-start" scope="col" data-sort="TYPE_LEAVE">Status</th>
+                                            <th class="sort align-middle text-start pe-7" scope="col" data-sort="DATE_START_DESC">Date Start</th>
+                                            <th class="sort align-middle text-start pe-3" scope="col" data-sort="DATE_END_DESC">Date End</th>
                                             <th class="sort text-start align-middle pe-0 ps-5" scope="col"></th>
                                         </tr>
                                     </thead>
                                     <tbody class="list" id="customer-order-table-body">
-                                        <tr style="display:none;">
-                                            <td class="emP_NAME"></td>
-                                            <td class="datE_START"></td>
-                                            <td class="datE_END"></td>
-                                            <td class="numbeR_OF_LEAVE"></td>
-                                            <td class="typE_LEAVE"></td>
-                                            <td class="approver"></td>
-                                            <td class="approveR_DATE"></td>
-                                            <td></td>
-                                        </tr>
+        
                                     </tbody>
                                 </table>
                             </div>
@@ -172,6 +163,7 @@
          console.log("loadUserDataProfiler :" + email)
         loadUserProfileImage(email);
         loadUserLeaveHistory(email);
+        loadLeaveInformation(email);
 
         function loadUserProfileImage(email) {
 
@@ -184,18 +176,18 @@
 
                         if (response.success)
                         {
-                            $("#txtUserName").html(response.data.emP_NAME);
-                            $("#txtJoinedDate").html(response.data.joineD_DATE_DESC);
+                            $("#txtUserName").html(response.data.EMP_NAME);
+                            $("#txtJoinedDate").html(response.data.JOINED_DATE_DESC);
                             $("#txtAddress").html("Not found");
-                            $("#txtEmailAdress").html(response.data.emP_EMAIL);
-                            $("#txtEmailAdress").attr("href","mailto:" + response.data.emP_EMAIL);
+                            $("#txtEmailAdress").html(response.data.EMP_EMAIL);
+                            $("#txtEmailAdress").attr("href","mailto:" + response.data.EMP_EMAIL);
                             $("#txtPhoneNo").html("-");
-                            $("#txtPhoneNo").attr("href","mailto:" + response.data.emP_EMAIL);
-                            $("#txtRole").html(response.data.designation);
-                            $("#txtTeam").html(response.data.team);
-                            $("#txtEmpNo").html(response.data.emP_NO);
-                            $("#txtDepartment").html(response.data.department);
-                            $("#txtsupervisor").html("Supervisor : " + response.data.leader)
+                            $("#txtPhoneNo").attr("href","mailto:" + response.data.EMP_EMAIL);
+                            $("#txtRole").html(response.data.DESIGNATION);
+                            $("#txtTeam").html(response.data.TEAM);
+                            $("#txtEmpNo").html(response.data.EMP_NO);
+                            $("#txtDepartment").html(response.data.DEPARTMENT);
+                            $("#txtsupervisor").html("Supervisor : " + response.data.LEADER)
                         }
                         else
                         {
@@ -228,9 +220,9 @@
                           response.data.forEach(item => {
                               const row = `
                                       <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                          <td class="typE_LEAVE align-middle white-space-nowrap text-start fw-bold text-body-tertiary">${item.typE_LEAVE}</td>
-                                          <td class="datE_START align-middle text-start fw-semibold pe-7 text-body-highlight">${item.datE_START_DESC}</td>
-                                          <td class="datE_END align-middle text-start fw-semibold pe-7 text-body-highlight">${item.datE_END_DESC}</td>
+                                          <td class="typE_LEAVE align-middle white-space-nowrap text-start fw-bold text-body-tertiary">${item.TYPE_LEAVE}</td>
+                                          <td class="datE_START align-middle text-start fw-semibold pe-7 text-body-highlight">${item.DATE_START_DESC}</td>
+                                          <td class="datE_END align-middle text-start fw-semibold pe-7 text-body-highlight">${item.DATE_END_DESC}</td>
                                           <td class="align-middle white-space-nowrap text-start pe-0 ps-5">
                                               <div class="btn-reveal-trigger position-static">
                                                   <button class="btn btn-sm dropdown-toggle dropdown-caret-none transition-none btn-reveal fs-10" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent">
@@ -254,7 +246,7 @@
                                  window.leaveList.update();
                              } else {
                                  window.leaveList = new List('customerOrdersTable', {
-                                     valueNames: ["typE_LEAVE", "datE_START", "datE_END"],
+                                     valueNames: ["TYPE_LEAVE", "DATE_START_DESC", "DATE_END_DESC"],
                                      page: 10,
                                      pagination: true
                                  });
@@ -271,6 +263,29 @@
                 },
                 error: function (xhr) {
                     console.error("Error fetching profile:", xhr);
+                }
+            });
+        }
+        function loadLeaveInformation(email)
+        {
+            $.ajax({
+                url: `/MM_Leave/GetLoadLeaveInformation?email=${encodeURIComponent(email)}`,
+                method: 'GET',
+                success: function (response) {
+                    if (response.success && response.data)
+                    {
+                        $("#txtCarryForward").html(`${response.data.Carry_Forward}/${response.data.A_Carry_Forward}`);
+                        $("#txtAnnualLeave").html(`${response.data.Annual_Leave}/${response.data.A_Annual_Leave}`);
+                        $("#txtMedicalLeave").html(`${response.data.Medical_Leave}/${response.data.A_Medical_Leave}`);
+                        $("#txtPaternityLeave").html(`${response.data.Paternity_Leave}/${response.data.A_Paternity_Leave}`);
+                        $("#txtMaternityLeave").html(`${response.data.Maternity_Leave}/${response.data.A_Maternity_Leave}`);
+                        $("#txtCompassionateLeave").html(`${response.data.Compassionate_Leave}/${response.data.A_Compassionate_Leave}`);
+                        $("#txtMarriageLeave").html(`${response.data.Marriage_Leave}/${response.data.A_Marriage_Leave}`);
+                        $("#txtConvocationLeave").html(`${response.data.Convocation_Leave}/${response.data.A_Convocation_Leave}`);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error fetching leave information:", xhr);
                 }
             });
         }

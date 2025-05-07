@@ -1,0 +1,104 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_new.cshtml";
+}
+<style>
+    .page-align-top {
+        align-self: flex-start !important;
+        width: 100%;
+    }
+</style>
+<div class="page-align-top w-100">
+    <div class="w-100">
+        <div class="row align-items-center justify-content-between g-3 mt-3">
+            <div class="col-auto">
+                <h2 class="mb-0">Ai Resume Screening - History</h2>
+            </div>
+            <div class="col-auto">
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <a class="btn btn-primary" href="../AiResume/Index"><span class="fas fa-plus me-2"></span>New Screening</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-12 col-xl-10 order-1 order-xl-0 w-100">
+                <div class="card shadow-none border my-4 w-100" data-component-card="data-component-card">
+                    <div class="card-body p-3">
+                        <table id="example" class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th style="min-width: 120px;">Phone</th>
+                                    <th style="text-align: center;">Match Percentage</th>
+                                    <th style="min-width: 300px;">Short Description</th>
+                                    <th style="min-width: 90px;">Date Run</th>
+                                    <th style="min-width: 80px;text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+         $(document).ready(function () {
+  
+        const storedResults = localStorage.getItem("ai_resume_results");
+
+        const table = $('#example').DataTable({
+            initComplete: function () {
+                $("#example").wrap(`<div class="tr-scrolledDataTable h-100"></div>`);
+            }
+        });
+
+        if (storedResults) {
+            try {
+                const resumeData = JSON.parse(storedResults);
+
+                resumeData.forEach(item => {
+                    const date = new Date(item.timestamp);
+                    const formattedDate = formatDate(date);
+
+                    table.row.add([
+                        item.jobtitle,
+                        item.name,
+                        item.email,
+                        item.phone_number,
+                        `<div style="text-align:center;">${item.percentage_match}%</div>`,
+                        item.short_description,
+                        formattedDate,
+                        `<div class="text-center">
+                            <button class="btn btn-success btn-sm" title="Shortlisted">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>`
+                    ]).draw(false);
+                });
+            } catch (err) {
+                console.error("Error parsing localStorage resume data:", err);
+            }
+        }
+
+        function formatDate(date) {
+            const pad = (n) => n < 10 ? '0' + n : n;
+            const day = pad(date.getDate());
+            const month = pad(date.getMonth() + 1);
+            const year = date.getFullYear();
+            const hours = date.getHours();
+            const minutes = pad(date.getMinutes());
+            const suffix = hours >= 12 ? 'PM' : 'AM';
+            const hour12 = hours % 12 || 12;
+
+            return `${day}/${month}/${year} ${pad(hour12)}:${minutes} ${suffix}`;
+        }
+    });
+
+</script>
