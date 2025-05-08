@@ -372,6 +372,81 @@ namespace MaxSystemWebSite.Helpers.Graph
                 return (false, ex.Message, null);
             }
         }
+        public async Task<(bool success, string message, List<SP_LeaveHistory> data)> GetAllLeaveHistory(string _siteID, string listID)
+        {
+            try
+            {
+                _ = _appClient ??
+                    throw new NullReferenceException("Graph has not been initialized for app auth");
+                var recordList = await _appClient.Sites[_siteID].Lists[listID].Items.GetAsync(requestConfiguration =>
+                {
+                    requestConfiguration.QueryParameters.Expand = ["fields"];
+                    requestConfiguration.QueryParameters.Top = 10000;
+                    requestConfiguration.QueryParameters.Orderby = ["fields/Modified desc"];
+                });
+
+                List<SP_LeaveHistory> dataModel = new List<SP_LeaveHistory>();
+
+                foreach (var record in recordList.Value)
+                {
+                    if (record.Fields?.AdditionalData != null)
+                    {
+                        var data = record.Fields.AdditionalData;
+                        // Helper Functions
+                        string GetString(string key) => data.TryGetValue(key, out var val) ? val?.ToString() : null;
+                        int GetInt(string key) => int.TryParse(GetString(key), out var v) ? v : 0;
+                        double GetDouble(string key) => double.TryParse(GetString(key), out var v) ? v : 0.0;
+                        decimal GetDecimal(string key) => decimal.TryParse(GetString(key), out var v) ? v : 0.0m;
+
+                        DateTime? GetDate(string key)
+                        {
+                            if (data.TryGetValue(key, out var val) && DateTime.TryParse(val?.ToString(), out var dt))
+                            {
+                                return dt.ToLocalTime();
+                            }
+                            return null;
+                        }
+                        bool GetBool(string key) => bool.TryParse(GetString(key), out var v) ? v : false;
+
+                        int GetEmpId()
+                        {
+                            if (data.TryGetValue("EmployeeID", out var val) && int.TryParse(val?.ToString(), out var id))
+                            {
+                                return id;
+                            }
+                            return 0;
+                        }
+
+                        string emailFromList = GetString("Email"); // assuming field_6 holds the email
+                        if (!string.IsNullOrEmpty(emailFromList))
+                        {
+                            var item = new SP_LeaveHistory
+                            {
+                                EMP_NAME = GetString("Title"),
+                                EMP_EMAIL = GetString("Email"),
+                                EMP_NO = GetString("field_1"),
+                                DATE_START = GetDate("field_2"),
+                                DATE_END = GetDate("field_3"),
+                                NUMBER_OF_LEAVE = GetDecimal("field_4"),
+                                TYPE_LEAVE = GetString("field_5"),
+                                APPROVER = GetString("field_6"),
+                                APPROVER_DATE = GetDate("field_7"),
+                                EMERGENCY_LEAVE = GetString("ContentType"),
+                            };
+
+                            dataModel.Add(item);
+                        }
+
+                    }
+
+                }
+                return (true, "OK", dataModel);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
         public async Task<(bool success, string message, SP_LeaveInformation data)> GetLeaveInformation(string _siteID, string listID, string email)
         {
             try

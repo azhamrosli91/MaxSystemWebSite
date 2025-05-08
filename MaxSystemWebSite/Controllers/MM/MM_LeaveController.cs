@@ -41,11 +41,22 @@ namespace MaxSystemWebSite.Controllers.MM
             return Json(new { success = dataReturn.success, msg = dataReturn.message, data = dataReturn.data });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllLeaveHistory()
+        {
+            (bool success, string message, List<SP_LeaveHistory> data) dataReturn = await _sharePoint.GetAllLeaveHistory(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:HistoryLeaveRecordID"]);
+
+            return Json(new { success = dataReturn.success, msg = dataReturn.message, data = dataReturn.data });
+        }
+
         public async Task<IActionResult> GetLoadLeaveInformation(string email) 
         {
             (bool success, string message, SP_LeaveInformation data) dataReturn = await _sharePoint.GetLeaveInformation(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:LeaveBalance"], email);
 
             return Json(new { success = dataReturn.success, msg = dataReturn.message, data = dataReturn.data });
         }
+
+
+
     }
 }
