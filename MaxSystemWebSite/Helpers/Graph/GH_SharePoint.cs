@@ -12,6 +12,7 @@ using MaxSys.Models;
 using Microsoft.Graph.Models.TermStore;
 using System.Diagnostics;
 using Org.BouncyCastle.Ocsp;
+using iText.StyledXmlParser.Jsoup.Nodes;
 
 namespace MaxSystemWebSite.Helpers.Graph
 {
@@ -364,6 +365,70 @@ namespace MaxSystemWebSite.Helpers.Graph
                     }
 
                 }
+                return (true, "OK", dataModel);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        public async Task<(bool success, string message, SP_LeaveInformation data)> GetLeaveInformation(string _siteID, string listID, string email)
+        {
+            try
+            {
+                _ = _appClient ??
+                   throw new NullReferenceException("Graph has not been initialized for app auth");
+                var recordList = await _appClient.Sites[_siteID].Lists[listID].Items.GetAsync(requestConfiguration =>
+                {
+                    requestConfiguration.QueryParameters.Expand = ["fields"];
+                    requestConfiguration.QueryParameters.Top = 10000;
+                    requestConfiguration.QueryParameters.Orderby = ["fields/Modified desc"];
+                });
+
+                SP_LeaveInformation dataModel = new SP_LeaveInformation();
+
+                foreach (var record in recordList.Value)
+                {
+                    if (record.Fields?.AdditionalData != null)
+                    {
+                        var data = record.Fields.AdditionalData;
+                        // Helper Functions
+                        string GetString(string key) => data.TryGetValue(key, out var val) ? val?.ToString() : null;
+                        int GetInt(string key) => int.TryParse(GetString(key), out var v) ? v : 0;
+                        double GetDouble(string key) => double.TryParse(GetString(key), out var v) ? v : 0.0;
+                        decimal GetDecimal(string key) => decimal.TryParse(GetString(key), out var v) ? Math.Round(v, 1) : 0.0m;
+
+
+                        string emailFromList = GetString("Email"); // assuming field_6 holds the email
+
+                        if (!string.IsNullOrEmpty(emailFromList) && emailFromList.Equals(email, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var item = new SP_LeaveInformation
+                            {
+                                Email = GetString("Email"),
+                                Carry_Forward = GetDecimal("CarryForward"),
+                                Annual_Leave = GetDecimal("field_3"),
+                                Medical_Leave = GetDecimal("field_4"),
+                                Paternity_Leave = GetDecimal("field_7"),
+                                Maternity_Leave = GetDecimal("field_6"),
+                                Compassionate_Leave = GetDecimal("field_9"),
+                                Marriage_Leave = GetDecimal("field_8"),
+                                Convocation_Leave = GetDecimal("ConvocationLeave"),
+                                A_Carry_Forward = 7,
+                                A_Annual_Leave = GetDecimal("AnnualLeaveEntitlement"),
+                                A_Medical_Leave = GetDecimal("AnnualLeaveEntitlement"),
+                                A_Paternity_Leave = 7,
+                                A_Maternity_Leave = 98,
+                                A_Compassionate_Leave = 3,
+                                A_Marriage_Leave = 3,
+                                A_Convocation_Leave = 3,
+                            };
+
+                            dataModel = item;
+                        }
+                    }
+                }
+
                 return (true, "OK", dataModel);
             }
             catch (Exception ex)

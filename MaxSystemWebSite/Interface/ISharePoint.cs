@@ -16,6 +16,7 @@ namespace MaxSys.Interface
 
         #region "LEAVE"
             Task<(bool success, string message, List<SP_LeaveHistory> data)> GetLeaveHistory(string _siteID, string listID, string email);
+            Task<(bool success, string message, SP_LeaveInformation data)> GetLeaveInformation(string _siteID, string listID, string email);
         #endregion
     }
 }

@@ -575,6 +575,15 @@ namespace MaxSys.Controllers
         [HttpGet]
         [NoSessionExpire]
         [AllowAnonymous]
+        public async Task<IActionResult> Functions()
+        {
+            return View();
+        }
+
+
+        [HttpGet]
+        [NoSessionExpire]
+        [AllowAnonymous]
         public async Task<IActionResult> EmailSummarize()
         {
             return View();
@@ -621,7 +630,57 @@ namespace MaxSys.Controllers
 
             return Ok(new { summary }); // Return JSON like { "summary": "..." }
         }
- 
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ReplyEmailPolish(string emailBody, string userName)
+        {
+            string apiKey = _configuration["ChatGPT:SecretKey"];
+            string modelType = _configuration["ChatGPT:Model"];
+            double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var payload = new
+            {
+                model = modelType,
+                messages = new[]
+                {
+                    new {
+                        role = "system",
+                        content = $"You are an expert writing assistant. Rephrase the user's email to sound professional and polite. At the end, sign off the message with 'Best regards, {userName}'. Do not add subject lines or extra greetings."
+                    },
+                    new {
+                        role = "user",
+                        content = "Please polish the following email:\n\n" + emailBody
+                    }
+                },
+                temperature = temperature
+            };
+
+
+
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+            var response = await client.PostAsync("https://api.openai.com/v1/chat/completions",
+                new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest(new { error = "Failed to polish email." });
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(result);
+            var polishedText = doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            return Ok(new { polishedText }); // Return JSON like { "polishedText": "..." }
+        }
+
 
         [AllowAnonymous]
         [Route("api/messages")]

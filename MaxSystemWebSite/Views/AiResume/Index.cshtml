@@ -45,6 +45,9 @@
                 <div class="col-auto">
                     <a class="btn btn-phoenix-secondary" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</a>
                 </div>
+                <div class="col-auto">
+                    <a class="btn btn-success" href="../AiResume/Shortlisted"><span class="fas fa-check me-2"></span>Shortlisted</a>
+                </div>
             </div>
         </div>
     </div>
@@ -274,29 +277,56 @@
                         }
                     }
 
-                    resumeResults.push({
+                    const newResume = {
                         jobtitle: title,
                         name: response.name,
                         email: response.email,
                         phone_number: response.phone_number,
                         percentage_match: response.percentage_match,
                         short_description: response.short_description,
-                        timestamp: new Date().toISOString()
-                    });
+                        timestamp: new Date().toISOString(),
+                        short_listed: false
+                    };
+
+                    // Check if resume with same email exists
+                    const existingIndex = resumeResults.findIndex(r => r.email === newResume.email);
+
+                    if (existingIndex !== -1) {
+                        resumeResults[existingIndex] = newResume; // Replace existing
+                    } else {
+                        resumeResults.push(newResume); // Add new
+                    }
 
                     localStorage.setItem("ai_resume_results", JSON.stringify(resumeResults));
-                    table.row.add([
-                        response.name,
-                        response.email,
-                        response.phone_number,
-                        `<div style="text-align:center;">${response.percentage_match}%</div>`,
-                        response.short_description,
-                        `<div class="text-center">
-                            <button class="btn btn-success btn-sm" title="Shortlisted">
-                                <i class="fas fa-check"></i>
-                            </button>
-                        </div>`
-                    ]).draw(false);
+
+                    const isShortlisted = resumeResults.some(x => x.email === response.email && x.short_listed === true);
+
+                     const newRow = table.row.add([
+                         response.name,
+                         response.email,
+                         response.phone_number,
+                         `<div style="text-align:center;">${response.percentage_match}%</div>`,
+                         response.short_description,
+                         isShortlisted
+                             ? ''
+                             : `<div class="text-center">
+                                     <button class="btn btn-success btn-sm shortlisted" title="Shortlisted">
+                                         <i class="fas fa-check"></i>
+                                     </button>
+                                </div>`
+                     ]).draw(false).node();
+
+                     // 💡 Store full data for later use
+                     $(newRow).data("resume", {
+                         jobtitle: title,
+                         name: response.name,
+                         email: response.email,
+                         phone_number: response.phone_number,
+                         percentage_match: response.percentage_match,
+                         short_description: response.short_description,
+                         timestamp: new Date().toISOString(),
+                         short_listed: false
+                     });
 
                     // $('#upload-bar').css("width", "100%");
                 } catch (error) {
@@ -334,5 +364,45 @@
                 });
             });
         }
+        // Handle "Shortlisted" button click
+       $('#example tbody').on('click', '.shortlisted', function () {
+            const $btn = $(this);
+            const $row = $btn.closest('tr');
+        
+            const data = $row.data("resume"); // <-- We previously stored full resume data using .data("resume", item);
+            console.log("shortlisted 1; ",data) //error here
+            if (!data || !data.email) return;
+        
+            // Retrieve existing shortlist from localStorage
+            let shortlisted = [];
+            const stored = localStorage.getItem("ai_resume_shortlisted");
+            console.log("shortlisted",stored) 
+            if (stored) {
+                try {
+                    shortlisted = JSON.parse(stored);
+                    if (!Array.isArray(shortlisted)) shortlisted = [];
+                } catch (e) {
+                    shortlisted = [];
+                }
+            }
+        
+            // Check if already shortlisted by email
+            const alreadyShortlisted = shortlisted.some(item => item.email === data.email);
+        
+            if (!alreadyShortlisted) {
+                // Add to shortlist with short_listed = true
+                data.short_listed = true;
+                shortlisted.push(data);
+                localStorage.setItem("ai_resume_shortlisted", JSON.stringify(shortlisted));
+                console.log("Shortlisted resume saved:", data.email);
+            }
+        
+            // Hide the button after clicking
+            $btn.closest('div.text-center').remove();
+        });
+
+
+
+
     });
 </script>
