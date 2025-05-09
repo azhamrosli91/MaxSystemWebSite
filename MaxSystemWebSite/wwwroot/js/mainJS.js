@@ -202,7 +202,7 @@ function toastMessage(message, type = "success", title, callback) {
         <span class="text text-2">${message}</span>
         </div>
     </div>
-    <i class="fa-solid fa-x close"></i>
+    <div class="close"><i class="fa-solid fa-x"></i></div>
     <div class="progress active"></div>
     `;
 

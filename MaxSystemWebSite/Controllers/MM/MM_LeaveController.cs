@@ -56,7 +56,39 @@ namespace MaxSystemWebSite.Controllers.MM
             return Json(new { success = dataReturn.success, msg = dataReturn.message, data = dataReturn.data });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPublicHoliday()
+        {
+            (bool success, string message, List<SP_PublicHoliday> data) dataReturn = await _sharePoint.GetPublicHoliday(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:PublicHoliday"]);
 
+            return Json(new { success = dataReturn.success, msg = dataReturn.message, data = dataReturn.data });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCalendarData()
+        {
+            bool success = true;
+            string message = "";
+
+            (bool success, string message, List<SP_LeaveHistory> data) dataLeave = await _sharePoint.GetAllLeaveHistory(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:HistoryLeaveRecordID"]);
+            if (!dataLeave.success)
+            {
+                message += !string.IsNullOrEmpty(dataLeave.message) ? dataLeave.message : "Fail to obtain leave information.";
+            }
+
+            (bool success, string message, List<SP_PublicHoliday> data) dataHoliday = await _sharePoint.GetPublicHoliday(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:PublicHoliday"]);
+            if (!dataHoliday.success)
+            {
+                message += !string.IsNullOrEmpty(dataHoliday.message) ? dataHoliday.message : "Fail to obtain holiday information.";
+            }
+
+            if (!dataLeave.success && !dataHoliday.success)
+            {
+                success = false;
+            }
+
+            return Json(new { success = success, msg = message, l_data = dataLeave.data, h_data = dataHoliday.data });
+        }
 
     }
 }

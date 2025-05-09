@@ -203,7 +203,7 @@ namespace MaxSys.Controllers.DE
                 };
 
                 // Create SQL connection
-                using (var connection = new SqlConnection("Server=(LocalDb)\\MSSQLLocalDB;Database=PracticeDB;Integrated Security=True;"))
+                using (var connection = new SqlConnection("Server=dbdev.azhamrosli.com,1433;Initial Catalog=DB_HRMS;Persist Security Info=False;User ID=devuser;Password=Black@654321;MultipleActiveResultSets=False;Encrypt=False;"))
                 {
                     await connection.OpenAsync();
 
@@ -235,6 +235,11 @@ namespace MaxSys.Controllers.DE
             });
         }
 
+
+        public IActionResult Calendar()
+        {
+            return View();
+        }
 
     }
 }

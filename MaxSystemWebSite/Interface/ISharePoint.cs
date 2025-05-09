@@ -19,5 +19,9 @@ namespace MaxSys.Interface
             Task<(bool success, string message, List<SP_LeaveHistory> data)> GetAllLeaveHistory(string _siteID, string listID);
             Task<(bool success, string message, SP_LeaveInformation data)> GetLeaveInformation(string _siteID, string listID, string email);
         #endregion
+
+        #region "PUBLIC HOLIDAY"
+            Task<(bool success, string message, List<SP_PublicHoliday> data)> GetPublicHoliday(string _siteID, string listID);
+        #endregion
     }
 }

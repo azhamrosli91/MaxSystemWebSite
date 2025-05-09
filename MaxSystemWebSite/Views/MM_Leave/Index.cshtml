@@ -3,6 +3,55 @@
 }
 
 <style>
+    .content {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding-bottom: 2.5rem;
+    }
+
+    #appCalendar {
+        height: unset !important;
+        min-height: 0;
+        flex-grow: 1;
+    }
+
+    .holiday-label.fc-daygrid-event {
+        border-color: #3E424B !important;
+        background-color: #3E424B !important;
+    }
+
+        .holiday-label .fc-event-title {
+            color: #fff;
+            font-weight: bold !important;
+        }
+
+        .holiday-label.fc-daygrid-event .fc-event-main {
+            padding-left: 20px;
+        }
+        .holiday-label.fc-daygrid-event .fc-event-main::before {
+            content: ""; /* Coconut tree emoji */
+            position: absolute;
+            left: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: inline-block;
+            margin-top: -1px;
+            margin-right: 4px;
+            font-size: 14px; /* Adjust as needed */
+            width: 16px;
+            height: 16px;
+            border: none; /* Remove previous styling */
+
+            background-image: url('/Images/icons/palm_tree.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .holiday-label.fc-daygrid-event .fc-event-main::after {
+            display: none !important;
+        }
+
     .event-medical .fc-event-main::after {
         border-color: #28a745 !important; /* green */
     }
@@ -31,17 +80,77 @@
         color: blue;
         animation: fa-spin 1s linear infinite;
     }
+
+
+    /* Customize popover to show the table properly */
+    #btnLegend:hover {
+        color: grey;
+        cursor: pointer;
+    }
+
+    .msc-legend {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .msc-legend-row {
+        display: flex;
+    }
+
+    .msc-legend-label {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin-right: 5px;
+        border-radius: 50%;
+        margin-top: 1px;
+    }
+
+        .msc-legend-label.event-medical {
+            background: #28a745 !important; /* green */
+        }
+
+        .msc-legend-label.event-emergency {
+            background: #dc3545 !important; /* red */
+        }
+
+        .msc-legend-label.event-annual {
+            background: #ffc107 !important; /* yellow */
+        }
+
+        .msc-legend-label.event-unpaid {
+            background: #6c757d !important; /* gray */
+        }
+
+        .msc-legend-label.event-training {
+            background: #007bff !important; /* blue */
+        }
+
+        .msc-legend-label.event-default {
+            background: #343a40 !important; /* dark gray */
+        }
+
+        .msc-legend-label.event-holiday {
+            border-radius: unset;
+            background-image: url('/Images/icons/palm_tree.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
 </style>
 
 
 
 <div class="row g-0 mb-4 align-items-center">
     <div class="col-5 col-md-6">
-        <h4 class="mb-0 text-body-emphasis fw-bold fs-md-6"><span class="calendar-day d-block d-md-inline mb-1"></span><span class="px-3 fw-thin text-body-quaternary d-none d-md-inline">|</span><span class="calendar-date"></span></h4>
+        <h4 class="mb-0 text-body-emphasis fw-bold fs-md-6">
+            <span class="calendar-day d-block d-md-inline mb-1"></span><span class="px-3 fw-thin text-body-quaternary d-none d-md-inline">|</span><span class="calendar-date"></span>
+            <span id="btnLegend" class="ms-2"><i class="fa-solid fa-info-circle"></i></span>
+        </h4>
     </div>
     <div class="col-7 col-md-6 d-flex justify-content-end">
-        <button class="btn btn-link text-body px-0" id="btnRefresh"><i class="me-2"><span class="fa-solid fa-sync fs-10"></span></i><span class="d-none d-md-inline">Sync Now</span></button>
-        @* <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addEventModal"> <span class="fas fa-plus pe-2 fs-10"></span>Add new task </button> *@
+        <button class="btn btn-link text-body px-0 me-2 me-md-4" id="btnRefresh"><i class="me-2"><span class="fa-solid fa-sync fs-10"></span></i><span class="d-none d-md-inline">Sync Now</span></button>
+        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addEventModal"> <span class="fas fa-plus pe-2 fs-10"></span>Apply Leave </button>
     </div>
 </div>
 <div class="mx-n4 px-4 mx-lg-n6 px-lg-6 border-y border-translucent">
@@ -58,13 +167,13 @@
             <div>
                 <div class="btn-group btn-group-sm" role="group">
                     <button class="btn btn-phoenix-secondary active-view" data-fc-view="dayGridMonth">Month</button>
-                    <button class="btn btn-phoenix-secondary" data-fc-view="timeGridWeek">Week</button>
+                    <button class="btn btn-phoenix-secondary" data-fc-view="dayGridWeek">Week</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="calendar-outline mt-6 mb-9" id="appCalendar"></div>
+<div class="calendar-outline mt-6" id="appCalendar"></div>
 
 
 <!--MODAL-->
@@ -73,10 +182,10 @@
         <div class="modal-content border border-translucent"></div>
     </div>
 </div>
-@* <div class="modal fade" id="addEventModal" tabindex="-1">
+<div class="modal fade" id="addEventModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content border border-translucent">
-            <form id="addEventForm" autocomplete="off">
+            <!--<form id="addEventForm" autocomplete="off">-->
                 <div class="modal-header px-card border-0">
                     <div class="w-100 d-flex justify-content-between align-items-start">
                         <div>
@@ -158,12 +267,13 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-between align-items-center border-0">
                     <a class="me-3 fs-9 text-body" href="../apps/events/create-an-event.html">More options<span class="fas fa-angle-right ms-1 fs-10"></span></a>
-                    <button class="btn btn-primary px-4" type="submit">Save</button>
+                    <button class="btn btn-primary px-4" type="button">Save</button>
                 </div>
-            </form>
+            <!--</form>-->
         </div>
     </div>
-</div> *@
+</div>
+
 
 
 @section Scripts {
@@ -179,6 +289,43 @@
             $('#btnRefresh').click(function(){
                 fetchLeaveData();
             });
+
+            // Initialize popover when the button is clicked or hovered
+            $('#btnLegend').popover({
+              trigger: 'hover click',  // Show popover on hover
+              html: true,        // Allow HTML content inside popover
+              placement: "bottom",
+              content: function() {
+                return `
+                    <div class="msc-legend">
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-medical"></div>
+                            <div class="msc-legend-text">Medical Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-emergency"></div>
+                            <div class="msc-legend-text">Emergency Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-annual"></div>
+                            <div class="msc-legend-text">Annual Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-unpaid"></div>
+                            <div class="msc-legend-text">Unpaid Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-default"></div>
+                            <div class="msc-legend-text">Other's Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-holiday"></div>
+                            <div class="msc-legend-text">Public Holiday</div>
+                        </div>
+                    </div>`;
+              }
+            });
+
         });
 
 
@@ -191,9 +338,10 @@
         const currentYear = dayjs && dayjs().format('YYYY');
 
 
+
         function fetchLeaveData() {
           $.ajax({
-            url: '/MM_Leave/GetAllLeaveHistory', // Change to your actual route
+            url: '/MM_Leave/GetCalendarData', // Change to your actual route
             method: 'GET',
             beforeSend: function(){
                 $('#btnRefresh').addClass('refreshing');
@@ -201,20 +349,34 @@
             success: function (response) {
                 $('#btnRefresh').removeClass('refreshing');
                 if (response.success) {
-                    const mappedData = response.data.map(item => ({
+                     const hData = response.h_data.map(item => ({
+                      ...item,
+                      title: item.HOLIDAY_NAME,
+                      start: dayjs(item.DATE_START).format('YYYY-MM-DD'),
+                      end: dayjs(item.DATE_END).add(1, 'day').format('YYYY-MM-DD'), //Add 1 day FCJS treat is as before
+                      classNames: ["holiday-label"]
+                    }));
+
+                    const lData = response.l_data.map(item => ({
                       ...item,
                       title: item.EMP_NAME,
                       start: dayjs(item.DATE_START).format('YYYY-MM-DD'),
-                      end: dayjs(item.DATE_END).format('YYYY-MM-DD'),
+                      end: dayjs(item.DATE_END).add(1, 'day').format('YYYY-MM-DD'), //Add 1 day FCJS treat is as before
                       classNames: [getEventDotClass(item.TYPE_LEAVE)]
                     }));
 
-                    //console.log(mappedData);
+                    const combinedData = [...hData, ...lData];
+
+                    //console.log(combinedData);
 
                     ms_calendar.removeAllEvents();
-                    ms_calendar.addEventSource(mappedData);
+                    ms_calendar.addEventSource(combinedData);
+
+                    if (response.msg != "") {
+                        toastMessage(response.msg, 'warning');
+                    }
                 } else {
-                    toastMessage(response.message, 'error');
+                    toastMessage(response.msg, 'error');
                 }
             },
             error: function () {
@@ -348,7 +510,8 @@
                       window.dayjs(event.start).format('dddd, MMMM D, YYYY')
                     }
                     ${
-                      event.end
+                      event.end &&
+                      window.dayjs(event.start).format('YYYY-MM-DD') !== window.dayjs(event.end).subtract(1, 'day').format('YYYY-MM-DD')
                         ? `– ${
                             window.dayjs &&
                             window
@@ -357,6 +520,20 @@
                               .format('dddd, MMMM D, YYYY')
                           }`
                         : ''
+                    }
+                    ${
+                        event.extendedProps.NUMBER_OF_HOLIDAY
+                        ? `
+                            ${
+                                event.extendedProps.NUMBER_OF_HOLIDAY > 1
+                                ?
+                                `(${event.extendedProps.NUMBER_OF_HOLIDAY} days)`
+                                :
+                                `(${event.extendedProps.NUMBER_OF_HOLIDAY} day)`
+                            }
+                          `
+                        :
+                        ''
                     }
                     ${
                         event.extendedProps.NUMBER_OF_LEAVE
@@ -495,7 +672,7 @@
               ms_calendar = fullCalendar.renderCalendar(appCalendar, {
                 headerToolbar: false,
                 dayMaxEvents: 3,
-                height: 800,
+                //height: 800,
                 stickyHeaderDates: false,
                 views: {
                   week: {
@@ -509,13 +686,33 @@
                   meridiem: true
                 },
                 events: [],
+                eventDidMount: function(info) {
+                  if (info.event.classNames.includes("holiday-label")) {
+                    const start = dayjs(info.event.start);
+                    const end = dayjs(info.event.end || info.event.start);
+                    //console.log(info.event);
+
+                    let current = start.clone();
+                    while (current.isBefore(end, 'day')) {
+                        const dateStr = current.format('YYYY-MM-DD');
+                        const cell = document.querySelector(`.fc-daygrid-day[data-date="${dateStr}"]`);
+                        if (cell) {
+                            cell.style.backgroundColor = '#828282';
+                            cell.style.color = 'black';
+                            cell.style.border = 'none';
+                            cell.style.textAlign = 'center';
+                        }
+                        current = current.add(1, 'day');
+                    }
+                  }
+                },
                 eventClick: info => {
                   if (info.event.url) {
                     window.open(info.event.url, '_blank');
                     info.jsEvent.preventDefault();
                   } else {
                     const template = getTemplate(info.event);
-                    console.log(info);
+                    //console.log(info);
                     document.querySelector(
                       Selectors.EVENT_DETAILS_MODAL_CONTENT
                     ).innerHTML = template;
@@ -563,8 +760,16 @@
                 link.addEventListener(Events.CLICK, e => {
                   e.preventDefault();
                   const el = e.currentTarget;
-                  ms_calendar.changeView(getData(el, DataKeys.FC_VIEW));
+                  const newView = getData(el, DataKeys.FC_VIEW);
+
+                  ms_calendar.changeView(newView);
                   updateTitle(ms_calendar.currentData);
+
+                  if (newView === 'dayGridWeek') {
+                    ms_calendar.setOption('dayMaxEvents', false); // disable
+                  } else {
+                    ms_calendar.setOption('dayMaxEvents', 3); // restore default
+                  }
 
                   document.querySelectorAll(Selectors.DATA_CALENDAR_VIEW).forEach(btn => {
                     btn.classList.remove('active-view');
