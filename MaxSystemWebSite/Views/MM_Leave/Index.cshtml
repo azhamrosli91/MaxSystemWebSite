@@ -1,5 +1,11 @@
-﻿@{
+﻿@using MaxSystemWebSite.Models.MM;
+@model MM_LEAVE_VM;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
     Layout = "~/Views/Shared/_Layout_new.cshtml";
+
+    var username = HttpContextAccessor.HttpContext.Request.Cookies["NAME"];
+    var userID = HttpContextAccessor.HttpContext.Request.Cookies["USER_ID"];
 }
 
 <style>
@@ -52,24 +58,40 @@
             display: none !important;
         }
 
-    .event-medical .fc-event-main::after {
-        border-color: #28a745 !important; /* green */
-    }
-
-    .event-emergency .fc-event-main::after {
-        border-color: #dc3545 !important; /* red */
-    }
-
     .event-annual .fc-event-main::after {
-        border-color: #ffc107 !important; /* yellow */
+        border-color: #ffc107 !important; /* yellow – annual/vacation leave */
     }
 
     .event-unpaid .fc-event-main::after {
-        border-color: #6c757d !important; /* gray */
+        border-color: #6c757d !important; /* gray – unpaid leave */
     }
 
-    .event-training .fc-event-main::after {
-        border-color: #007bff !important; /* blue */
+    .event-medical .fc-event-main::after {
+        border-color: #28a745 !important; /* green – regular medical leave */
+    }
+
+    .event-hospitalization .fc-event-main::after {
+        border-color: #20c997 !important; /* teal – hospitalization (stronger medical) */
+    }
+
+    .event-maternity .fc-event-main::after {
+        border-color: #e83e8c !important; /* pink – maternity leave */
+    }
+
+    .event-paternity .fc-event-main::after {
+        border-color: #6610f2 !important; /* purple – paternity leave */
+    }
+
+    .event-marriage .fc-event-main::after {
+        border-color: #fd7e14 !important; /* orange – marriage leave (festive) */
+    }
+
+    .event-compassionate .fc-event-main::after {
+        border-color: #dc3545 !important; /* red – compassionate leave (serious/emergency) */
+    }
+
+    .event-convocation .fc-event-main::after {
+        border-color: #17a2b8 !important; /* cyan – convocation (educational event) */
     }
 
     .event-default .fc-event-main::after {
@@ -106,24 +128,40 @@
         margin-top: 1px;
     }
 
-        .msc-legend-label.event-medical {
-            background: #28a745 !important; /* green */
-        }
-
-        .msc-legend-label.event-emergency {
-            background: #dc3545 !important; /* red */
-        }
-
         .msc-legend-label.event-annual {
-            background: #ffc107 !important; /* yellow */
+            background: #ffc107 !important; /* yellow – annual/vacation leave */
         }
 
         .msc-legend-label.event-unpaid {
-            background: #6c757d !important; /* gray */
+            background: #6c757d !important; /* gray – unpaid leave */
         }
 
-        .msc-legend-label.event-training {
-            background: #007bff !important; /* blue */
+        .msc-legend-label.event-medical {
+            background: #28a745 !important; /* green – regular medical leave */
+        }
+
+        .msc-legend-label.event-hospitalization {
+            background: #20c997 !important; /* teal – hospitalization (stronger medical) */
+        }
+
+        .msc-legend-label.event-maternity {
+            background: #e83e8c !important; /* pink – maternity leave */
+        }
+
+        .msc-legend-label.event-paternity {
+            background: #6610f2 !important; /* purple – paternity leave */
+        }
+
+        .msc-legend-label.event-marriage {
+            background: #fd7e14 !important; /* orange – marriage leave (festive) */
+        }
+
+        .msc-legend-label.event-compassionate {
+            background: #dc3545 !important; /* red – compassionate leave (serious/emergency) */
+        }
+
+        .msc-legend-label.event-convocation {
+            background: #17a2b8 !important; /* cyan – convocation (educational event) */
         }
 
         .msc-legend-label.event-default {
@@ -185,91 +223,96 @@
 <div class="modal fade" id="addEventModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content border border-translucent">
-            <!--<form id="addEventForm" autocomplete="off">-->
+            <form id="addEventForm" class="needs-validation" autocomplete="off" novalidate>
                 <div class="modal-header px-card border-0">
-                    <div class="w-100 d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="mb-0 lh-sm text-body-highlight">Add new</h5>
-                            <div class="mt-2">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" id="inlineRadio1" type="radio" name="calendarTask" checked="checked" />
-                                    <label class="form-check-label" for="inlineRadio1">Event</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" id="inlineRadio2" type="radio" name="calendarTask" />
-                                    <label class="form-check-label" for="inlineRadio2">Task</label>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="w-100 d-flex justify-content-end align-items-start">
                         <button class="btn p-1 fs-10 text-body" type="button" data-bs-dismiss="modal" aria-label="Close">DISCARD </button>
                     </div>
                 </div>
                 <div class="modal-body p-card py-0">
                     <div class="form-floating mb-3">
-                        <input class="form-control" id="eventTitle" type="text" name="title" required="required" placeholder="Event title" />
-                        <label for="eventTitle">Title</label>
-                    </div>
-                    <div class="form-floating mb-5">
-                        <select class="form-select" id="eventLabel" name="label">
-                            <option value="primary" selected="selected">Business</option>
-                            <option value="secondary">Personal</option>
-                            <option value="success">Meeting</option>
-                            <option value="danger">Birthday</option>
-                            <option value="info">Report</option>
-                            <option value="warinng">Must attend</option>
-                        </select>
-                        <label for="eventLabel">Label</label>
-                    </div>
-                    <div class="flatpickr-input-container mb-3">
-                        <div class="form-floating">
-                            <input class="form-control datetimepicker" id="eventStartDate" type="text" name="startDate" placeholder="yyyy/mm/dd hh:mm" data-options='{"disableMobile":true,"enableTime":"true","dateFormat":"Y-m-d H:i"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
-                            <label class="ps-6" for="eventStartDate">Starts at</label>
-                        </div>
-                    </div>
-                    <div class="flatpickr-input-container mb-3">
-                        <div class="form-floating">
-                            <input class="form-control datetimepicker" id="eventEndDate" type="text" name="endDate" placeholder="yyyy/mm/dd hh:mm" data-options='{"disableMobile":true,"enableTime":"true","dateFormat":"Y-m-d H:i"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
-                            <label class="ps-6" for="eventEndDate">Ends at</label>
-                        </div>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="eventAllDay" name="allDay" />
-                        <label class="form-check-label" for="eventAllDay">
-                            All day event
-                        </label>
-                    </div>
-                    <div class="form-floating my-5">
-                        <textarea class="form-control" id="eventDescription" placeholder="Leave a comment here" name="description" style="height: 128px"></textarea>
-                        <label for="eventDescription">Description</label>
+                        <input class="form-control" id="txtName" type="text" required="required" placeholder="Name" value="@username" readonly />
+                        <label for="txtName">Name</label>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="form-floating mb-3">
-                        <select class="form-select" id="eventRepetition" name="repetition">
-                            <option value="" selected="selected">No Repeat</option>
-                            <option value="daily">Daily </option>
-                            <option value="deekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="dailyExceptHolidays">Daily (except holidays)</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                        <label for="eventRepetition">Repetition</label>
+                        <input class="form-control" id="txtEmpNo" type="text" required="required" placeholder="Employee Number" value="@userID" readonly />
+                        <label for="txtEmpNo">Employee Number</label>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="form-floating mb-3">
-                        <select class="form-select" id="eventReminder" name="reminder">
-                            <option value="" selected="selected">30 minutes earlier</option>
-                            <option value="">8 am on the day</option>
-                            <option value="">8 am on the day before</option>
-                            <option value="">2 days earlier</option>
-                            <option value="">a week earlier</option>
-                        </select>
-                        <label for="eventReminder">Reminder</label>
+                        @Html.DropDownListFor(Model => Model.EMP_MANAGER, new SelectList(Model.DDL_MANAGER, "SA_EMAIL", "SA_NAME"), new { id = "ddlManager", @class = "form-select", @required="required" })
+                        @* <select class="form-select" id="ddlManager" required="required">
+                            <option value="1" selected="selected">Azham</option>
+                        </select> *@
+                        <label for="ddlManager">Business Unit Manager/Supervisor Name</label>
+                        <div class="invalid-feedback"></div>
                     </div>
-                    <button class="btn btn-link p-0 mb-3" type="button"> <span class="fa-solid fa-plus me-2"></span>Add Reminder</button>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="txtManagerEmail" type="text" required="required" placeholder="Business Unit Manager/Supervisor Email Address" value="" readonly />
+                        <label for="txtManagerEmail">Business Unit Manager/Supervisor Email Address</label>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="ddlLeaveType" name="label">
+                            <option value="Annual Leave" selected="selected">Annual Leave</option>
+                            <option value="Unpaid Leave">Unpaid Leave</option>
+                            <option value="Medical Leave">Medical Leave</option>
+                            <option value="Hospitalization Leave">Hospitalization Leave</option>
+                            <option value="Maternity Leave">Maternity Leave</option>
+                            <option value="Paternity Leave">Paternity Leave</option>
+                            <option value="Marriage Leave">Marriage Leave</option>
+                            <option value="Compassionate Leave">Compassionate Leave</option>
+                            <option value="Convocation Leave">Convocation Leave</option>
+                        </select>
+                        <label for="ddlLeaveType">Leave Type</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="ddlHalfDay" name="label">
+                            <option value="0" selected="selected">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <label for="ddlHalfDay">Apply Half Day Leave?</label>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="flatpickr-input-container mb-3">
+                                <div class="form-floating">
+                                    <input class="form-control datetimepicker isResetable" id="txtStartDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
+                                    <label class="ps-6" for="txtStartDate">Starts at</label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="flatpickr-input-container mb-3">
+                                <div class="form-floating">
+                                    <input class="form-control datetimepicker isResetable" id="txtEndDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
+                                    <label class="ps-6" for="txtEndDate">Ends at</label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control isResetable" id="txtDays" type="text" placeholder="Days Applied" readonly />
+                        <label for="txtDays">Days Applied</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control isResetable" id="txtJustification" type="text" required="required" placeholder="Justification for Leave" />
+                        <label for="txtJustification">Justification for Leave</label>
+                        <div class="invalid-feedback">Please provide a reason.</div>
+                    </div>
+                    <div class="form-floating mb-1">
+                        <input class="form-control isResetable" id="txtEmailCC" type="text" placeholder="Add Person to CC in Mail" />
+                        <label for="txtEmailCC">Add Person to CC in Mail</label>
+                    </div>
+                    <div class="small mb-3">Use ; to separate more than 1 email. The email will automatically include HR email.</div>
                 </div>
-                <div class="modal-footer d-flex justify-content-between align-items-center border-0">
-                    <a class="me-3 fs-9 text-body" href="../apps/events/create-an-event.html">More options<span class="fas fa-angle-right ms-1 fs-10"></span></a>
-                    <button class="btn btn-primary px-4" type="button">Save</button>
+                <div class="modal-footer d-flex justify-content-end align-items-center border-0">
+                    <button class="btn btn-primary px-4" type="button" id="btnSubmit">Apply Leave</button>
                 </div>
-            <!--</form>-->
+            </form>
         </div>
     </div>
 </div>
@@ -279,6 +322,40 @@
 @section Scripts {
 
     <script src="~/vendor/fullcalendar/index.global.min.js"></script>
+
+    <script>
+        const email = $("#txtuseremail").val(); // Replace with dynamic value if needed
+        loadUserProfile(email);
+
+        function loadUserProfile(email) {
+            $.ajax({
+                url: `/MM_UserProfile/GetProfileDetail?email=${encodeURIComponent(email)}`,
+                method: 'GET',
+                success: function (response) {
+                    if (response.success && response.data)
+                    {
+                        if (response.success)
+                        {
+                            $('#txtName').val(response.data.EMP_NAME);
+                            $('#txtEmpNo').val(response.data.EMP_NO);
+                            $('#ddlManager').val(response.data.TMS_MANAGER);
+                            $('#txtManagerEmail').val(response.data.TMS_MANAGER);
+                        }
+                        else
+                        {
+                            console.error("Failed to load profile:", response.msg);
+                        }
+
+                    } else {
+                        console.error("Failed to load profile:", response.msg);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error fetching profile:", xhr);
+                }
+            });
+        }
+    </script>
 
     <script>
         let ms_calendar;
@@ -299,14 +376,6 @@
                 return `
                     <div class="msc-legend">
                         <div class="msc-legend-row">
-                            <div class="msc-legend-label event-medical"></div>
-                            <div class="msc-legend-text">Medical Leave</div>
-                        </div>
-                        <div class="msc-legend-row">
-                            <div class="msc-legend-label event-emergency"></div>
-                            <div class="msc-legend-text">Emergency Leave</div>
-                        </div>
-                        <div class="msc-legend-row">
                             <div class="msc-legend-label event-annual"></div>
                             <div class="msc-legend-text">Annual Leave</div>
                         </div>
@@ -315,8 +384,32 @@
                             <div class="msc-legend-text">Unpaid Leave</div>
                         </div>
                         <div class="msc-legend-row">
-                            <div class="msc-legend-label event-default"></div>
-                            <div class="msc-legend-text">Other's Leave</div>
+                            <div class="msc-legend-label event-medical"></div>
+                            <div class="msc-legend-text">Medical Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-hospitalization"></div>
+                            <div class="msc-legend-text">Hospitalization Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-maternity"></div>
+                            <div class="msc-legend-text">Maternity Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-paternity"></div>
+                            <div class="msc-legend-text">Paternity Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-marriage"></div>
+                            <div class="msc-legend-text">Marriage Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-compassionate"></div>
+                            <div class="msc-legend-text">Compassionate Leave</div>
+                        </div>
+                        <div class="msc-legend-row">
+                            <div class="msc-legend-label event-convocation"></div>
+                            <div class="msc-legend-text">Convocation Leave</div>
                         </div>
                         <div class="msc-legend-row">
                             <div class="msc-legend-label event-holiday"></div>
@@ -387,16 +480,24 @@
 
         function getEventDotClass(type) {
           switch (type.toLowerCase()) {
-            case 'medical leave':
-              return 'event-medical';
-            case 'emergency leave':
-              return 'event-emergency';
             case 'annual leave':
               return 'event-annual';
             case 'unpaid leave':
               return 'event-unpaid';
-            case 'training':
-              return 'event-training';
+            case 'medical leave':
+              return 'event-medical';
+            case 'hospitalization leave':
+              return 'event-hospitalization';
+            case 'maternity leave':
+              return 'event-maternity';
+            case 'paternity leave':
+              return 'event-paternity';
+            case 'marriage leave':
+              return 'event-marriage';
+            case 'compassionate leave':
+              return 'event-compassionatel';
+            case 'convocation leave':
+              return 'event-convocation';
             default:
               return 'event-default';
           }
@@ -813,6 +914,151 @@
 
         }));
         //# sourceMappingURL=calendar.js.map
+
+    </script>
+
+    <script>
+        //Apply Leave Control
+        $(document).ready(function () {
+
+            $('#ddlManager').change(function(){
+                $('#txtManagerEmail').val($(this).val());
+            });
+
+
+            var $startInput = $("#txtStartDate");
+            var $endInput = $("#txtEndDate");
+
+            // Flatpickr instances
+            var startPicker = $startInput.flatpickr({
+              disableMobile: true,
+              dateFormat: "Y-m-d",
+              onChange: function (selectedDates, dateStr) {
+                if (selectedDates.length > 0) {
+                  endPicker.set("minDate", dateStr);
+                  // If end date is before start, clear it
+                  if ($endInput.val() && dayjs($endInput.val()).isBefore(dateStr)) {
+                    $endInput.val("");
+                  }
+                }
+                $('#txtDays').val(getDayDifference($startInput.val(), $endInput.val()));
+              }
+            });
+
+            var endPicker = $endInput.flatpickr({
+              disableMobile: true,
+              dateFormat: "Y-m-d",
+              onChange: function (selectedDates, dateStr) {
+                if (selectedDates.length > 0) {
+                  startPicker.set("maxDate", dateStr);
+                  // If start date is after end, clear it
+                  if ($startInput.val() && dayjs($startInput.val()).isAfter(dateStr)) {
+                    $startInput.val("");
+                  }
+                }
+                $('#txtDays').val(getDayDifference($startInput.val(), $endInput.val()));
+              }
+            });
+
+            $('#btnSubmit').click(function(){
+                submitForm();
+            });
+        });
+
+        function getDayDifference(startDateStr, endDateStr) {
+            if (!startDateStr) return '';       // If start date is empty, return empty string
+            if (!endDateStr) return 1;          // If end date is empty, assume same-day → return 1
+
+            const start = new Date(startDateStr);
+            const end = new Date(endDateStr);
+
+            // Remove time part (if any) for accurate day diff
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+
+            const diffInMs = end - start;
+            const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+            return diffInDays + 1; // +1 to include both start and end date
+        }
+
+        $('#addEventModal').on('hidden.bs.modal', function () {
+            $('#addEventModal .needs-validation').removeClass('was-validated');
+            $('#addEventModal .is-invalid').removeClass('is-invalid');
+
+            $('#addEventForm .isResetable').each(function () {
+                $(this).val('');
+            });
+        });
+
+        $(document).on('change', '[required]', function(){
+            $(this).removeClass('is-invalid');
+        });
+
+        function submitForm() {
+            var cont = true;
+            var message = "";
+
+            $('#addEventModal .needs-validation').addClass('was-validated');
+            $('#addEventModal .is-invalid').removeClass('is-invalid');
+
+            $('#addEventForm [required]').each(function () {
+                if (!$(this).val()) {
+                    cont = false;
+                    message = "Field cannot be empty.";
+
+                    $(this).addClass('is-invalid');
+                    $(this).parent().find('.invalid-feedback').text(message);
+                }
+            });
+
+            if (cont) {
+
+                var data = {
+                    EMP_NAME: $('#txtName').val().trim(),
+                    EMP_NO: $('#txtEmpNo').val().trim(),
+                    MANAGER_NAME: $('#ddlManager option:selected').text().trim(),
+                    MANAGER_EMAIL: $('#txtManagerEmail').val().trim(),
+                    LEAVE_TYPE: $('#ddlLeaveType').val().trim(),
+                    IS_HALF_DAY: $('#ddlHalfDay').val().trim(),
+                    DATE_FROM: $('#txtStartDate').val().trim(),
+                    DATE_TO: $('#txtEndDate').val().trim(),
+                    DAYS_APPLIED: $('#txtDays').val().trim(),
+                    JUSTIFICATION: $('#txtJustification').val().trim(),
+                    EMAIL_CC: $('#txtEmailCC').val().trim()
+                };
+
+                $.ajax({
+                    url: '/MM_Leave/ExecuteApplyLeave',
+                    type: 'POST',
+                    data: data,
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        if (!response.error) {
+                            toastMessage("Data save successfully", 'success');
+                            $('#addEventModal').modal('hide');
+                        } else {
+                            loadings(false);
+                            toastMessage(response.msg, 'error');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400) {
+                            location.href = system_logout_url;
+                        } else {
+                            toastMessage("Error occured", 'error');
+                        }
+                    }
+                });
+
+            } else {
+                if(message != ""){
+                    toastMessage(message, 'error');
+                }
+            }
+        }
 
     </script>
 }

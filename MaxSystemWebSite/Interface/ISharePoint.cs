@@ -23,5 +23,9 @@ namespace MaxSys.Interface
         #region "PUBLIC HOLIDAY"
             Task<(bool success, string message, List<SP_PublicHoliday> data)> GetPublicHoliday(string _siteID, string listID);
         #endregion
+
+        #region "OTHERS"
+            Task<(bool success, string message, List<SP_CompanySA> data)> GetCompanySA(string _siteID, string listID);
+        #endregion
     }
 }

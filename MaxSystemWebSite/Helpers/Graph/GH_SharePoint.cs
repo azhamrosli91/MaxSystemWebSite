@@ -513,6 +513,7 @@ namespace MaxSystemWebSite.Helpers.Graph
         }
         #endregion
 
+        #region"Public Holiday"
         public async Task<(bool success, string message, List<SP_PublicHoliday> data)> GetPublicHoliday(string _siteID, string listID)
         {
             try
@@ -570,6 +571,65 @@ namespace MaxSystemWebSite.Helpers.Graph
                 return (false, ex.Message, null);
             }
         }
+        #endregion
+
+        #region"Others"
+        public async Task<(bool success, string message, List<SP_CompanySA> data)> GetCompanySA(string _siteID, string listID)
+        {
+            try
+            {
+                _ = _appClient ??
+                    throw new NullReferenceException("Graph has not been initialized for app auth");
+                var recordList = await _appClient.Sites[_siteID].Lists[listID].Items.GetAsync(requestConfiguration =>
+                {
+                    requestConfiguration.QueryParameters.Expand = ["fields"];
+                    requestConfiguration.QueryParameters.Top = 10000;
+                    requestConfiguration.QueryParameters.Orderby = ["fields/Modified desc"];
+                });
+
+                List<SP_CompanySA> dataModel = new List<SP_CompanySA>();
+
+                foreach (var record in recordList.Value)
+                {
+                    if (record.Fields?.AdditionalData != null)
+                    {
+                        var data = record.Fields.AdditionalData;
+                        // Helper Functions
+                        string GetString(string key) => data.TryGetValue(key, out var val) ? val?.ToString() : null;
+                        int GetInt(string key) => int.TryParse(GetString(key), out var v) ? v : 0;
+                        double GetDouble(string key) => double.TryParse(GetString(key), out var v) ? v : 0.0;
+                        decimal GetDecimal(string key) => decimal.TryParse(GetString(key), out var v) ? v : 0.0m;
+
+                        DateTime? GetDate(string key)
+                        {
+                            if (data.TryGetValue(key, out var val) && DateTime.TryParse(val?.ToString(), out var dt))
+                            {
+                                return dt.ToLocalTime();
+                            }
+                            return null;
+                        }
+                        bool GetBool(string key) => bool.TryParse(GetString(key), out var v) ? v : false;
+
+
+                        var item = new SP_CompanySA
+                        {
+                            SA_NAME = GetString("Title"),
+                            SA_EMAIL = GetString("SAEmail")
+                        };
+
+                        dataModel.Add(item);
+
+                    }
+
+                }
+                return (true, "OK", dataModel);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message, null);
+            }
+        }
+        #endregion
 
     }
 }

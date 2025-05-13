@@ -1,10 +1,17 @@
-﻿using BaseSQL.Interface;
+﻿using Base.Model;
+using BaseSQL.Interface;
 using BaseWebApi.Interface;
+using Dapper;
 using MaxSys.Helpers;
 using MaxSys.Interface;
 using MaxSystemWebSite.Models.EMAIL;
+using MaxSystemWebSite.Models.MM;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph.Models;
+using System.Data;
 using System.Text.Encodings.Web;
+using System.Web.Helpers;
 
 namespace MaxSystemWebSite.Controllers.MM
 {
@@ -28,10 +35,46 @@ namespace MaxSystemWebSite.Controllers.MM
             _sharePoint = sharePoint;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            MM_LEAVE_VM Model = new MM_LEAVE_VM();
+
+            List<SP_CompanySA> ddlManager = new List<SP_CompanySA>();
+
+            try
+            {
+                (bool success, string message, List<SP_CompanySA> data) dataCompanySA = await _sharePoint.GetCompanySA(_configuration["MaxSystem_SharePoint:MainPoint"], _configuration["MaxSystem_SharePoint:CompanySA"]);
+                ddlManager = dataCompanySA.data ?? new List<SP_CompanySA>();
+            }
+            catch (Exception ex)
+            {
+                //await ErrorLog_Add_V3(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, UserID_Name);
+            }
+            Model.DDL_MANAGER = ddlManager;
+
+            return View(Model);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> ExecuteApplyLeave(MM_LEAVE_APPLICATION Model)
+        {
+            var error = false;
+            var msg = "Successfully saved data.";
+
+            try
+            {
+                //TBC
+            }
+            catch (Exception ex)
+            {
+                //await ErrorLog_Add_V3(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, UserID_Name);
+                error = true;
+                msg = ex.Message;
+            }
+
+            return Json(new { error = error, msg = msg });
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetLeaveHistory(string email)
