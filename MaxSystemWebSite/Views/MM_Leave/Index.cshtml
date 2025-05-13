@@ -359,6 +359,7 @@
 
     <script>
         let ms_calendar;
+        var holiday_data = [];
 
         $(document).ready(function(){
             fetchLeaveData();
@@ -442,13 +443,14 @@
             success: function (response) {
                 $('#btnRefresh').removeClass('refreshing');
                 if (response.success) {
-                     const hData = response.h_data.map(item => ({
+                    const hData = response.h_data.map(item => ({
                       ...item,
                       title: item.HOLIDAY_NAME,
                       start: dayjs(item.DATE_START).format('YYYY-MM-DD'),
                       end: dayjs(item.DATE_END).add(1, 'day').format('YYYY-MM-DD'), //Add 1 day FCJS treat is as before
                       classNames: ["holiday-label"]
                     }));
+                    holiday_data = hData;
 
                     const lData = response.l_data.map(item => ({
                       ...item,
@@ -941,7 +943,7 @@
                     $endInput.val("");
                   }
                 }
-                $('#txtDays').val(getDayDifference($startInput.val(), $endInput.val()));
+                $('#txtDays').val(getDayDifferenceExcludingWeekendsAndHolidays($startInput.val(), $endInput.val()));
               }
             });
 
@@ -956,7 +958,7 @@
                     $startInput.val("");
                   }
                 }
-                $('#txtDays').val(getDayDifference($startInput.val(), $endInput.val()));
+                $('#txtDays').val(getDayDifferenceExcludingWeekendsAndHolidays($startInput.val(), $endInput.val()));
               }
             });
 
@@ -965,21 +967,46 @@
             });
         });
 
-        function getDayDifference(startDateStr, endDateStr) {
-            if (!startDateStr) return '';       // If start date is empty, return empty string
-            if (!endDateStr) return 1;          // If end date is empty, assume same-day → return 1
+        function getDayDifferenceExcludingWeekendsAndHolidays(startDateStr, endDateStr) {
+            if (!startDateStr) return '';   // Start date empty → return ''
+            if (!endDateStr) endDateStr = startDateStr; // End date empty → assume same day
 
-            const start = new Date(startDateStr);
-            const end = new Date(endDateStr);
+            const start = new Date(dayjs(startDateStr).format('YYYY-MM-DD'));
+            const end = new Date(dayjs(endDateStr).format('YYYY-MM-DD'));
 
-            // Remove time part (if any) for accurate day diff
+            // Normalize to remove time portion
             start.setHours(0, 0, 0, 0);
             end.setHours(0, 0, 0, 0);
 
-            const diffInMs = end - start;
-            const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+            // Convert holidays into Set of strings: 'YYYY-MM-DD'
+            const holidayDates = new Set();
+            holiday_data.forEach(holiday => {
+                const startH = new Date(holiday.start);
+                const endH = new Date(holiday.end);
+                for (
+                    let d = new Date(startH);
+                    d < endH;  // 'end' is exclusive due to +1 in your map
+                    d.setDate(d.getDate() + 1)
+                ) {
+                    holidayDates.add(d.toISOString().slice(0, 10));
+                }
+            });
 
-            return diffInDays + 1; // +1 to include both start and end date
+            // Count valid days
+            let count = 0;
+            for (
+                let d = new Date(start);
+                d <= end;
+                d.setDate(d.getDate() + 1)
+            ) {
+                const dayOfWeek = d.getDay(); // 0=Sun, 6=Sat
+                const dateStr = dayjs(d).format('YYYY-MM-DD');
+                if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayDates.has(dateStr)) {
+                    console.log(dateStr);
+                    count++;
+                }
+            }
+            return count;
         }
 
         $('#addEventModal').on('hidden.bs.modal', function () {
