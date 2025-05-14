@@ -13,7 +13,10 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        padding-bottom: 2.5rem;
+        padding-top: calc(var(--phoenix-navbar-top-height) + 1rem);
+        padding-bottom: 1rem;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
     #appCalendar {
@@ -38,15 +41,15 @@
         .holiday-label.fc-daygrid-event .fc-event-main::before {
             content: ""; /* Coconut tree emoji */
             position: absolute;
-            left: 0px;
+            left: 2px;
             top: 50%;
             transform: translateY(-50%);
             display: inline-block;
             margin-top: -1px;
             margin-right: 4px;
             font-size: 14px; /* Adjust as needed */
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border: none; /* Remove previous styling */
 
             background-image: url('/Images/icons/palm_tree.png');
@@ -179,39 +182,39 @@
 
 
 
-<div class="row g-0 mb-4 align-items-center">
-    <div class="col-5 col-md-6">
-        <h4 class="mb-0 text-body-emphasis fw-bold fs-md-6">
+<div class="row g-0 mb-1 align-items-center">
+    <div class="col-6 col-md-6">
+        <h5 class="mb-0 text-body-emphasis fw-bold fs-sm-8">
             <span class="calendar-day d-block d-md-inline mb-1"></span><span class="px-3 fw-thin text-body-quaternary d-none d-md-inline">|</span><span class="calendar-date"></span>
             <span id="btnLegend" class="ms-2"><i class="fa-solid fa-info-circle"></i></span>
-        </h4>
+        </h5>
     </div>
-    <div class="col-7 col-md-6 d-flex justify-content-end">
-        <button class="btn btn-link text-body px-0 me-2 me-md-4" id="btnRefresh"><i class="me-2"><span class="fa-solid fa-sync fs-10"></span></i><span class="d-none d-md-inline">Sync Now</span></button>
-        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addEventModal"> <span class="fas fa-plus pe-2 fs-10"></span>Apply Leave </button>
+    <div class="col-6 col-md-6 d-flex justify-content-end">
+        <button class="btn btn-link btn-xs text-body px-0 me-2 me-md-4" id="btnRefresh"><i class="me-2"><span class="fa-solid fa-sync fs-10"></span></i><span class="d-none d-md-inline">Sync Now</span></button>
+        <button class="btn btn-primary btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#addEventModal"> <span class="fas fa-plus pe-2 fs-10"></span>Apply Leave </button>
     </div>
 </div>
-<div class="mx-n4 px-4 mx-lg-n6 px-lg-6 border-y border-translucent">
-    <div class="row py-3 gy-3 gx-0">
+<div class="mx-n3 px-3 mx-lg-n3 px-lg-3 border-y border-translucent">
+    <div class="row py-1 gy-1 gx-0">
         <div class="col-6 col-md-4 order-1 d-flex align-items-center">
-            <button class="btn btn-sm btn-phoenix-primary px-4" data-event="today">Today</button>
+            <button class="btn btn-xs btn-phoenix-primary px-4" data-event="today">Today</button>
         </div>
         <div class="col-12 col-md-4 order-md-1 d-flex align-items-center justify-content-center">
             <button class="btn icon-item icon-item-sm shadow-none text-body-emphasis p-0" type="button" data-event="prev" title="Previous"><span class="fas fa-chevron-left"></span></button>
-            <h3 class="px-3 text-body-emphasis fw-semibold calendar-title mb-0"> </h3>
+            <h5 class="px-3 text-body-emphasis fw-semibold calendar-title mb-0 fs-sm-8"> </h5>
             <button class="btn icon-item icon-item-sm shadow-none text-body-emphasis p-0" type="button" data-event="next" title="Next"><span class="fas fa-chevron-right"></span></button>
         </div>
         <div class="col-6 col-md-4 ms-auto order-1 d-flex justify-content-end">
             <div>
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-phoenix-secondary active-view" data-fc-view="dayGridMonth">Month</button>
-                    <button class="btn btn-phoenix-secondary" data-fc-view="dayGridWeek">Week</button>
+                    <button class="btn btn-xs btn-phoenix-secondary active-view" data-fc-view="dayGridMonth">Month</button>
+                    <button class="btn btn-xs btn-phoenix-secondary" data-fc-view="dayGridWeek">Week</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="calendar-outline mt-6" id="appCalendar"></div>
+<div class="calendar-outline fc-custom-sm mt-2" id="appCalendar"></div>
 
 
 <!--MODAL-->

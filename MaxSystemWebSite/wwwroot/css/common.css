@@ -294,3 +294,47 @@
 .ms-toast.info .progress:before {
     background: rgb(13 202 240);
 }
+
+
+
+/** -------------------------------------------------
+    CUSTOM BOOTSTRAP CLASS
+----------------------------------------------------- **/
+.btn-xs {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+
+/** -------------------------------------------------
+    CUSTOM FULLCALENDAR JS - SMALLER
+----------------------------------------------------- **/
+.fc-custom-sm.fc table {
+    font-size: 12px;
+}
+.fc-custom-sm.fc .fc-col-header-cell-cushion {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.fc-custom-sm.fc .fc-daygrid-day-number {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+}
+.fc-custom-sm.fc .fc-daygrid-event {
+    padding: 0.25rem 0.25rem !important;
+    margin-bottom: 0.125rem !important;
+}
+@media (min-width: 768px) {
+    .fc-custom-sm.fc .fc-daygrid-day-frame {
+        padding: 0.1rem !important;
+    }
+    .fc-custom-sm.fc .fc-daygrid-event {
+        font-size: 10px;
+    }
+    .fc-custom-sm.fc .fc-daygrid-more-link {
+        font-size: 10px;
+    }
+}
