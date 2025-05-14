@@ -21,6 +21,7 @@ using Microsoft.Bot.Builder;
 using E_Template.Helpers;
 using MaxSystemWebSite.Helpers.Graph;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -31,6 +31,7 @@ namespace MaxSystemWebSite.Controllers.DE
 
         public IActionResult Index()
         {
+
             return View();
         }
         public IActionResult History()

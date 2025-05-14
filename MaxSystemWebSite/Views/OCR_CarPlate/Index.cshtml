@@ -31,23 +31,23 @@
         margin-bottom: 2px;
     }
 
-    .dropzone .dz-message{
-        margin : 0px !important;
+    .dropzone .dz-message {
+        margin: 0px !important;
     }
 </style>
 <div class="mb-9 w-100">
     <div class="row align-items-center justify-content-between g-3">
         <div class="col-auto">
-            <h2 class="mb-0">Ai Resume Screening</h2>
+            <h2 class="mb-0">OCR Car Plate Testing</h2>
         </div>
         <div class="col-auto">
             <div class="row g-3">
-                <div class="col-auto">
+               @*  <div class="col-auto">
                     <a class="btn btn-phoenix-secondary" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</a>
                 </div>
                 <div class="col-auto">
                     <a class="btn btn-success" href="../AiResume/Shortlisted"><span class="fas fa-check me-2"></span>Shortlisted</a>
-                </div>
+                </div> *@
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
                 <div class="card-body p-3">
                     <div class="mb-3">
                         <div class="input-group mb-3">
-                            <input class="form-control" id="txtTitle" type="text" placeholder="Job Title" aria-label="Job Title" aria-describedby="button-addon2" />
+                            <input class="form-control" id="txtTitle" type="text" placeholder="Title" aria-label="Title" aria-describedby="button-addon2" value="Data" />
                             <button class="btn btn-primary" type="submit" id="button-addon2">
                                 <i class="fa fa-paper-plane"></i>
                                 Submit
@@ -67,16 +67,41 @@
                     <form>
                         <div class="row">
                             <div class="col-12 col-md-6 col-xxl-5 col-sm-12">
-                                <label class="form-label" for="exampleFormControlInput">Job Description </label>
-                                <textarea id="txtJobDescription" class="tinymce" name="content" data-tinymce="{}"></textarea>
+                                <label class="form-label" for="exampleFormControlInput">Configuration </label>
+                                <div class="mb-3">
+                                    <label class="form-label" for="txtThreshold">Detail </label>
+                                    <select class="form-control" name="detail">
+                                        <option value="1" selected>True</option>
+                                        <option value="0">False</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="txtThreshold">Threshold </label>
+                                    <input class="form-control" id="txtThreshold" type="number" min="0" max="0" value="0.5" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="txtlowText">Low Text </label>
+                                    <input class="form-control" id="txtlowText" type="number" min="0" max="0" value="0.5" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="txtLinkThreshold">Link Threshold </label>
+                                    <input class="form-control" id="txtLinkThreshold" type="number" min="0" max="0" value="0.5" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="exampleFormControlInput">Grayscale </label>
+                                    <select class="form-control" name="grayscale">
+                                        <option value="true" selected>True</option>
+                                        <option value="false">False</option>
+                                    </select>
+                                </div>
                                 @* <textarea id="txtJobDescription"></textarea> *@
                             </div>
                             <div class="col-12 col-md-6 col-xxl-7 col-sm-12">
-                                <label class="form-label" for="exampleFormControlInput">Upload Resume </label>
+                                <label class="form-label" for="exampleFormControlInput">Upload Picture </label>
                                 <div class="p-4 code-to-copy">
                                     <div class="dropzone dropzone-multiple p-0" id="dropzone-multiple" data-dropzone="data-dropzone">
                                         <div class="fallback">
-                                            <input name="file" type="file" multiple accept="image/*,.doc,.docx,application/pdf" />
+                                            <input name="file" type="file" multiple accept="image/*" />
                                         </div>
                                         <div class="dz-message" data-dz-message="data-dz-message"><img class="me-2" src="~/images/icons/cloud-upload.svg" width="25" alt="" />Drop your files here</div>
                                         <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column">
@@ -87,7 +112,7 @@
                                                         <h6 data-dz-name="data-dz-name"></h6>
                                                         <div class="d-flex align-items-center">
                                                             <p class="mb-0 fs-9 text-body-quaternary lh-1" data-dz-size="data-dz-size"></p>
-                                                            
+
                                                         </div><span class="fs-10 text-danger" data-dz-errormessage="data-dz-errormessage"></span>
                                                     </div>
                                                     <div class="dropdown">
@@ -105,24 +130,25 @@
                     <hr />
                     <div class="mb-3">
                         <!-- Your table -->
-                        <table id="example" class="table table-striped" style="width:100%">
+                        <hr />
+                        <div id="ocrCardContainer" class="d-flex flex-wrap gap-3"></div>
+
+                        @* <table id="example" class="table table-striped" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th style="min-width: 250px;">Contact</th>
-                                    <th style="text-align: center;">Match %</th>
-                                    <th style="min-width: 300px;">Short Description</th>
-                                    <th style="min-width: 120px; text-align: center;">Action</th>
+                                    <th>Image</th>
+                                    <th>Information</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
-                        </table>
+                        </table> *@
                     </div>
                 </div>
             </div>
         </div>
     </div>
- 
+
 </div>
 <!-- Disable autoDiscover BEFORE Dropzone loads -->
 <script>
@@ -142,39 +168,31 @@
 <!-- Load Dropzone -->
 <script src="~/vendor/dropzone/dropzone-min.js"></script>
 
+<div class="modal fade" id="ocrModal" tabindex="-1" aria-labelledby="ocrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ocrModalLabel">OCR Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+                <img id="modalImage" src="" class="img-fluid rounded mb-3" style="max-width:300px; max-height:300px; width:auto; height:auto;" />
+            
+                <div id="modalText" class="text-start w-100 mb-3"></div>
+            
+                <div id="modalConfig" class="text-start w-100 border-top pt-3 small text-muted">
+                    <!-- config info will be populated here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script>
     let myDropzone;
 
     $(document).ready(function () {
-        // Prefill Job Title & Description from localStorage
-        const storedTitle = localStorage.getItem("ai_job_title");
-        const storedDescription = localStorage.getItem("ai_job_description");
-
-        if (storedTitle) {
-            $('#txtTitle').val(storedTitle);
-        }
-
-       if (storedDescription) {
-            $('#txtJobDescription').val(storedDescription);
-        }
-
-
-        // TinyMCE Init with optional set content
-        // tinymce.init({
-        //     selector: '#txtJobDescription',
-        //     plugins: 'lists code table',
-        //     toolbar: 'undo redo | bold italic underline | bullist numlist | code table',
-        //     menubar: false,
-        //     branding: false,
-        //     license_key: 'gpl',
-        //     setup: function (editor) {
-        //         editor.on('init', function () {
-        //             if (storedDescription) {
-        //                 editor.setContent(storedDescription); // ✅ Correct way
-        //             }
-        //         });
-        //     }
-        // });
 
         // Dropzone Initialization
         if ($('#dropzone-multiple').length) {
@@ -210,7 +228,7 @@
             $btn.prop('disabled', true).html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Submitting...`);
 
             const title = $('#txtTitle').val().trim();
-            const jobDesc = tinymce.get('txtJobDescription').getContent({ format: 'text' }).trim();
+           
             const files = myDropzone?.getAcceptedFiles() || [];
 
             if (!title) {
@@ -220,12 +238,6 @@
                 return;
             }
 
-            if (!jobDesc) {
-                alert("❗ Please enter Job Description.");
-                tinymce.get('txtJobDescription').focus();
-                resetButton();
-                return;
-            }
 
             if (!files.length) {
                 alert("❗ Please upload at least one resume file.");
@@ -236,101 +248,77 @@
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const formData = new FormData();
-                formData.append("jobDesc", jobDesc);
-                formData.append("file", file);
 
-                // Optional: show progress bar
-                // $('#upload-progress').show();
-                // $('#upload-bar').css("width", "30%");
 
-                const tempRow = table.row.add([
-                    'Uploading...',
-                    '',
-                    '',
-                    '<div class="text-center">Uploading...</div>',
-                    '',
-                    '<div class="text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></div>'
-                ]).draw(false).node();
+                // Append required OCR parameters
+                formData.append("image", file);
+                formData.append("detail", $('select[name="detail"]').val() || "1");
+                formData.append("text_threshold", $('#txtThreshold').val() || "0.5");
+                formData.append("low_text", $('#txtlowText').val() || "0.5");
+                formData.append("link_threshold", $('#txtLinkThreshold').val() || "0.5");
+                formData.append("grayscale", $('select[name="grayscale"]').val() || "true");
+
+                // Show placeholder card
+                const $cardContainer = $('#ocrCardContainer');
+                const placeholderId = `card-${Date.now()}-${i}`;
+                $cardContainer.append(`
+                    <div class="card shadow-sm border text-center p-3" id="${placeholderId}" style="width:300px;">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 mb-0 small text-muted">Processing ${file.name}...</p>
+                    </div>
+                `);
 
                 try {
-                    const response = await uploadResumeAsync(formData);
-                    table.row(tempRow).remove().draw(false);
+                    const detail = $('select[name="detail"]').val() || "1";
+                    const text_threshold = $('#txtThreshold').val() || "0.5";
+                    const low_text = $('#txtlowText').val() || "0.5";
+                    const link_threshold = $('#txtLinkThreshold').val() || "0.5";
+                    const grayscale = $('select[name="grayscale"]').val() || "true";
 
-                    // Save Job Title & Description
-                    localStorage.setItem("ai_job_title", title);
-                    localStorage.setItem("ai_job_description", jobDesc);
+                    const response = await uploadOCRData(formData);
 
-                    // Save Resume Results
-                    const existing = localStorage.getItem("ai_resume_results");
-                    let resumeResults = [];
+                   const imageTag = `<img src="${response.imageUrl}" class="img-fluid rounded border mb-2" style="width:300px; height:300px; object-fit:cover;" />`;
 
-                    if (existing) {
-                        try {
-                            resumeResults = JSON.parse(existing);
-                            if (!Array.isArray(resumeResults)) {
-                                resumeResults = [];
-                            }
-                        } catch (e) {
-                            resumeResults = [];
-                        }
-                    }
+                    const textData = Array.isArray(response.texts) ? response.texts.join("<br/>") : "-";
 
-                    const newResume = {
-                        jobtitle: title,
-                        name: response.name,
-                        email: response.email,
-                        phone_number: response.phone_number,
-                        percentage_match: response.percentage_match,
-                        short_description: response.short_description,
-                        timestamp: new Date().toISOString(),
-                        short_listed: false
-                    };
+                    // Replace placeholder with real card
+                    $(`#${placeholderId}`).replaceWith(`
+                        <div class="card ocr-result-card shadow-sm border p-3"
+                             style="width:300px; cursor:pointer;"
+                             data-img="${response.imageUrl}"
+                             data-text="${encodeURIComponent(textData)}"
+                             data-detail="${detail}"
+                             data-threshold="${text_threshold}"
+                             data-lowtext="${low_text}"
+                             data-link="${link_threshold}"
+                             data-grayscale="${grayscale}">
 
-                    // Check if resume with same email exists
-                    const existingIndex = resumeResults.findIndex(r => r.email === newResume.email);
+                            ${imageTag}
 
-                    if (existingIndex !== -1) {
-                        resumeResults[existingIndex] = newResume; // Replace existing
-                    } else {
-                        resumeResults.push(newResume); // Add new
-                    }
+                            <div class="mt-2 text-start small text-body">
+                                <strong>Result:</strong><br/>
+                                ${textData}
+                                <hr class="my-2"/>
+                                <strong>Config:</strong><br/>
+                                Detail: ${detail}<br/>
+                                Threshold: ${text_threshold}<br/>
+                                Low Text: ${low_text}<br/>
+                                Link Threshold: ${link_threshold}<br/>
+                                Grayscale: ${grayscale}
+                            </div>
+                        </div>
+                    `);
 
-                    localStorage.setItem("ai_resume_results", JSON.stringify(resumeResults));
 
-                    const isShortlisted = resumeResults.some(x => x.email === response.email && x.short_listed === true);
 
-                    const newRow = table.row.add([
-                        `<div><strong>${response.name}</strong><br><span>${response.email}</span><br><span>${response.phone_number}</span></div>`,
-                        `<div style="text-align:center;">${response.percentage_match}%</div>`,
-                        response.short_description,
-                        isShortlisted
-                            ? ''
-                            : `<div class="text-center">
-                                    <button class="btn btn-success btn-sm shortlisted" title="Shortlisted">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                               </div>`
-                    ]).draw(false).node();
-
-                     // 💡 Store full data for later use
-                     $(newRow).data("resume", {
-                         jobtitle: title,
-                         name: response.name,
-                         email: response.email,
-                         phone_number: response.phone_number,
-                         percentage_match: response.percentage_match,
-                         short_description: response.short_description,
-                         timestamp: new Date().toISOString(),
-                         short_listed: false
-                     });
-
-                    // $('#upload-bar').css("width", "100%");
                 } catch (error) {
-                    table.row(tempRow).remove().draw(false);
+                    $(`#${placeholderId}`).remove(); // Remove failed placeholder
                     alert(`❌ Failed to upload ${file.name}: ` + error.message);
-                    // $('#upload-bar').css("width", "100%").addClass("bg-danger");
                 }
             }
+
+
+
 
             // Unlock button
             resetButton();
@@ -341,10 +329,10 @@
         });
 
         // Ajax wrapper
-        function uploadResumeAsync(formData) {
+        function uploadOCRData(formData) {
             return new Promise(function (resolve, reject) {
-                $.ajax({
-                    url: "/AiResume/UploadProxy",
+                  $.ajax({
+                     url: "/OCR_CarPlate/UploadProxy",
                     type: "POST",
                     data: formData,
                     processData: false,
@@ -360,44 +348,34 @@
                 });
             });
         }
-        // Handle "Shortlisted" button click
-       $('#example tbody').on('click', '.shortlisted', function () {
-            const $btn = $(this);
-            const $row = $btn.closest('tr');
-        
-            const data = $row.data("resume"); // <-- We previously stored full resume data using .data("resume", item);
-            console.log("shortlisted 1; ",data) //error here
-            if (!data || !data.email) return;
-        
-            // Retrieve existing shortlist from localStorage
-            let shortlisted = [];
-            const stored = localStorage.getItem("ai_resume_shortlisted");
-            console.log("shortlisted",stored) 
-            if (stored) {
-                try {
-                    shortlisted = JSON.parse(stored);
-                    if (!Array.isArray(shortlisted)) shortlisted = [];
-                } catch (e) {
-                    shortlisted = [];
-                }
-            }
-        
-            // Check if already shortlisted by email
-            const alreadyShortlisted = shortlisted.some(item => item.email === data.email);
-        
-            if (!alreadyShortlisted) {
-                // Add to shortlist with short_listed = true
-                data.short_listed = true;
-                shortlisted.push(data);
-                localStorage.setItem("ai_resume_shortlisted", JSON.stringify(shortlisted));
-                console.log("Shortlisted resume saved:", data.email);
-            }
-        
-            // Hide the button after clicking
-            $btn.closest('div.text-center').remove();
+
+         // Show modal on card click
+        $('#ocrCardContainer').on('click', '.ocr-result-card', function () {
+            const img = $(this).data('img');
+            const text = decodeURIComponent($(this).data('text'));
+
+            // OCR config values
+            const detail = $(this).data('detail');
+            const threshold = $(this).data('threshold');
+            const lowtext = $(this).data('lowtext');
+            const link = $(this).data('link');
+            const grayscale = $(this).data('grayscale');
+
+            $('#modalImage').attr('src', img);
+            $('#modalText').html(`<strong>Detected Text:</strong><br>${text}`);
+
+            $('#modalConfig').html(`
+                <strong>OCR Configuration:</strong><br/>
+                Detail: ${detail}<br/>
+                Threshold: ${threshold}<br/>
+                Low Text: ${lowtext}<br/>
+                Link Threshold: ${link}<br/>
+                Grayscale: ${grayscale}
+            `);
+
+            const modal = new bootstrap.Modal(document.getElementById('ocrModal'));
+            modal.show();
         });
-
-
 
 
     });
