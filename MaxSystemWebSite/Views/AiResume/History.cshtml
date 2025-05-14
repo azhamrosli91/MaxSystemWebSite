@@ -33,10 +33,10 @@
                                 <tr>
                                     <th style="min-width: 150px;">Title</th>
                                     <th style="min-width: 250px;">Contact</th>
-                                    <th style="min-width: 120px; text-align: center;">Match %</th>
+                                    <th text-align: center;">Match %</th>
                                     <th style="min-width: 300px;">Short Description</th>
-                                    <th style="min-width: 120px;">Date Run</th>
-                                    <th style="min-width: 80px; text-align: center;">Action</th>
+                                    <th>Date Run</th>
+                                    <th style="min-width: 120px; text-align: center;">Action</th>
                                 </tr>
                             </thead>
 
@@ -87,7 +87,7 @@
 
 
 <script>
-         $(document).ready(function () {
+    $(document).ready(function () {
   
         const storedResults = localStorage.getItem("ai_resume_results");
 
@@ -123,8 +123,8 @@
                     const actionHtml = isShortlisted
                         ? '' // Hide the button
                         : `<div class="text-center">
-                               <button class="btn btn-success btn-sm" title="Shortlisted">
-                                   <i class="fas fa-check"></i>
+                               <button class="btn btn-success btn-sm shortlisted" title="Shortlisted">
+                                   <i class="fas fa-check "></i>
                                </button>
                            </div>`;
 
@@ -168,6 +168,9 @@
         }
 
          $('#example tbody').on('click', 'tr', function () {
+
+             // if ($(e.target).closest('button').length) return;
+
              const data = $(this).data("resume");
              if (!data) return;
 
@@ -188,6 +191,7 @@
             const $row = $btn.closest('tr');
 
             const data = $row.data("resume"); // <-- We previously stored full resume data using .data("resume", item);
+            console.log(data)
             if (!data || !data.email) return;
 
             // Retrieve existing shortlist from localStorage
