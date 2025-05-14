@@ -278,7 +278,7 @@
                         <div class="col-sm-6">
                             <div class="flatpickr-input-container mb-3">
                                 <div class="form-floating">
-                                    <input class="form-control datetimepicker isResetable" id="txtStartDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
+                                    <input class="form-control datetimepicker" id="txtStartDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
                                     <label class="ps-6" for="txtStartDate">Starts at</label>
                                     <div class="invalid-feedback"></div>
                                 </div>
@@ -287,7 +287,7 @@
                         <div class="col-sm-6">
                             <div class="flatpickr-input-container mb-3">
                                 <div class="form-floating">
-                                    <input class="form-control datetimepicker isResetable" id="txtEndDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
+                                    <input class="form-control datetimepicker" id="txtEndDate" type="text" required="required" placeholder="yyyy/mm/dd" data-options='{"disableMobile":true,"enableTime":"false","dateFormat":"Y-m-d"}' /><span class="uil uil-calendar-alt flatpickr-icon text-body-tertiary"></span>
                                     <label class="ps-6" for="txtEndDate">Ends at</label>
                                     <div class="invalid-feedback"></div>
                                 </div>
@@ -308,6 +308,30 @@
                         <label for="txtEmailCC">Add Person to CC in Mail</label>
                     </div>
                     <div class="small mb-3">Use ; to separate more than 1 email. The email will automatically include HR email.</div>
+
+                    <div class="dropzone dropzone-multiple p-0" id="dropzone-multiple" data-dropzone="data-dropzone" action="#!">
+                        <div class="fallback"><input id="txtFile" name="file" type="file" multiple="multiple" /></div>
+                        <div class="dz-message" data-dz-message="data-dz-message"><img class="me-2" src="~/Images/icons/cloud-upload.svg" width="25" alt="" />Drop your files here</div>
+                        <div class="dz-preview dz-preview-multiple m-0 d-flex flex-column">
+                            <div class="d-flex mb-3 pb-3 border-bottom border-translucent media">
+                                <div class="border p-2 rounded-2 me-2"><img class="rounded-2 dz-image" src="~/Images/icons/file.png" alt="..." data-dz-thumbnail="data-dz-thumbnail" /></div>
+                                <div class="flex-1 d-flex flex-between-center">
+                                    <div>
+                                        <h6 data-dz-name="data-dz-name"></h6>
+                                        <div class="d-flex align-items-center">
+                                            <p class="mb-0 fs-9 text-body-quaternary lh-1" data-dz-size="data-dz-size"></p>
+                                            <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress=""></span></div>
+                                        </div><span class="fs-10 text-danger" data-dz-errormessage="data-dz-errormessage"></span>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-body-tertiary btn-sm dropdown-toggle btn-reveal dropdown-caret-none" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h"></span></button>
+                                        <div class="dropdown-menu dropdown-menu-end border border-translucent py-2"><a class="dropdown-item" href="#!" data-dz-remove="data-dz-remove">Remove File</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer d-flex justify-content-end align-items-center border-0">
                     <button class="btn btn-primary px-4" type="button" id="btnSubmit">Apply Leave</button>
@@ -322,6 +346,7 @@
 @section Scripts {
 
     <script src="~/vendor/fullcalendar/index.global.min.js"></script>
+    <script src="~/vendor/dropzone/dropzone-min.js"></script>
 
     <script>
         const email = $("#txtuseremail").val(); // Replace with dynamic value if needed
@@ -360,6 +385,7 @@
     <script>
         let ms_calendar;
         var holiday_data = [];
+        var myDropzone;
 
         $(document).ready(function(){
             fetchLeaveData();
@@ -420,6 +446,7 @@
               }
             });
 
+            myDropzone = Dropzone.forElement("#dropzone-multiple");
         });
 
 
@@ -921,6 +948,9 @@
 
     <script>
         //Apply Leave Control
+        var startPicker;
+        var endPicker;
+
         $(document).ready(function () {
 
             $('#ddlManager').change(function(){
@@ -932,7 +962,7 @@
             var $endInput = $("#txtEndDate");
 
             // Flatpickr instances
-            var startPicker = $startInput.flatpickr({
+            startPicker = $startInput.flatpickr({
               disableMobile: true,
               dateFormat: "Y-m-d",
               onChange: function (selectedDates, dateStr) {
@@ -947,7 +977,7 @@
               }
             });
 
-            var endPicker = $endInput.flatpickr({
+            endPicker = $endInput.flatpickr({
               disableMobile: true,
               dateFormat: "Y-m-d",
               onChange: function (selectedDates, dateStr) {
@@ -1002,7 +1032,7 @@
                 const dayOfWeek = d.getDay(); // 0=Sun, 6=Sat
                 const dateStr = dayjs(d).format('YYYY-MM-DD');
                 if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayDates.has(dateStr)) {
-                    console.log(dateStr);
+                    //console.log(dateStr); //Developer - Check Valid Date
                     count++;
                 }
             }
@@ -1010,8 +1040,15 @@
         }
 
         $('#addEventModal').on('hidden.bs.modal', function () {
+            //FORM RESET
             $('#addEventModal .needs-validation').removeClass('was-validated');
             $('#addEventModal .is-invalid').removeClass('is-invalid');
+
+            myDropzone.removeAllFiles(true);
+            startPicker.clear();
+            startPicker.set("maxDate", null);
+            endPicker.clear();
+            endPicker.set("minDate", null);
 
             $('#addEventForm .isResetable').each(function () {
                 $(this).val('');
@@ -1029,6 +1066,8 @@
             $('#addEventModal .needs-validation').addClass('was-validated');
             $('#addEventModal .is-invalid').removeClass('is-invalid');
 
+            const files = myDropzone.getAcceptedFiles();
+
             $('#addEventForm [required]').each(function () {
                 if (!$(this).val()) {
                     cont = false;
@@ -1041,24 +1080,28 @@
 
             if (cont) {
 
-                var data = {
-                    EMP_NAME: $('#txtName').val().trim(),
-                    EMP_NO: $('#txtEmpNo').val().trim(),
-                    MANAGER_NAME: $('#ddlManager option:selected').text().trim(),
-                    MANAGER_EMAIL: $('#txtManagerEmail').val().trim(),
-                    LEAVE_TYPE: $('#ddlLeaveType').val().trim(),
-                    IS_HALF_DAY: $('#ddlHalfDay').val().trim(),
-                    DATE_FROM: $('#txtStartDate').val().trim(),
-                    DATE_TO: $('#txtEndDate').val().trim(),
-                    DAYS_APPLIED: $('#txtDays').val().trim(),
-                    JUSTIFICATION: $('#txtJustification').val().trim(),
-                    EMAIL_CC: $('#txtEmailCC').val().trim()
-                };
+                var formData = new FormData();
+                formData.append('EMP_NAME', $('#txtName').val().trim());
+                formData.append('EMP_NO', $('#txtEmpNo').val().trim());
+                formData.append('MANAGER_NAME', $('#ddlManager option:selected').text().trim());
+                formData.append('MANAGER_EMAIL', $('#txtManagerEmail').val().trim());
+                formData.append('LEAVE_TYPE', $('#ddlLeaveType').val().trim());
+                formData.append('IS_HALF_DAY', $('#ddlHalfDay').val().trim());
+                formData.append('DATE_FROM', $('#txtStartDate').val().trim());
+                formData.append('DATE_TO', $('#txtEndDate').val().trim());
+                formData.append('DAYS_APPLIED', $('#txtDays').val().trim());
+                formData.append('JUSTIFICATION', $('#txtJustification').val().trim());
+                formData.append('EMAIL_CC', $('#txtEmailCC').val().trim());
+                files.forEach((file, i)  => {
+                    formData.append(`ListMM_LEAVE_ATTACHMENT[${i}].ATTACHMENT_FILEBASE`, file);
+                });
 
                 $.ajax({
                     url: '/MM_Leave/ExecuteApplyLeave',
                     type: 'POST',
-                    data: data,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
                     beforeSend: function () {
                         loadings();
                     },

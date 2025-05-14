@@ -1,5 +1,4 @@
-﻿using Base.Model;
-using MaxSystemWebSite.Models.EMAIL;
+﻿using MaxSystemWebSite.Models.EMAIL;
 
 namespace MaxSystemWebSite.Models.MM
 {
@@ -24,6 +23,14 @@ namespace MaxSystemWebSite.Models.MM
         public string DAYS_APPLIED { get; set; }
         public string JUSTIFICATION { get; set; }
         public string EMAIL_CC { get; set; }
+        public List<MM_LEAVE_ATTACHMENT> ListMM_LEAVE_ATTACHMENT { get; set; }
+    }
+
+    public class MM_LEAVE_ATTACHMENT
+    {
+        public string ATTACHMENT_NAME { get; set; }
+        public string ATTACHMENT_URL { get; set; }
+        public IFormFile ATTACHMENT_FILEBASE { get; set; }
     }
 
 }
