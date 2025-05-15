@@ -1,0 +1,152 @@
+﻿@using MaxSystemWebSite.Models.MM;
+@model MM_SAMPLE;
+@{
+    Layout = "~/Views/Shared/_Layout_new.cshtml";
+}
+
+
+<form id="mainForm" class="needs-validation" autocomplete="off" novalidate>
+    <div class="col-md-12">
+        <div class="row mb-2">
+            <div class="col-md-12">
+
+                <label class="form-label">Test</label>
+                <select class="form-select" id="ddlTest" aria-label="Default select example" required>
+                    <option value="" selected="">Open this select menu</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                </select>
+                <div class="invalid-feedback"></div>
+
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-12">
+
+                <label class="form-label">Remark</label>
+                <div class="tinymce-custom-inputarea form-control p-0">
+                    <textarea id="txtRemark">Hello, TinyMCE!</textarea>
+                </div>
+                <div class="invalid-feedback"></div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-end align-items-center border-0">
+                    <button class="btn btn-primary px-4" type="button" id="btnSubmit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    $(document).ready(function(){
+        tinymce.init({
+            selector: '#txtRemark',
+            skin: 'oxide',
+            height: 300,
+            menubar: false,
+            plugins: 'lists link image preview table',
+            toolbar: 'undo redo | formatselect fontsizeselect | bold italic underline forecolor backcolor | bullist numlist | table | link image | preview',
+            branding: false,
+            resize: false,
+            statusbar: false,
+            setup: function (editor) {
+                // Run on typing, pasting, or any input
+                editor.on('input keydown change', function () {
+                    $('#txtRemark').closest('.tinymce-custom-inputarea').removeClass('is-invalid');
+                });
+                // Optionally remove on focus too
+                editor.on('focus', function () {
+                    $('#txtRemark').closest('.tinymce-custom-inputarea').removeClass('is-invalid');
+                });
+            }
+        });
+
+
+        $('#btnSubmit').click(function(){
+            submitForm();
+        });
+    });
+
+    $(document).on('change', '[required]', function(){
+        $(this).removeClass('is-invalid');
+    });
+    function getEditorContent(element_id) {
+        const editor = tinymce.get(element_id);
+        if (editor) {
+            return editor.getContent(); // ✅ return the content
+        } else {
+            console.warn('Editor not ready yet.');
+            return ''; // safe fallback
+        }
+    }
+
+
+    function submitForm() {
+        var cont = true;
+        var message = "";
+
+        $('#mainForm.needs-validation').addClass('was-validated');
+        $('#mainForm .is-invalid').removeClass('is-invalid');
+
+        $('#mainForm [required]').each(function () {
+            if (!$(this).val()) {
+                cont = false;
+                message = "Field cannot be empty.";
+                $(this).addClass('is-invalid');
+                $(this).parent().find('.invalid-feedback').text(message);
+            }
+        });
+
+        if (getEditorContent('txtRemark') === "") {
+            cont = false;
+            message = "Field cannot be empty.";
+            $('#txtRemark').parent().addClass('is-invalid');
+            $('#txtRemark').parent().parent().find('.invalid-feedback').text(message);
+        }
+
+        if (cont) {
+
+            var formData = new FormData();
+            formData.append('REMARK', getEditorContent());
+
+            $.ajax({
+                url: '/MM_Sample/ExecuteSubmission',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    if (!response.error) {
+                        toastMessage("Data save successfully", 'success');
+                    } else {
+                        loadings(false);
+                        toastMessage(response.msg, 'error');
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 400) {
+                        location.href = system_logout_url;
+                    } else {
+                        toastMessage("Error occured", 'error');
+                    }
+                }
+            });
+
+        } else {
+            if(message != ""){
+                toastMessage(message, 'error');
+            }
+        }
+    }
+
+</script>
