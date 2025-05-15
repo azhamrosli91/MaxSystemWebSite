@@ -77,6 +77,11 @@ namespace MaxSystemWebSite.Helpers.Graph
             }
         }
 
+        public Task<(bool success, string message, string? base64Image)> GetUserList()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
