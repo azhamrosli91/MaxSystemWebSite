@@ -5,51 +5,61 @@
 }
 
 
+<div class="row g-0 tr-listing-header">
+    <!-- Title takes full width on mobile, half width on medium and larger screens -->
+    <div class="col-12 col-md-6 align-self-center mb-2">
+        <div class="row g-2 justify-content-start align-items-center">
+            <div class="col-md-auto">
+                <a href="/MM_Sample/Index" class="btn btn-sm btn-secondary" id="btnBack"><i class="fa-solid fa-chevron-left"></i></a>
+            </div>
+            <div class="col-md-auto">
+                <h4 class="text-muted m-0 tr-listing-header-title " id="lblHeaderTitle" name="lblHeader">@(Model.ID_MM_SAMPLE == 0 ? "New Sample" : "Sample Record ID: " + Model.ID_MM_SAMPLE)</h4>
+            </div>
+        </div>
+    </div>
+    <!-- Buttons take full width on mobile, half width on medium and larger screens -->
+    <div class="col-12 col-md-6 text-md-end align-self-center mb-2">
+        <div class="row g-2 justify-content-center justify-content-md-end" id="buttonContainer">
+            <div class="col-12 col-md-auto">
+                <button class="btn btn-sm btn-primary w-100" type="button" id="btnSubmit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <form id="mainForm" class="needs-validation" autocomplete="off" novalidate>
     <div class="col-md-12">
         <div class="row mb-2">
             <div class="col-md-12">
-
-                <label class="form-label">Test</label>
-                <select class="form-select" id="ddlTest" aria-label="Default select example" required>
-                    <option value="" selected="">Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
+                <label class="form-label">Title</label>
+                @Html.TextBoxFor(Model => Model.TITLE, new { @class = "form-control", id = "txtTitle", placeholder = "Please enter title...", maxlength = "50", required = true })
                 <div class="invalid-feedback"></div>
-
             </div>
         </div>
 
         <div class="row mb-2">
             <div class="col-md-12">
-
                 <label class="form-label">Remark</label>
                 <div class="tinymce-custom-inputarea form-control p-0">
-                    <textarea id="txtRemark">Hello, TinyMCE!</textarea>
+                    <textarea id="txtRemark">@Model.REMARK</textarea>
                 </div>
                 <div class="invalid-feedback"></div>
+            </div>
+        </div>
 
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="d-flex justify-content-end align-items-center border-0">
-                    <button class="btn btn-primary px-4" type="button" id="btnSubmit">Submit</button>
-                </div>
-            </div>
-        </div>
     </div>
 </form>
 
 
 <script>
+    var headerID = @Model.ID_MM_SAMPLE;
+
     $(document).ready(function(){
         tinymce.init({
             selector: '#txtRemark',
             skin: 'oxide',
-            height: 300,
+            height: 400,
             menubar: false,
             plugins: 'lists link image preview table',
             toolbar: 'undo redo | formatselect fontsizeselect | bold italic underline forecolor backcolor | bullist numlist | table | link image | preview',
@@ -92,7 +102,7 @@
         var cont = true;
         var message = "";
 
-        $('#mainForm.needs-validation').addClass('was-validated');
+        //$('#mainForm.needs-validation').addClass('was-validated');
         $('#mainForm .is-invalid').removeClass('is-invalid');
 
         $('#mainForm [required]').each(function () {
@@ -114,7 +124,9 @@
         if (cont) {
 
             var formData = new FormData();
-            formData.append('REMARK', getEditorContent());
+            formData.append('ID_MM_SAMPLE', headerID);
+            formData.append('TITLE', $('#txtTitle').val().trim());
+            formData.append('REMARK', getEditorContent('txtRemark'));
 
             $.ajax({
                 url: '/MM_Sample/ExecuteSubmission',
@@ -128,6 +140,9 @@
                 success: function (response) {
                     if (!response.error) {
                         toastMessage("Data save successfully", 'success');
+                         setTimeout(function (e) {
+                            window.location.href = '/MM_Sample/Index';
+                        }, 1000);
                     } else {
                         loadings(false);
                         toastMessage(response.msg, 'error');
