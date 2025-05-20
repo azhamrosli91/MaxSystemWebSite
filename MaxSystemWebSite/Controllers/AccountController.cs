@@ -111,6 +111,15 @@ namespace MaxSys.Controllers
             Response.Cookies.Append("NAME", employee.emp.NAME, cookieOptions);
             Response.Cookies.Append("AUTH_TYPE", "OPENID", cookieOptions);
 
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,  // Set to true for production with HTTPS
+                Expires = DateTime.UtcNow.AddYears(30),
+                Path = "/",  // Makes the cookie accessible across the entire app
+                SameSite = SameSiteMode.Strict  // Prevents the cookie from being sent in cross-site requests
+            });
+
             // Trigger the OpenID Connect authentication process and pass the return URL
             return RedirectToAction("Index", "MM_UserProfile");
         }

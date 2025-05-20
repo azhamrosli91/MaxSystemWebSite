@@ -899,6 +899,73 @@ namespace MaxSystemWebSite.Helpers.Graph
                 return (false, $"failed {ex.Message}");
             }
         }
+        public async Task<(bool success, string message)> SendComposeEmailAsync(Emai_TemplateSent model)
+        {
+            try
+            {
+                // Ensure client isn't null
+                _ = _appClient ??
+                    throw new NullReferenceException("Graph has not been initialized for app auth");
+
+                if (model == null)
+                {
+                    return (false, "Graph has not been initialized for app auth");
+                }
+
+                // Create the email message
+                var message = new Message
+                {
+                    Subject = model.Subject,
+                    Body = new ItemBody
+                    {
+                        ContentType = BodyType.Html,
+                        Content = model.bodyContent
+                    },
+                    ToRecipients = model.Recipient ?? new List<Recipient>(),
+                    CcRecipients = model.CC ?? new List<Recipient>(),
+                    BccRecipients = model.BCC ?? new List<Recipient>(),
+                    Attachments = new List<Attachment>()
+                };
+
+                // Add attachments if any
+                if (model.Attachments != null && model.Attachments.Any())
+                {
+                    foreach (var file in model.Attachments)
+                    {
+                        var fileAttachment = new FileAttachment
+                        {
+                            OdataType = "#microsoft.graph.fileAttachment",
+                            Name = file.FileName,
+                            ContentBytes = file.FileContent,
+                            ContentType = file.ContentType
+                        };
+
+                        message.Attachments.Add(fileAttachment);
+                    }
+                }
+
+                // Create the request body
+                var requestBody = new SendMailPostRequestBody
+                {
+                    Message = message,
+                    SaveToSentItems = false
+                };
+
+                // Send the email
+                if (model.Setting_Setup != null && !string.IsNullOrEmpty(model.Setting_Setup.SMTP_ACCOUNT))
+                {
+                    await _appClient.Users[model.Setting_Setup.SMTP_ACCOUNT].SendMail.PostAsync(requestBody);
+                    return (true, "ok");
+                }
+
+                return (false, "setting setup not found");
+            }
+            catch (Exception ex)
+            {
+                // Log ex.Message if needed
+                return (false, $"failed {ex.Message}");
+            }
+        }
         #endregion
 
     }

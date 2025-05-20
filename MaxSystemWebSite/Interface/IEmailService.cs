@@ -35,5 +35,6 @@ namespace MaxSys.Interface
         Task<(bool success, string message, List<EmailContent_Response>? data)> GetEmailBodyContentByMessageID(string userID, string messageId);
         Task<(bool success, string message, EmailContent_Response? data)> GetEmailBodyContentByV1MessageID(string userID, string messageId);
         Task<(bool success, string message)> SendEmailAsync(Emai_TemplateSent model);
+        Task<(bool success, string message)> SendComposeEmailAsync(Emai_TemplateSent model);
     }
 }

@@ -6,6 +6,7 @@ namespace MaxSystemWebSite.Models.EMAIL
     {
         public string? Id { get; set; }
         public List<Attachment>? Attachments { get; set; }
+        public List<AttachmentDto>? AttachmentDto { get; set; }
         public List<Recipient>? BccRecipients { get; set; }
         public string? Content { get; set; }
         public BodyType? ContentType { get; set; }
@@ -21,5 +22,11 @@ namespace MaxSystemWebSite.Models.EMAIL
         public DateTimeOffset? SentDateTime { get; set; }
         public string? Subject { get; set; }
         public List<Recipient>? ToRecipients { get; set; }
+    }
+    public class AttachmentDto
+    {
+        public string Name { get; set; }
+        public string ContentType { get; set; }
+        public string ContentBytes { get; set; } // base64 string
     }
 }
