@@ -253,13 +253,13 @@ Server=YOUR_SERVER;Database=YOUR_DB;User Id=YOUR_USER;Password=YOUR_PASSWORD;”
 Maria will pause and not execute any command until the connection string is received.
 
 🔹 MCP ACTION STRUCTURE (REVISED)
-Action Name	Requires connection_string?	Description
-DB_QUERY_EXECUTE	✅ Yes	Executes a SELECT query or procedure call
-DB_INSERT_UPDATE	✅ Yes	Calls a stored procedure for insert/update
-GET_MODEL	✅ Yes	Reads structure for model generation
-INFER_STRUCTURE	❌ No	Converts JSON to SQL model (offline, no DB needed)
-SEND_EMAIL	❌ No	Sends email (SMTP settings required)
-EXPORT_EXCEL	❌ No	Generates downloadable Excel from JSON data
+Action Name		Requires connection_string?	Description
+DB_QUERY_EXECUTE	✅ Yes				Executes a SELECT query or procedure call
+DB_INSERT_UPDATE	✅ Yes				Calls a stored procedure for insert/update
+GET_MODEL		✅ Yes				Reads structure for model generation
+INFER_STRUCTURE		❌ No				Converts JSON to SQL model (offline, no DB needed)
+SEND_EMAIL		❌ No				Sends email (SMTP settings required)
+EXPORT_EXCEL		❌ No				Generates downloadable Excel from JSON data
 
 🔐 AI CONNECTION FLOW (MANDATORY BEFORE EXECUTION)
 Check if connection_string is present
