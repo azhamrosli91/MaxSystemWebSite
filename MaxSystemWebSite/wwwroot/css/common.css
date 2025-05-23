@@ -106,10 +106,6 @@
     border-bottom-left-radius: 0;
 }
 
-.disabled {
-    background-color: #F0F0F0 !important;
-}
-
 
 /** -------------------------------------------------
     GENERAL TABLE WRAPPER
@@ -378,9 +374,16 @@
     CUSTOM TINYMCE EDITOR BOX
 ----------------------------------------------------- **/
 .tinymce-custom-inputarea {
-    border: 1px solid var(--phoenix-border-color);
     border-radius: 7px;
+    border-color: transparent;
 }
+    .tinymce-custom-inputarea .tox .tox-editor-header {
+        border: 1px solid var(--phoenix-border-color);
+        margin-bottom: 0;
+        border-bottom: none;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
     .tinymce-custom-inputarea .tox .tox-toolbar__group:first-child {
         padding: 0 11px 0 12px !important;
     }
@@ -400,11 +403,6 @@
 
 .dt-custom-ms div.dataTables_scrollBody {
     border-left: 0px !important;
-}
-
-.dt-custom-ms .dataTables_length label {
-    font-size: 16px;
-    color: #54575A !important;
 }
 
 .dt-custom-ms table.border-secondary {
@@ -428,19 +426,6 @@
     border-top-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     border-bottom-right-radius: 0px !important;
-}
-
-.dt-custom-ms .dataTables_paginate .pagination * {
-    font-size: 16px;
-}
-
-.dt-custom-ms .dataTables_info {
-    font-size: 16px;
-}
-
-.dt-custom-ms .go-to * {
-    font-size: 16px;
-    color: #54575A !important;
 }
 
 .dt-custom-ms table.dataTable th {

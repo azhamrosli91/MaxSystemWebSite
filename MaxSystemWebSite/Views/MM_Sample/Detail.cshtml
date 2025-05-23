@@ -5,23 +5,25 @@
 }
 
 
-<div class="row g-0 tr-listing-header">
-    <!-- Title takes full width on mobile, half width on medium and larger screens -->
-    <div class="col-12 col-md-6 align-self-center mb-2">
-        <div class="row g-2 justify-content-start align-items-center">
-            <div class="col-md-auto">
-                <a href="/MM_Sample/Index" class="btn btn-sm btn-secondary" id="btnBack"><i class="fa-solid fa-chevron-left"></i></a>
-            </div>
-            <div class="col-md-auto">
-                <h4 class="text-muted m-0 tr-listing-header-title " id="lblHeaderTitle" name="lblHeader">@(Model.ID_MM_SAMPLE == 0 ? "New Sample" : "Sample Record ID: " + Model.ID_MM_SAMPLE)</h4>
+<div class="widgets-scrollspy-nav mt-n5 bg-body-emphasis z-5 mx-n4 mx-lg-n6 border-bottom p-2">
+    <div class="row g-0 tr-listing-header">
+        <!-- Title takes full width on mobile, half width on medium and larger screens -->
+        <div class="col-12 col-sm-6 align-self-center">
+            <div class="row g-0 justify-content-start align-items-center mb-2 mb-sm-0">
+                <div class="col-auto">
+                    <a href="/MM_Sample/Index" class="btn btn-sm btn-secondary me-2" id="btnBack"><i class="fa-solid fa-chevron-left"></i></a>
+                </div>
+                <div class="col-auto">
+                    <h7 class="text-muted m-0 tr-listing-header-title fw-bold fs-sm-8" id="lblHeaderTitle" name="lblHeader">@(Model.ID_MM_SAMPLE == 0 ? "New Sample" : "Sample Record ID: " + Model.ID_MM_SAMPLE)</h7>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- Buttons take full width on mobile, half width on medium and larger screens -->
-    <div class="col-12 col-md-6 text-md-end align-self-center mb-2">
-        <div class="row g-2 justify-content-center justify-content-md-end" id="buttonContainer">
-            <div class="col-12 col-md-auto">
-                <button class="btn btn-sm btn-primary w-100" type="button" id="btnSubmit">Submit</button>
+        <!-- Buttons take full width on mobile, half width on medium and larger screens -->
+        <div class="col-12 col-sm-6 text-md-end align-self-center">
+            <div class="row g-0 justify-content-center justify-content-sm-end mb-0" id="buttonContainer">
+                <div class="col-12 col-sm-auto">
+                    <button class="btn btn-sm btn-primary w-100" type="button" id="btnSubmit">Submit</button>
+                </div>
             </div>
         </div>
     </div>
