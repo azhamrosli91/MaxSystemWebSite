@@ -184,13 +184,18 @@
 </style>
 
 <div class="bodydata">
-    <div class="p-3">
-       
+    <div class="bodydata">
+        <div class="p-3">
+            <!-- Bot/User messages go here -->
+            <!-- 👇 Loading Spinner -->
+        </div>
     </div>
+
 </div>
 <button id="scrollToBottomBtn" class="scroll-to-bottom">
     <i class="fa-solid fa-arrow-down"></i>
 </button>
+
 <footer class="footer position-absolute">
     <div class="row g-0 justify-content-between align-items-center h-100">
         <div class="card-footer">
@@ -410,19 +415,31 @@
             $btn.prop('disabled', true).html('Sending...');
 
             // Append user message (blue bubble)
-            const userMsg = `<div class="chat-message user">${messageContent}</div>`;
+               const userMsg = `
+    <div class="chat-message user d-flex justify-content-start align-items-center" style="flex-wrap: nowrap;">
+      <div id="chat-loading" class="chatloading me-2 flex-shrink-0">
+        <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+      </div>
+      <div class="text-start" style="word-break: break-word; white-space: normal;">
+        ${messageContent}
+      </div>
+    </div>`;
+
+
+
+
             $('.bodydata .p-3').append(userMsg);
 
             // Prepare bot message container (append early)
             const botMsgContainer = `<div class="chat-message bot"><div class="bot-stream"></div></div>`;
             $('.bodydata .p-3').append(botMsgContainer);
             const $botStream = $('.bot-stream').last();
-
+            $('#chat-loading').show(); // ⏳ Show spinner
             $('.chat-textarea').html(''); // Clear input
             $('html, body').animate({ scrollTop: $(document).height() }, 300); // Optional scroll
 
             const requestData = {
-                theadID: getOrCreateThreadId(),
+                theadID: null,
                 userName: username,
                 dateTime: new Date().toISOString(),
                 messages: [
@@ -444,8 +461,7 @@
                     reader.read().then(({ done, value }) => {
                         if (done) {
                             $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
-
-                            // Append horizontal line after complete bot response
+                            $('.chatloading').remove(); // ✅ Remove loading spinner inside user bubble
                             $('.bodydata .p-3').append('<hr class="my-3 border-secondary" />');
 
                             return;
@@ -460,11 +476,12 @@
                 }
 
                 read();
-            }).catch(err => {
-                console.error("Stream error:", err);
-                alert("Failed to send message.");
-                $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
-            });
+                }).catch(err => {
+        console.error("Stream error:", err);
+        alert("Failed to send message.");
+        $('.chatloading').remove(); // ❌ Remove spinner if error
+        $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
+    });
         });
         function getOrCreateThreadId() {
             const storageKey = 'chat_thread_id';

@@ -41,217 +41,217 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
         }
         // Extract of updated SnippaiController with streaming + code-box rendering
         // Extract of updated SnippaiController with streaming + code-box rendering + MCP execution
-        [HttpPost]
-        public async Task Chatbot([FromBody] SnippaiChatRequest request)
-        {
-            Response.ContentType = "text/plain";
-            Response.Headers.Add("Cache-Control", "no-cache");
-            Response.Headers.Add("X-Accel-Buffering", "no");
+        //[HttpPost]
+        //public async Task Chatbot([FromBody] SnippaiChatRequest request)
+        //{
+        //    Response.ContentType = "text/plain";
+        //    Response.Headers.Add("Cache-Control", "no-cache");
+        //    Response.Headers.Add("X-Accel-Buffering", "no");
 
-            string apiKey = _configuration["ChatGPT:SecretKey"];
-            string assistantId = _configuration["ChatGPT:AssistantId"];
-            string threadId = request.TheadID;
+        //    string apiKey = _configuration["ChatGPT:SecretKey"];
+        //    string assistantId = _configuration["ChatGPT:AssistantId"];
+        //    string threadId = request.TheadID;
 
-            // Step 1: Try from cookie
-            if (string.IsNullOrWhiteSpace(threadId) && Request.Cookies.ContainsKey("chat_thread_id"))
-            {
-                threadId = Request.Cookies["chat_thread_id"];
-            }
+        //    // Step 1: Try from cookie
+        //    if (string.IsNullOrWhiteSpace(threadId) && Request.Cookies.ContainsKey("chat_thread_id"))
+        //    {
+        //        threadId = Request.Cookies["chat_thread_id"];
+        //    }
 
-            // Step 2: If still null or empty, create new thread and store in cookie
-            if (string.IsNullOrWhiteSpace(threadId))
-            {
-                threadId = await CreateNewThread(apiKey);
+        //    // Step 2: If still null or empty, create new thread and store in cookie
+        //    if (string.IsNullOrWhiteSpace(threadId))
+        //    {
+        //        threadId = await CreateNewThread(apiKey);
 
-                // Set cookie to expire in 7 days
-                Response.Cookies.Append("chat_thread_id", threadId, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTimeOffset.UtcNow.AddDays(7)
-                });
-            }
+        //        // Set cookie to expire in 7 days
+        //        Response.Cookies.Append("chat_thread_id", threadId, new CookieOptions
+        //        {
+        //            HttpOnly = true,
+        //            Secure = true,
+        //            SameSite = SameSiteMode.Lax,
+        //            Expires = DateTimeOffset.UtcNow.AddDays(7)
+        //        });
+        //    }
 
-            string userMessage = request.Messages.LastOrDefault()?.content?.Trim();
-            if (string.IsNullOrWhiteSpace(userMessage))
-            {
-                await Response.WriteAsync("\u274C No user message found.");
-                await Response.Body.FlushAsync();
-                return;
-            }
+        //    string userMessage = request.Messages.LastOrDefault()?.content?.Trim();
+        //    if (string.IsNullOrWhiteSpace(userMessage))
+        //    {
+        //        await Response.WriteAsync("\u274C No user message found.");
+        //        await Response.Body.FlushAsync();
+        //        return;
+        //    }
 
-            await PostUserMessageToThread(threadId, userMessage, apiKey);
-            string runId = await TriggerRun(threadId, assistantId, apiKey);
+        //    await PostUserMessageToThread(threadId, userMessage, apiKey);
+        //    string runId = await TriggerRun(threadId, assistantId, apiKey);
 
-            var client = CreateHttpClientWithProxy(apiKey);
-            //while (true)
-            //{
-            //    var response = await client.GetAsync($"https://api.openai.com/v1/threads/{threadId}/runs/{runId}");
-            //    var json = await response.Content.ReadAsStringAsync();
-            //    dynamic result = JsonConvert.DeserializeObject(json);
-            //    string status = result.status;
+        //    var client = CreateHttpClientWithProxy(apiKey);
+        //    while (true)
+        //    {
+        //        var response = await client.GetAsync($"https://api.openai.com/v1/threads/{threadId}/runs/{runId}");
+        //        var json = await response.Content.ReadAsStringAsync();
+        //        dynamic result = JsonConvert.DeserializeObject(json);
+        //        string status = result.status;
 
-            //    if (status == "completed") break;
-            //    if (status == "failed" || status == "cancelled")
-            //    {
-            //        await Response.WriteAsync($"\u274C Assistant run ended with status: {status}");
-            //        await Response.Body.FlushAsync();
-            //        return;
-            //    }
+        //        if (status == "completed") break;
+        //        if (status == "failed" || status == "cancelled")
+        //        {
+        //            await Response.WriteAsync($"\u274C Assistant run ended with status: {status}");
+        //            await Response.Body.FlushAsync();
+        //            return;
+        //        }
 
-            //    await Task.Delay(1000);
-            //}
+        //        await Task.Delay(1000);
+        //    }
 
-            var streamResponse = await client.GetAsync($"https://api.openai.com/v1/threads/{threadId}/messages", HttpCompletionOption.ResponseHeadersRead);
-            var streamJson = await streamResponse.Content.ReadAsStringAsync();
-            dynamic messageList = JsonConvert.DeserializeObject(streamJson);
+        //    var streamResponse = await client.GetAsync($"https://api.openai.com/v1/threads/{threadId}/messages", HttpCompletionOption.ResponseHeadersRead);
+        //    var streamJson = await streamResponse.Content.ReadAsStringAsync();
+        //    dynamic messageList = JsonConvert.DeserializeObject(streamJson);
 
-            string lastContent = "";
-            foreach (var message in messageList.data)
-            {
-                if ((string)message.role == "assistant")
-                {
-                    lastContent = message.content[0].text.value;
-                    break;
-                }
-            }
+        //    string lastContent = "";
+        //    foreach (var message in messageList.data)
+        //    {
+        //        if ((string)message.role == "assistant")
+        //        {
+        //            lastContent = message.content[0].text.value;
+        //            break;
+        //        }
+        //    }
 
 
-            if (!string.IsNullOrWhiteSpace(lastContent))
-            {
-                bool insideCode = false;
-                string codeLang = "plaintext";
-                var codeBuilder = new StringBuilder();
-                var lines = lastContent.Split("\n");
-                foreach (var line in lines)
-                {
-                    if (line.TrimStart().StartsWith("```"))
-                    {
-                        if (!insideCode)
-                        {
-                            codeLang = line.Trim().Length > 3 ? line.Trim().Substring(3) : "plaintext";
-                            insideCode = true;
-                            await Response.WriteAsync($"<div class=\"code-box\"><div class=\"code-box-header\"><div class=\"title\">{codeLang}</div><div class=\"buttons\"><button class=\"btn-copy\">Copy</button></div></div><pre><code class=\"language-{codeLang}\">");
-                        }
-                        else
-                        {
-                            insideCode = false;
-                            await Response.WriteAsync(WebUtility.HtmlEncode(codeBuilder.ToString()));
-                            await Response.WriteAsync("</code></pre></div>");
-                            codeBuilder.Clear();
-                        }
-                        continue;
-                    }
+        //    if (!string.IsNullOrWhiteSpace(lastContent))
+        //    {
+        //        bool insideCode = false;
+        //        string codeLang = "plaintext";
+        //        var codeBuilder = new StringBuilder();
+        //        var lines = lastContent.Split("\n");
+        //        foreach (var line in lines)
+        //        {
+        //            if (line.TrimStart().StartsWith("```"))
+        //            {
+        //                if (!insideCode)
+        //                {
+        //                    codeLang = line.Trim().Length > 3 ? line.Trim().Substring(3) : "plaintext";
+        //                    insideCode = true;
+        //                    await Response.WriteAsync($"<div class=\"code-box\"><div class=\"code-box-header\"><div class=\"title\">{codeLang}</div><div class=\"buttons\"><button class=\"btn-copy\">Copy</button></div></div><pre><code class=\"language-{codeLang}\">");
+        //                }
+        //                else
+        //                {
+        //                    insideCode = false;
+        //                    await Response.WriteAsync(WebUtility.HtmlEncode(codeBuilder.ToString()));
+        //                    await Response.WriteAsync("</code></pre></div>");
+        //                    codeBuilder.Clear();
+        //                }
+        //                continue;
+        //            }
 
-                    if (insideCode)
-                        codeBuilder.AppendLine(line);
-                    else
-                    {
-                        await Response.WriteAsync(WebUtility.HtmlEncode(line) + "<br/>");
-                    }
-                    await Response.Body.FlushAsync();
-                }
+        //            if (insideCode)
+        //                codeBuilder.AppendLine(line);
+        //            else
+        //            {
+        //                await Response.WriteAsync(WebUtility.HtmlEncode(line) + "<br/>");
+        //            }
+        //            await Response.Body.FlushAsync();
+        //        }
 
-                // === MCP Execution from Assistant Response ===
-                if (lastContent.Trim().StartsWith("{"))
-                {
-                    try
-                    {
-                        dynamic mcp = JsonConvert.DeserializeObject(lastContent);
-                        string action = mcp?.action;
-                        string connStrRaw = mcp?.connection_string;
-                        string connStr = ExtractConnectionStringFromHtml(connStrRaw);
+        //        // === MCP Execution from Assistant Response ===
+        //        if (lastContent.Trim().StartsWith("{"))
+        //        {
+        //            try
+        //            {
+        //                dynamic mcp = JsonConvert.DeserializeObject(lastContent);
+        //                string action = mcp?.action;
+        //                string connStrRaw = mcp?.connection_string;
+        //                string connStr = ExtractConnectionStringFromHtml(connStrRaw);
 
-                        if (string.IsNullOrWhiteSpace(action))
-                        {
-                            await Response.WriteAsync("❌ Missing `action` in MCP payload.");
-                            await Response.Body.FlushAsync();
-                            return;
-                        }
+        //                if (string.IsNullOrWhiteSpace(action))
+        //                {
+        //                    await Response.WriteAsync("❌ Missing `action` in MCP payload.");
+        //                    await Response.Body.FlushAsync();
+        //                    return;
+        //                }
 
-                        if (string.IsNullOrWhiteSpace(connStr))
-                        {
-                            await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string`.");
-                            await Response.Body.FlushAsync();
-                            return;
-                        }
+        //                if (string.IsNullOrWhiteSpace(connStr))
+        //                {
+        //                    await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string`.");
+        //                    await Response.Body.FlushAsync();
+        //                    return;
+        //                }
 
-                        using var connection = new SqlConnection(connStr);
-                        await connection.OpenAsync();
+        //                using var connection = new SqlConnection(connStr);
+        //                await connection.OpenAsync();
 
-                        if (action == "DB_QUERY_EXECUTE")
-                        {
-                            string sql = mcp.sql;
-                            var result = await connection.QueryAsync(sql);
-                            var rows = result.ToList();
-                            if (rows.Count == 0)
-                            {
-                                await Response.WriteAsync("<p><i>No data returned.</i></p>");
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
+        //                if (action == "DB_QUERY_EXECUTE")
+        //                {
+        //                    string sql = mcp.sql;
+        //                    var result = await connection.QueryAsync(sql);
+        //                    var rows = result.ToList();
+        //                    if (rows.Count == 0)
+        //                    {
+        //                        await Response.WriteAsync("<p><i>No data returned.</i></p>");
+        //                        await Response.Body.FlushAsync();
+        //                        return;
+        //                    }
 
-                            var html = new StringBuilder();
-                            html.Append(@"<div class='code-box'><div class='code-box-header'><div class='title'>table</div><div class='buttons'><button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button></div></div><div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'><table class='table table-bordered table-sm mb-0'><thead class='table-light'><tr>");
+        //                    var html = new StringBuilder();
+        //                    html.Append(@"<div class='code-box'><div class='code-box-header'><div class='title'>table</div><div class='buttons'><button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button></div></div><div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'><table class='table table-bordered table-sm mb-0'><thead class='table-light'><tr>");
 
-                            foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
-                            {
-                                html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
-                            }
-                            html.Append("</tr></thead><tbody>");
+        //                    foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
+        //                    {
+        //                        html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
+        //                    }
+        //                    html.Append("</tr></thead><tbody>");
 
-                            foreach (var row in rows)
-                            {
-                                html.Append("<tr>");
-                                foreach (var val in (IDictionary<string, object>)row)
-                                {
-                                    html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
-                                }
-                                html.Append("</tr>");
-                            }
+        //                    foreach (var row in rows)
+        //                    {
+        //                        html.Append("<tr>");
+        //                        foreach (var val in (IDictionary<string, object>)row)
+        //                        {
+        //                            html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
+        //                        }
+        //                        html.Append("</tr>");
+        //                    }
 
-                            html.Append(@"</tbody></table></div></div>");
-                            await Response.WriteAsync(html.ToString());
-                            await Response.Body.FlushAsync();
-                            return;
-                        }
+        //                    html.Append(@"</tbody></table></div></div>");
+        //                    await Response.WriteAsync(html.ToString());
+        //                    await Response.Body.FlushAsync();
+        //                    return;
+        //                }
 
-                        if (action == "DB_INSERT_UPDATE")
-                        {
-                            string spName = mcp.sp_name;
-                            var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
-                            var parameters = new DynamicParameters();
-                            foreach (var pair in paramDict)
-                            {
-                                parameters.Add(pair.Key, pair.Value);
-                            }
-                            var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-                            string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-                            await Response.WriteAsync($"<div class='code-box'><div class='code-box-header'><div class='title'>json</div><div class='buttons'><button class='btn-copy'>Copy</button></div></div><pre><code class='language-json'>{WebUtility.HtmlEncode(json)}</code></pre></div>");
-                            await Response.Body.FlushAsync();
-                            return;
-                        }
+        //                if (action == "DB_INSERT_UPDATE")
+        //                {
+        //                    string spName = mcp.sp_name;
+        //                    var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+        //                    var parameters = new DynamicParameters();
+        //                    foreach (var pair in paramDict)
+        //                    {
+        //                        parameters.Add(pair.Key, pair.Value);
+        //                    }
+        //                    var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+        //                    string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+        //                    await Response.WriteAsync($"<div class='code-box'><div class='code-box-header'><div class='title'>json</div><div class='buttons'><button class='btn-copy'>Copy</button></div></div><pre><code class='language-json'>{WebUtility.HtmlEncode(json)}</code></pre></div>");
+        //                    await Response.Body.FlushAsync();
+        //                    return;
+        //                }
 
-                        await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                await Response.WriteAsync("⚠️ No assistant reply found.");
-            }
+        //                await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
+        //                await Response.Body.FlushAsync();
+        //                return;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
+        //                await Response.Body.FlushAsync();
+        //                return;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        await Response.WriteAsync("⚠️ No assistant reply found.");
+        //    }
 
-            await Response.Body.FlushAsync();
-        }
+        //    await Response.Body.FlushAsync();
+        //}
 
         private HttpClient CreateHttpClientWithProxy(string apiKey)
         {
@@ -290,9 +290,6 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
 
             return client;
         }
-
-
-
         private async Task<string> CreateNewThread(string apiKey)
         {
             var client = CreateHttpClientWithProxy(apiKey);
@@ -364,372 +361,450 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             return "⚠️ No assistant reply found.";
         }
 
-        //        [HttpPost]
-        //        public async Task Chatbot([FromBody] SnippaiChatRequest request)
-        //        {
-        //            Response.ContentType = "text/plain";
-        //            Response.Headers.Add("Cache-Control", "no-cache");
-        //            Response.Headers.Add("X-Accel-Buffering", "no"); // for nginx streaming
+        [HttpPost]
+        public async Task Chatbot([FromBody] SnippaiChatRequest request)
+        {
+            Response.ContentType = "text/plain";
+            Response.Headers.Add("Cache-Control", "no-cache");
+            Response.Headers.Add("X-Accel-Buffering", "no"); // for nginx streaming
 
-        //            string apiKey = _configuration["ChatGPT:SecretKey"];
-        //            string modelType = "gpt-4.1-mini";
-        //            double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
+            string apiKey = _configuration["ChatGPT:SecretKey"];
+            string modelType = "gpt-4.1-mini";
+            double temperature = double.TryParse(_configuration["ChatGPT:Temperature"], out var value) ? value : 0.7;
 
-        //            string promptPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Template", "SnippaiPrompt.txt");
-        //            string systemPrompt = System.IO.File.Exists(promptPath)
-        //                ? await System.IO.File.ReadAllTextAsync(promptPath)
-        //                : "You are a helpful assistant.";
+            string promptPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Template", "SnippaiPrompt.txt");
+            string systemPrompt = System.IO.File.Exists(promptPath)
+                ? await System.IO.File.ReadAllTextAsync(promptPath)
+                : "You are a helpful assistant.";
 
-        //            string threadId = request.TheadID ?? Guid.NewGuid().ToString();
+            //string threadId = request.TheadID ?? Guid.NewGuid().ToString();
+            string threadId = request.TheadID;
 
-        //            if (!_threadMessages.ContainsKey(threadId))
-        //            {
-        //                _threadMessages[threadId] = new List<MessageChatBot>
-        //        {
-        //            new MessageChatBot("system", systemPrompt)
-        //        };
-        //            }
+            // Step 1: Try from cookie
+            if (string.IsNullOrWhiteSpace(threadId) && Request.Cookies.ContainsKey("chat_thread_id"))
+            {
+                threadId = Request.Cookies["chat_thread_id"];
+            }
 
-        //            _threadMessages[threadId].AddRange(request.Messages);
+            // Step 2: If still null or empty, create new thread and store in cookie
+            if (string.IsNullOrWhiteSpace(threadId))
+            {
+                threadId = await CreateNewThread(apiKey);
 
-        //            // === MCP Instruction Execution ===
-        //            var latestMessage = request.Messages.LastOrDefault()?.content?.Trim();
-        //            if (!string.IsNullOrWhiteSpace(latestMessage) && latestMessage.StartsWith("{"))
-        //            {
-        //                try
-        //                {
-        //                    dynamic mcp = JsonConvert.DeserializeObject(latestMessage);
-        //                    string action = mcp?.action;
-        //                    //string connStr = mcp?.connection_string;
-        //                    string connStrRaw = mcp?.connection_string;
-        //                    string connStr = ExtractConnectionStringFromHtml(connStrRaw);
+                // Set cookie to expire in 7 days
+                Response.Cookies.Append("chat_thread_id", threadId, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+            }
+            if (!_threadMessages.ContainsKey(threadId))
+            {
+                _threadMessages[threadId] = new List<MessageChatBot>
+                {
+                    new MessageChatBot("system", systemPrompt)
+                };
+            }
 
-        //                    if (string.IsNullOrWhiteSpace(action))
-        //                    {
-        //                        await Response.WriteAsync("❌ Missing `action` in MCP payload.");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
+            _threadMessages[threadId].AddRange(request.Messages);
 
-        //                    if (string.IsNullOrWhiteSpace(connStr))
-        //                    {
-        //                        await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string` before executing.");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
+            // === MCP Instruction Execution ===
+            var latestMessage = request.Messages.LastOrDefault()?.content?.Trim();
+            if (!string.IsNullOrWhiteSpace(latestMessage) && latestMessage.StartsWith("{"))
+            {
+                try
+                {
+                    dynamic mcp = JsonConvert.DeserializeObject(latestMessage);
+                    string action = mcp?.action;
+                    //string connStr = mcp?.connection_string;
+                    string connStrRaw = mcp?.connection_string;
+                    string connStr = ExtractConnectionStringFromHtml(connStrRaw);
 
-        //                    using var connection = new SqlConnection(connStr);
-        //                    await connection.OpenAsync();
+                    if (string.IsNullOrWhiteSpace(action))
+                    {
+                        await Response.WriteAsync("❌ Missing `action` in MCP payload.");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
 
-        //                    if (action == "DB_QUERY_EXECUTE")
-        //                    {
-        //                        string sql = mcp.sql;
-        //                        var result = await connection.QueryAsync(sql);
-        //                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+                    if (string.IsNullOrWhiteSpace(connStr))
+                    {
+                        await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string` before executing.");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
 
+                    using var connection = new SqlConnection(connStr);
+                    await connection.OpenAsync();
 
-
-        //                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
-
-        //                    if (action == "DB_INSERT_UPDATE")
-        //                    {
-        //                        string spName = mcp.sp_name;
-        //                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
-
-        //                        var parameters = new DynamicParameters();
-        //                        foreach (var pair in paramDict)
-        //                        {
-        //                            parameters.Add(pair.Key, pair.Value);
-        //                        }
-
-        //                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-
-        //                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-        //                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
-
-        //                    await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
-        //                    await Response.Body.FlushAsync();
-        //                    return;
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
-        //                    await Response.Body.FlushAsync();
-        //                    return;
-        //                }
-        //            }
-
-        //            // === Fallback: OpenAI ChatGPT Streaming ===
-        //            var body = new
-        //            {
-        //                model = modelType,
-        //                messages = _threadMessages[threadId],
-        //                temperature = temperature,
-        //                stream = true
-        //            };
-
-        //            string proxyAddr = _configuration["Proxy:Address"];
-        //            string proxyUser = _configuration["Proxy:Username"];
-        //            string proxyPass = _configuration["Proxy:Password"];
-
-        //            var handler = string.IsNullOrWhiteSpace(proxyAddr)
-        //                ? new HttpClientHandler()
-        //                : new HttpClientHandler
-        //                {
-        //                    Proxy = new WebProxy
-        //                    {
-        //                        Address = new Uri(proxyAddr),
-        //                        BypassProxyOnLocal = false,
-        //                        UseDefaultCredentials = false,
-        //                        Credentials = new NetworkCredential(proxyUser, proxyPass)
-        //                    },
-        //                    UseProxy = true
-        //                };
-
-        //            using var client = new HttpClient(handler);
-        //            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
-        //            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions")
-        //            {
-        //                Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")
-        //            };
-
-        //            var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-        //            using var stream = await response.Content.ReadAsStreamAsync();
-        //            using var reader = new StreamReader(stream);
-
-        //            var fullAssistantReply = new StringBuilder();
-        //            bool insideCodeBlock = false;
-        //            StringBuilder codeBuffer = new();
-        //            StringBuilder fullLineBuffer = new();
-        //            string currentLang = "plaintext";
-        //            string pendingBacktick = "";
-
-        //            while (!reader.EndOfStream)
-        //            {
-        //                var line = await reader.ReadLineAsync();
-        //                if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data: ")) continue;
-
-        //                var jsonLine = line.Substring("data: ".Length);
-        //                if (jsonLine == "[DONE]") break;
-
-        //                dynamic parsed = JsonConvert.DeserializeObject(jsonLine);
-        //                string content = parsed?.choices[0]?.delta?.content;
-        //                if (string.IsNullOrEmpty(content)) continue;
-
-        //                fullAssistantReply.Append(content);
-        //                fullLineBuffer.Append(content);
-        //                string combined = fullLineBuffer.ToString();
-
-        //                if (!insideCodeBlock)
-        //                {
-        //                    pendingBacktick += content;
-        //                    if (pendingBacktick.EndsWith("```"))
-        //                    {
-        //                        insideCodeBlock = true;
-        //                        codeBuffer.Clear();
-
-        //                        var afterBacktick = pendingBacktick.Length > 3 ? pendingBacktick.Substring(3).TrimStart() : "";
-        //                        var parts = afterBacktick.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-        //                        currentLang = parts.Length > 0 && parts[0].Length <= 15 && !parts[0].Contains(" ")
-        //                            ? parts[0].Trim().ToLower()
-        //                            : "plaintext";
-
-        //                        pendingBacktick = "";
-        //                        fullLineBuffer.Clear();
-        //                        continue;
-        //                    }
-        //                    else if (pendingBacktick.Length > 5)
-        //                    {
-        //                        await Response.WriteAsync(pendingBacktick);
-        //                        await Response.Body.FlushAsync();
-        //                        pendingBacktick = "";
-        //                    }
-        //                    continue;
-        //                }
-
-        //                if (insideCodeBlock)
-        //                {
-        //                    codeBuffer.Append(content);
-        //                    if (codeBuffer.ToString().EndsWith("```"))
-        //                    {
-        //                        var cleanCode = codeBuffer.ToString();
-        //                        cleanCode = cleanCode.Substring(0, cleanCode.Length - 3);
-
-        //                        await Response.WriteAsync($@"
-        //<div class=""code-box"">
-        //  <div class=""code-box-header"">
-        //    <div class=""title"">{currentLang}</div>
-        //    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
-        //  </div>
-        //  <pre><code class=""language-{currentLang}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
-        //</div>");
-        //                        await Response.Body.FlushAsync();
-
-        //                        codeBuffer.Clear();
-        //                        insideCodeBlock = false;
-        //                        fullLineBuffer.Clear();
-        //                        continue;
-        //                    }
-        //                    continue;
-        //                }
-
-        //                await Response.WriteAsync(content);
-        //                await Response.Body.FlushAsync();
-        //                fullLineBuffer.Clear();
-        //            }
-
-        //            _threadMessages[threadId].Add(new MessageChatBot("assistant", fullAssistantReply.ToString()));
-        //            try
-        //            {
-        //                var aiReplyText = fullAssistantReply.ToString().Trim();
-
-        //                if (aiReplyText.StartsWith("{"))
-        //                {
-        //                    dynamic mcp = JsonConvert.DeserializeObject(aiReplyText);
-        //                    string action = mcp?.action;
-        //                    string connStr = mcp?.connection_string;
-
-        //                    if (string.IsNullOrWhiteSpace(action))
-        //                    {
-        //                        await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
-
-        //                    if (string.IsNullOrWhiteSpace(connStr))
-        //                    {
-        //                        await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
-
-        //                    using var connection = new SqlConnection(connStr);
-        //                    await connection.OpenAsync();
-
-        //                    if (action == "DB_QUERY_EXECUTE")
-        //                    {
-        //                        string sql = mcp.sql;
-        //                        var result = await connection.QueryAsync(sql);
-        //                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-        //                        var rows = result.ToList();
-        //                        if (rows.Count == 0)
-        //                        {
-        //                            await Response.WriteAsync("<p><i>No data returned.</i></p>");
-        //                            await Response.Body.FlushAsync();
-        //                            return;
-        //                        }
-
-        //                        // Build HTML table
-        //                        var html = new StringBuilder();
-        //                        // Start code-box wrapper
-        //                        html.Append(@"
-        //                        <div class='code-box'>
-        //                          <div class='code-box-header'>
-        //                            <div class='title'>table</div>
-        //                            <div class='buttons'>
-        //                              <button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button>
-        //                            </div>
-        //                          </div>
-        //                          <div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'>
-        //                            <table class='table table-bordered table-sm mb-0'>
-        //                              <thead class='table-light'><tr>");
+                    if (action == "DB_QUERY_EXECUTE")
+                    {
+                        string sql = mcp.sql;
+                        var result = await connection.QueryAsync(sql);
+                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
 
 
 
-        //                        // Get headers from first row
-        //                        foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
-        //                        {
-        //                            html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
-        //                        }
-        //                        html.Append("</tr></thead><tbody>");
+                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
 
-        //                        foreach (var row in rows)
-        //                        {
-        //                            html.Append("<tr>");
-        //                            foreach (var val in (IDictionary<string, object>)row)
-        //                            {
-        //                                html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
-        //                            }
-        //                            html.Append("</tr>");
-        //                        }
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
 
-        //                        html.Append(@"
-        //                              </tbody>
-        //                            </table>
-        //                          </div>
-        //                        </div>
+                    if (action == "DB_INSERT_UPDATE")
+                    {
+                        string spName = mcp.sp_name;
+                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
 
-        //                        <script>
-        //                        function downloadExcel() {
-        //                            const payload = {
-        //                                filename: 'MCP_Result',
-        //                                data: " + JsonConvert.SerializeObject(rows) + @"
-        //                            };
+                        var parameters = new DynamicParameters();
+                        foreach (var pair in paramDict)
+                        {
+                            parameters.Add(pair.Key, pair.Value);
+                        }
 
-        //                            fetch('/Snippai/ExportExcel', {
-        //                                method: 'POST',
-        //                                headers: {
-        //                                    'Content-Type': 'application/json'
-        //                                },
-        //                                body: JSON.stringify(payload)
-        //                            })
-        //                            .then(resp => resp.blob())
-        //                            .then(blob => {
-        //                                const link = document.createElement('a');
-        //                                link.href = window.URL.createObjectURL(blob);
-        //                                link.download = payload.filename + '.xlsx';
-        //                                link.click();
-        //                            })
-        //                            .catch(err => alert('Export failed: ' + err));
-        //                        }
-        //                        </script>");
+                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+
+                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
+
+                    await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
+                    await Response.Body.FlushAsync();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
+                    await Response.Body.FlushAsync();
+                    return;
+                }
+            }
+
+            // === Fallback: OpenAI ChatGPT Streaming ===
+            var body = new
+            {
+                model = modelType,
+                messages = _threadMessages[threadId],
+                temperature = temperature,
+                stream = true
+            };
+
+            string proxyAddr = _configuration["Proxy:Address"];
+            string proxyUser = _configuration["Proxy:Username"];
+            string proxyPass = _configuration["Proxy:Password"];
+
+            var handler = string.IsNullOrWhiteSpace(proxyAddr)
+                ? new HttpClientHandler()
+                : new HttpClientHandler
+                {
+                    Proxy = new WebProxy
+                    {
+                        Address = new Uri(proxyAddr),
+                        BypassProxyOnLocal = false,
+                        UseDefaultCredentials = false,
+                        Credentials = new NetworkCredential(proxyUser, proxyPass)
+                    },
+                    UseProxy = true
+                };
+
+            using var client = new HttpClient(handler);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions")
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")
+            };
+
+            var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+            using var stream = await response.Content.ReadAsStreamAsync();
+            using var reader = new StreamReader(stream);
+
+            var fullAssistantReply = new StringBuilder();
+            bool insideCodeBlock = false;
+            StringBuilder codeBuffer = new();
+            StringBuilder fullLineBuffer = new();
+            string currentLang = "plaintext";
+            string pendingBacktick = "";
+
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data: ")) continue;
+
+                var jsonLine = line.Substring("data: ".Length);
+                if (jsonLine == "[DONE]") break;
+
+                dynamic parsed = JsonConvert.DeserializeObject(jsonLine);
+                string content = parsed?.choices[0]?.delta?.content;
+                if (string.IsNullOrEmpty(content)) continue;
+
+                fullAssistantReply.Append(content);
+                fullLineBuffer.Append(content);
+
+                string combined = fullLineBuffer.ToString();
+
+                if (!insideCodeBlock)
+                {
+                    pendingBacktick += content;
+
+                    if (pendingBacktick.EndsWith("`")) {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("``"))
+                    {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("```"))
+                    {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("```|"))
+                    {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("```||"))
+                    {
+                        continue;
+                    }
+
+                    if (pendingBacktick.EndsWith("```||>"))
+                    {
+                        continue;
+                    }
+
+                    if (pendingBacktick.EndsWith("```|| ["))
+                    {
+                        continue;
+                    }
 
 
-        //                        await Response.WriteAsync(html.ToString());
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
 
-        //                    if (action == "DB_INSERT_UPDATE")
-        //                    {
-        //                        string spName = mcp.sp_name;
-        //                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+                    var startIdx = pendingBacktick.ToString().Contains("```||>");
+                    if (startIdx == true)
+                    {
+                        insideCodeBlock = true;
+                        codeBuffer.Clear();
 
-        //                        var parameters = new DynamicParameters();
-        //                        foreach (var pair in paramDict)
-        //                        {
-        //                            parameters.Add(pair.Key, pair.Value);
-        //                        }
+                        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
+                        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                        currentLang =  "plaintext";
 
-        //                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-        //                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+                        pendingBacktick = "";
+                        fullLineBuffer.Clear();
+                        continue;
+                    }
 
-        //                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-        //                        await Response.Body.FlushAsync();
-        //                        return;
-        //                    }
+                    if (pendingBacktick.Length > 5)
+                    {
+                        await Response.WriteAsync(pendingBacktick);
+                        await Response.Body.FlushAsync();
+                        pendingBacktick = "";
+                    }
 
-        //                    await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
-        //                    await Response.Body.FlushAsync();
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                await Response.WriteAsync($"❌ MCP execution error from ChatGPT output: {WebUtility.HtmlEncode(ex.Message)}");
-        //                await Response.Body.FlushAsync();
-        //            }
+                    continue;
+                }
 
-        //        }
+                if (insideCodeBlock)
+                {
+                    codeBuffer.Append(content);
+
+                    if (codeBuffer.ToString().Contains("<||```"))
+                    {
+                        var cleanCode = codeBuffer.ToString();
+                        var endIndex = cleanCode.IndexOf("<||```", StringComparison.Ordinal);
+                        cleanCode = cleanCode.Substring(0, endIndex);
+
+                        // Match pattern ```||> [|lang|]
+                        var match = Regex.Match(fullAssistantReply.ToString(), @"```?\|\|>\s*\[\|(?<lang>[^\|\]]+)\|\]");
+                        if (match.Success)
+                        {
+                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
+                           
+                        }
+
+                        string codeBoxHtml = $@"
+<div class=""code-box"">
+  <div class=""code-box-header"">
+    <div class=""title"">{currentLang}</div>
+    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
+  </div>
+  <pre><code class=""language-{currentLang}"" id=""hl-streamed"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
+</div>
+<script>
+  setTimeout(() => {{
+    const codeBlock = document.getElementById('hl-streamed');
+    if (codeBlock) hljs.highlightElement(codeBlock);
+  }}, 100);
+</script>";
+
+                        await Response.Body.FlushAsync();
+
+
+                        codeBuffer.Clear();
+                        pendingBacktick = "";
+                        insideCodeBlock = false;
+                        fullLineBuffer.Clear();
+                        continue;
+                    }
+
+                    continue;
+                }
+
+                await Response.WriteAsync(content);
+                await Response.Body.FlushAsync();
+                fullLineBuffer.Clear();
+            }
+
+
+
+            _threadMessages[threadId].Add(new MessageChatBot("assistant", fullAssistantReply.ToString()));
+            try
+            {
+                var aiReplyText = fullAssistantReply.ToString().Trim();
+
+                if (aiReplyText.StartsWith("{"))
+                {
+                    dynamic mcp = JsonConvert.DeserializeObject(aiReplyText);
+                    string action = mcp?.action;
+                    string connStr = mcp?.connection_string;
+
+                    if (string.IsNullOrWhiteSpace(action))
+                    {
+                        await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(connStr))
+                    {
+                        await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
+
+                    using var connection = new SqlConnection(connStr);
+                    await connection.OpenAsync();
+
+                    if (action == "DB_QUERY_EXECUTE")
+                    {
+                        string sql = mcp.sql;
+                        var result = await connection.QueryAsync(sql);
+                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                        var rows = result.ToList();
+                        if (rows.Count == 0)
+                        {
+                            await Response.WriteAsync("<p><i>No data returned.</i></p>");
+                            await Response.Body.FlushAsync();
+                            return;
+                        }
+
+                        // Build HTML table
+                        var html = new StringBuilder();
+                        // Start code-box wrapper
+                        html.Append(@"
+                                <div class='code-box'>
+                                  <div class='code-box-header'>
+                                    <div class='title'>table</div>
+                                    <div class='buttons'>
+                                      <button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button>
+                                    </div>
+                                  </div>
+                                  <div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'>
+                                    <table class='table table-bordered table-sm mb-0'>
+                                      <thead class='table-light'><tr>");
+
+
+
+                        // Get headers from first row
+                        foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
+                        {
+                            html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
+                        }
+                        html.Append("</tr></thead><tbody>");
+
+                        foreach (var row in rows)
+                        {
+                            html.Append("<tr>");
+                            foreach (var val in (IDictionary<string, object>)row)
+                            {
+                                html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
+                            }
+                            html.Append("</tr>");
+                        }
+
+                        html.Append(@"
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+
+                                <script>
+                                function downloadExcel() {
+                                    const payload = {
+                                        filename: 'MCP_Result',
+                                        data: " + JsonConvert.SerializeObject(rows) + @"
+                                    };
+
+                                    fetch('/Snippai/ExportExcel', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(payload)
+                                    })
+                                    .then(resp => resp.blob())
+                                    .then(blob => {
+                                        const link = document.createElement('a');
+                                        link.href = window.URL.createObjectURL(blob);
+                                        link.download = payload.filename + '.xlsx';
+                                        link.click();
+                                    })
+                                    .catch(err => alert('Export failed: ' + err));
+                                }
+                                </script>");
+
+
+                        await Response.WriteAsync(html.ToString());
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
+
+                    if (action == "DB_INSERT_UPDATE")
+                    {
+                        string spName = mcp.sp_name;
+                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+
+                        var parameters = new DynamicParameters();
+                        foreach (var pair in paramDict)
+                        {
+                            parameters.Add(pair.Key, pair.Value);
+                        }
+
+                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                        await Response.Body.FlushAsync();
+                        return;
+                    }
+
+                    await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
+                    await Response.Body.FlushAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await Response.WriteAsync($"❌ MCP execution error from ChatGPT output: {WebUtility.HtmlEncode(ex.Message)}");
+                await Response.Body.FlushAsync();
+            }
+
+        }
         public static string ExtractConnectionStringFromHtml(string html)
         {
             if (string.IsNullOrWhiteSpace(html)) return "";

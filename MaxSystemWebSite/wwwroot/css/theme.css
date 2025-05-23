@@ -24011,11 +24011,12 @@ fieldset:disabled .table-list .page,
 /*                                    Height                                  */
 /* -------------------------------------------------------------------------- */
 .content {
-  min-height: 100vh;
-  padding: calc(var(--phoenix-navbar-top-height) + 2rem) 1.5rem 6.375rem 1.5rem;
-  position: relative;
-  padding-bottom: 6rem;
+    min-height: 100vh;
+    padding: calc(var(--phoenix-navbar-top-height) + 0.5rem) 0.75rem 2rem 0.75rem;
+    position: relative;
+    padding-bottom: 2rem;
 }
+
 @media (min-width: 576px) {
   .content {
     padding-bottom: 4rem;
