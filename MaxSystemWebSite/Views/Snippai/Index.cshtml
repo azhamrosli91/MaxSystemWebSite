@@ -373,10 +373,11 @@
         //Fix some default behavior of contenteditable div
         $('.chat-textarea').on('input', function () {
             const editable = this;
+            const sel = window.getSelection();
 
-            // Save current caret position
-            const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
+            if (!sel.rangeCount) return;
+
+            const range = sel.getRangeAt(0);
             const caretOffset = getCaretCharacterOffsetWithin(editable);
 
             // Do cleanup
@@ -404,7 +405,7 @@
             return caretOffset;
         }
 
-        // Helper to set caret position
+        // Restore caret position by character offset
         function setCaretPosition(element, offset) {
             const range = document.createRange();
             const sel = window.getSelection();
@@ -412,24 +413,23 @@
             let currentNode = null;
             let currentOffset = 0;
 
-            function traverseNodes(node) {
+            function traverse(node) {
                 if (node.nodeType === 3) { // text node
-                    const len = node.length;
-                    if (offset <= len) {
+                    if (offset <= node.length) {
                         currentNode = node;
                         currentOffset = offset;
                         return true;
                     }
-                    offset -= len;
+                    offset -= node.length;
                 } else {
                     for (let i = 0; i < node.childNodes.length; i++) {
-                        if (traverseNodes(node.childNodes[i])) return true;
+                        if (traverse(node.childNodes[i])) return true;
                     }
                 }
                 return false;
             }
 
-            traverseNodes(element);
+            traverse(element);
 
             if (currentNode) {
                 range.setStart(currentNode, currentOffset);
@@ -569,25 +569,44 @@
 
         //press enter
         $('.chat-textarea').on('keydown', function (e) {
-        const isAltEnter = e.key === 'Enter' && e.altKey;
-        const isJustEnter = e.key === 'Enter' && !e.altKey;
+            const isAltEnter = e.key === 'Enter' && e.altKey;
+            const isJustEnter = e.key === 'Enter' && !e.altKey;
 
-        if (isAltEnter) {
-            // Allow newline
-            return;
-        }
+            if (isAltEnter) {
+                e.preventDefault();
 
-        if (isJustEnter) {
-            // Prevent default newline
-            e.preventDefault();
+                const sel = window.getSelection();
+                if (!sel.rangeCount) return;
 
-            // Check if only one line exists (no <br>, <div>, or line breaks)
-            const htmlContent = $(this).html().replace(/<br\s*\/?>|<div.*?>.*?<\/div>/g, '').trim();
-            if (htmlContent.length > 0) {
-                // Trigger send button click
-                $('#btnSend').click();
+                const range = sel.getRangeAt(0);
+                const br = document.createElement("br");
+                range.deleteContents();
+                range.insertNode(br);
+
+                // Firefox needs this <br> to prevent cursor issues
+                const fix = document.createTextNode("\u200B");
+                br.after(fix);
+
+                // Move caret after the <br>
+                range.setStartAfter(fix);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+
+                return;
             }
-        }
+
+            if (isJustEnter) {
+                // Prevent default newline
+                e.preventDefault();
+
+                // Check if only one line exists (no <br>, <div>, or line breaks)
+                const htmlContent = $(this).html().replace(/<br\s*\/?>|<div.*?>.*?<\/div>/g, '').trim();
+                if (htmlContent.length > 0) {
+                    // Trigger send button click
+                    $('#btnSend').click();
+                }
+            }
         });
        //SENT button
         $('#btnSend').on('click', function () {
