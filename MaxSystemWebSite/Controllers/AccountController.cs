@@ -78,20 +78,44 @@ namespace MaxSys.Controllers
 
             string email = claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ??
                                            claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            string name = claims.FirstOrDefault(c => c.Type == "name")?.Value ??
+                          claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ??
+                          claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ??
+                          claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            (bool success, string message, MM_USER emp) employee = _dapper.PSP_COMMON_DAPPER_SINGLE_SYNC<MM_USER>
-                                  ("PSP_USER_BYEMAIL", CommandType.StoredProcedure, new { EMAIL = email });
+            (bool success, string message, IdentityUser emp) employee = _dapper.PSP_COMMON_DAPPER_SINGLE_SYNC<IdentityUser>
+                                  ("PSP_AUTH_GET_USER", CommandType.StoredProcedure, new { EMAIL = email });
 
             if (employee.success == false || employee.emp == null)
             {
-                return RedirectToAction("Unauthorize", "Errors", new { message = "employee is null or " + employee.message });
+
+                RegisterViewModel modelRegister = new RegisterViewModel
+                {
+                    Email = email,
+                    Name = name,
+                    Password = "MaxSystem@123",
+                    ConfirmPassword= "MaxSystem@123",
+                    ID_MM_COMPANY = "0",
+                    MM_COMPANY_CODE = "MAXSYS"
+                };
+                (bool status, string messsage) users_register = _authenticator.REGISTER_USER_SYNC(modelRegister);
+
+                if (users_register.status == false)
+                {
+                    return RedirectToAction("Unauthorize", "Errors", new { message = "employee is null or " + employee.message });
+                }
+                else {
+                    employee = _dapper.PSP_COMMON_DAPPER_SINGLE_SYNC<IdentityUser>
+                                      ("PSP_AUTH_GET_USER", CommandType.StoredProcedure, new { EMAIL = email });
+                }
+
             }
 
 
             IdentityUser identityUser = new IdentityUser();
             identityUser.Id = Guid.NewGuid().ToString();
-            identityUser.UserName = employee.emp.NAME;
-            identityUser.Email = employee.emp.EMAIL;
+            identityUser.UserName = employee.emp.UserName.ToUpper();
+            identityUser.Email = employee.emp.Email;
 
             string token = _authenticator.GenerateToken(identityUser);
 
@@ -106,9 +130,9 @@ namespace MaxSys.Controllers
             };
 
             Response.Cookies.Append("USER_TOKEN", token, cookieOptions);
-            Response.Cookies.Append("EMAIL", employee.emp.EMAIL, cookieOptions);
+            Response.Cookies.Append("EMAIL", employee.emp.Email, cookieOptions);
             Response.Cookies.Append("ID_MM_USER", identityUser.Id, cookieOptions);
-            Response.Cookies.Append("NAME", employee.emp.NAME, cookieOptions);
+            Response.Cookies.Append("NAME", employee.emp.UserName.ToUpper(), cookieOptions);
             Response.Cookies.Append("AUTH_TYPE", "OPENID", cookieOptions);
 
             Response.Cookies.Append("jwt", token, new CookieOptions

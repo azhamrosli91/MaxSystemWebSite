@@ -408,7 +408,25 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 };
             }
 
-            _threadMessages[threadId].AddRange(request.Messages);
+            var transformedMessages = new List<MessageChatBot>();
+            foreach (var msg in request.Messages)
+            {
+                if (!string.IsNullOrWhiteSpace(msg.content) && IsBase64Image(msg.content.Trim(), out string mimeType))
+                {
+                    transformedMessages.Add(new MessageChatBot("user", JsonConvert.SerializeObject(new
+                    {
+                        type = "input_image",
+                        image_url = $"data:{mimeType};base64,{msg.content.Trim()}",
+                         detail= "high"
+                    })));
+                }
+                else
+                {
+                    transformedMessages.Add(msg);
+                }
+            }
+            _threadMessages[threadId].AddRange(transformedMessages);
+            //_threadMessages[threadId].AddRange(request.Messages);
 
             // === MCP Instruction Execution ===
             var latestMessage = request.Messages.LastOrDefault()?.content?.Trim();
@@ -497,20 +515,20 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             string proxyAddr = _configuration["Proxy:Address"];
             string proxyUser = _configuration["Proxy:Username"];
             string proxyPass = _configuration["Proxy:Password"];
-
-            var handler = string.IsNullOrWhiteSpace(proxyAddr)
-                ? new HttpClientHandler()
-                : new HttpClientHandler
-                {
-                    Proxy = new WebProxy
-                    {
-                        Address = new Uri(proxyAddr),
-                        BypassProxyOnLocal = false,
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(proxyUser, proxyPass)
-                    },
-                    UseProxy = true
-                };
+            var handler = new HttpClientHandler();
+            //var handler = string.IsNullOrWhiteSpace(proxyAddr)
+            //    ? new HttpClientHandler()
+            //    : new HttpClientHandler
+            //    {
+            //        Proxy = new WebProxy
+            //        {
+            //            Address = new Uri(proxyAddr),
+            //            BypassProxyOnLocal = false,
+            //            UseDefaultCredentials = false,
+            //            Credentials = new NetworkCredential(proxyUser, proxyPass)
+            //        },
+            //        UseProxy = true
+            //    };
 
             using var client = new HttpClient(handler);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
@@ -537,177 +555,53 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data: ")) continue;
 
                 var jsonLine = line.Substring("data: ".Length);
-                if (jsonLine == "[DONE]") break;
-
-                dynamic parsed = JsonConvert.DeserializeObject(jsonLine);
-                string content = parsed?.choices[0]?.delta?.content;
-                if (string.IsNullOrEmpty(content)) continue;
-
-                fullAssistantReply.Append(content);
-                fullLineBuffer.Append(content);
-
-                string combined = fullLineBuffer.ToString();
-
-                if (!insideCodeBlock)
+                if (jsonLine == "[DONE]") 
                 {
-                    pendingBacktick += content;
-
-                    if (pendingBacktick.EndsWith("`")) {
-                        continue;
-                    }
-                    if (pendingBacktick.EndsWith("``"))
+                    try
                     {
-                        continue;
-                    }
-                    if (pendingBacktick.EndsWith("```"))
-                    {
-                        continue;
-                    }
-                    if (pendingBacktick.EndsWith("```|"))
-                    {
-                        continue;
-                    }
-                    if (pendingBacktick.EndsWith("```||"))
-                    {
-                        continue;
-                    }
+                        var aiReplyText = fullAssistantReply.ToString().Trim();
 
-                    if (pendingBacktick.EndsWith("```||>"))
-                    {
-                        continue;
-                    }
-
-                    if (pendingBacktick.EndsWith("```|| ["))
-                    {
-                        continue;
-                    }
-
-
-
-                    var startIdx = pendingBacktick.ToString().Contains("```||>");
-                    if (startIdx == true)
-                    {
-                        insideCodeBlock = true;
-                        codeBuffer.Clear();
-
-                        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
-                        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                        currentLang =  "plaintext";
-
-                        pendingBacktick = "";
-                        fullLineBuffer.Clear();
-                        continue;
-                    }
-
-                    if (pendingBacktick.Length > 5)
-                    {
-                        await Response.WriteAsync(pendingBacktick);
-                        await Response.Body.FlushAsync();
-                        pendingBacktick = "";
-                    }
-
-                    continue;
-                }
-
-                if (insideCodeBlock)
-                {
-                    codeBuffer.Append(content);
-
-                    if (codeBuffer.ToString().Contains("<||```"))
-                    {
-                        var cleanCode = codeBuffer.ToString();
-                        var endIndex = cleanCode.IndexOf("<||```", StringComparison.Ordinal);
-                        cleanCode = cleanCode.Substring(0, endIndex);
-
-                        // Match pattern ```||> [|lang|]
-                        var match = Regex.Match(fullAssistantReply.ToString(), @"```?\|\|>\s*\[\|(?<lang>[^\|\]]+)\|\]");
-                        if (match.Success)
+                        if (aiReplyText.StartsWith("{"))
                         {
-                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
-                           
-                        }
+                            dynamic mcp = JsonConvert.DeserializeObject(aiReplyText);
+                            string action = mcp?.action;
+                            string connStr = mcp?.connection_string;
 
-                        string codeBoxHtml = $@"
-<div class=""code-box"">
-  <div class=""code-box-header"">
-    <div class=""title"">{currentLang}</div>
-    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
-  </div>
-  <pre><code class=""language-{currentLang}"" id=""hl-streamed"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
-</div>
-<script>
-  setTimeout(() => {{
-    const codeBlock = document.getElementById('hl-streamed');
-    if (codeBlock) hljs.highlightElement(codeBlock);
-  }}, 100);
-</script>";
+                            if (string.IsNullOrWhiteSpace(action))
+                            {
+                                await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
+                                await Response.Body.FlushAsync();
+                                return;
+                            }
 
-                        await Response.Body.FlushAsync();
+                            if (string.IsNullOrWhiteSpace(connStr))
+                            {
+                                await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                                await Response.Body.FlushAsync();
+                                return;
+                            }
 
+                            using var connection = new SqlConnection(connStr);
+                            await connection.OpenAsync();
 
-                        codeBuffer.Clear();
-                        pendingBacktick = "";
-                        insideCodeBlock = false;
-                        fullLineBuffer.Clear();
-                        continue;
-                    }
+                            if (action == "DB_QUERY_EXECUTE")
+                            {
+                                string sql = mcp.sql;
+                                var result = await connection.QueryAsync(sql);
+                                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
 
-                    continue;
-                }
+                                var rows = result.ToList();
+                                if (rows.Count == 0)
+                                {
+                                    await Response.WriteAsync("<p><i>No data returned.</i></p>");
+                                    await Response.Body.FlushAsync();
+                                    return;
+                                }
 
-                await Response.WriteAsync(content);
-                await Response.Body.FlushAsync();
-                fullLineBuffer.Clear();
-            }
-
-
-
-            _threadMessages[threadId].Add(new MessageChatBot("assistant", fullAssistantReply.ToString()));
-            try
-            {
-                var aiReplyText = fullAssistantReply.ToString().Trim();
-
-                if (aiReplyText.StartsWith("{"))
-                {
-                    dynamic mcp = JsonConvert.DeserializeObject(aiReplyText);
-                    string action = mcp?.action;
-                    string connStr = mcp?.connection_string;
-
-                    if (string.IsNullOrWhiteSpace(action))
-                    {
-                        await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(connStr))
-                    {
-                        await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
-
-                    using var connection = new SqlConnection(connStr);
-                    await connection.OpenAsync();
-
-                    if (action == "DB_QUERY_EXECUTE")
-                    {
-                        string sql = mcp.sql;
-                        var result = await connection.QueryAsync(sql);
-                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-                        var rows = result.ToList();
-                        if (rows.Count == 0)
-                        {
-                            await Response.WriteAsync("<p><i>No data returned.</i></p>");
-                            await Response.Body.FlushAsync();
-                            return;
-                        }
-
-                        // Build HTML table
-                        var html = new StringBuilder();
-                        // Start code-box wrapper
-                        html.Append(@"
+                                // Build HTML table
+                                var html = new StringBuilder();
+                                // Start code-box wrapper
+                                html.Append(@"
                                 <div class='code-box'>
                                   <div class='code-box-header'>
                                     <div class='title'>table</div>
@@ -721,24 +615,24 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
 
 
 
-                        // Get headers from first row
-                        foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
-                        {
-                            html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
-                        }
-                        html.Append("</tr></thead><tbody>");
+                                // Get headers from first row
+                                foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
+                                {
+                                    html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
+                                }
+                                html.Append("</tr></thead><tbody>");
 
-                        foreach (var row in rows)
-                        {
-                            html.Append("<tr>");
-                            foreach (var val in (IDictionary<string, object>)row)
-                            {
-                                html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
-                            }
-                            html.Append("</tr>");
-                        }
+                                foreach (var row in rows)
+                                {
+                                    html.Append("<tr>");
+                                    foreach (var val in (IDictionary<string, object>)row)
+                                    {
+                                        html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
+                                    }
+                                    html.Append("</tr>");
+                                }
 
-                        html.Append(@"
+                                html.Append(@"
                                       </tbody>
                                     </table>
                                   </div>
@@ -770,39 +664,151 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                                 </script>");
 
 
-                        await Response.WriteAsync(html.ToString());
+                                await Response.WriteAsync(html.ToString());
+                                await Response.Body.FlushAsync();
+                                return;
+                            }
+
+                            if (action == "DB_INSERT_UPDATE")
+                            {
+                                string spName = mcp.sp_name;
+                                var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+
+                                var parameters = new DynamicParameters();
+                                foreach (var pair in paramDict)
+                                {
+                                    parameters.Add(pair.Key, pair.Value);
+                                }
+
+                                var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+                                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                                await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                                await Response.Body.FlushAsync();
+                                return;
+                            }
+
+                            await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
+                            await Response.Body.FlushAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await Response.WriteAsync($"❌ MCP execution error from ChatGPT output: {WebUtility.HtmlEncode(ex.Message)}");
                         await Response.Body.FlushAsync();
-                        return;
                     }
 
-                    if (action == "DB_INSERT_UPDATE")
-                    {
-                        string spName = mcp.sp_name;
-                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+                    break;
+                }
 
-                        var parameters = new DynamicParameters();
-                        foreach (var pair in paramDict)
+                dynamic parsed = JsonConvert.DeserializeObject(jsonLine);
+                string content = parsed?.choices[0]?.delta?.content;
+                if (string.IsNullOrEmpty(content)) continue;
+
+                fullAssistantReply.Append(content);
+                fullLineBuffer.Append(content);
+
+                string combined = fullLineBuffer.ToString();
+
+                if (!insideCodeBlock)
+                {
+                    pendingBacktick += content;
+
+                    if (pendingBacktick.EndsWith("`")) {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("``"))
+                    {
+                        continue;
+                    }
+                    if (pendingBacktick.EndsWith("```"))
+                    {
+                        continue;
+                    }
+                    
+
+
+
+                    var startIdx = pendingBacktick.ToString().Contains("```");
+                    if (startIdx == true)
+                    {
+                        insideCodeBlock = true;
+                        codeBuffer.Clear();
+
+                        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
+                        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                        currentLang =  "plaintext";
+
+                        pendingBacktick = "";
+                        fullLineBuffer.Clear();
+                        continue;
+                    }
+
+                    if (pendingBacktick.Length > 4)
+                    {
+                        await Response.WriteAsync(pendingBacktick);
+                        await Response.Body.FlushAsync();
+                        pendingBacktick = "";
+                    }
+
+                    continue;
+                }
+
+                if (insideCodeBlock)
+                {
+                    codeBuffer.Append(content);
+
+                    if (codeBuffer.ToString().Contains("```"))
+                    {
+                        var cleanCode = codeBuffer.ToString();
+                        var endIndex = cleanCode.IndexOf("```", StringComparison.Ordinal);
+                        cleanCode = cleanCode.Substring(0, endIndex);
+
+                        // Match pattern ```||> [|lang|]
+                        var match = Regex.Match(fullAssistantReply.ToString(), @"``` *?(?<lang>[^\s]+)");
+                        if (match.Success)
                         {
-                            parameters.Add(pair.Key, pair.Value);
+                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
                         }
 
-                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                        string tmpID = $"tmpbox_{Guid.NewGuid().ToString()}";
+                        string codeBoxHtml = $@"
+<div class=""code-box"">
+  <div class=""code-box-header"">
+    <div class=""title"">{currentLang}</div>
+    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
+  </div>
+  <pre><code class=""language-{currentLang}"" id=""{tmpID}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
+</div>
+<script>
+  setTimeout(() => {{
+    const codeBlock = document.getElementById('{tmpID}');
+    if (codeBlock) hljs.highlightElement(codeBlock);
+  }}, 100);
+</script>";
+                        await Response.WriteAsync(codeBoxHtml);
                         await Response.Body.FlushAsync();
-                        return;
+
+
+                        codeBuffer.Clear();
+                        pendingBacktick = "";
+                        insideCodeBlock = false;
+                        fullLineBuffer.Clear();
+                        continue;
                     }
 
-                    await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
-                    await Response.Body.FlushAsync();
+                    continue;
                 }
-            }
-            catch (Exception ex)
-            {
-                await Response.WriteAsync($"❌ MCP execution error from ChatGPT output: {WebUtility.HtmlEncode(ex.Message)}");
+
+                await Response.WriteAsync(content);
                 await Response.Body.FlushAsync();
+                fullLineBuffer.Clear();
             }
+
+
+
+            _threadMessages[threadId].Add(new MessageChatBot("assistant", fullAssistantReply.ToString()));
+           
 
         }
         public static string ExtractConnectionStringFromHtml(string html)
@@ -851,6 +857,69 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             stream.Seek(0, SeekOrigin.Begin);
 
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{filename}.xlsx");
+        }
+        private string ExtractBase64FromImgTag(string input)
+        {
+            // Extract src="data:image/...;base64,..." using regex
+            var match = Regex.Match(input, @"data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                return $"data:{match.Groups[1].Value};base64,{match.Groups[2].Value.Replace("\n", "").Replace("\r", "").Replace(" ", "")}";
+            }
+
+            return null;
+        }
+
+        private bool IsBase64Image(string input, out string mimeType)
+        {
+            mimeType = "image/jpeg"; // default fallback
+
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
+
+            try
+            {
+                // Clean up
+                input = input.Trim()
+                             .Replace(" ", "")
+                             .Replace("\r", "")
+                             .Replace("\n", "");
+                input = ExtractBase64FromImgTag(input);
+
+                // Extract MIME type and base64 data
+                var match = Regex.Match(input, @"^data:(image\/[a-zA-Z0-9.+-]+);base64,(.*)$", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    mimeType = match.Groups[1].Value;
+                    input = match.Groups[2].Value;
+                }
+
+              
+                // Validate base64 characters
+                if (!Regex.IsMatch(input, @"^[a-zA-Z0-9\+/]*={0,2}$"))
+                    return false;
+
+                byte[] data = Convert.FromBase64String(input);
+
+                // Check magic bytes
+                if (data.Length >= 4 && data[0] == 0xFF && data[1] == 0xD8)
+                {
+                    mimeType = "image/jpeg";
+                    return true;
+                }
+                if (data.Length >= 8 && data[0] == 0x89 && data[1] == 0x50 &&
+                    data[2] == 0x4E && data[3] == 0x47)
+                {
+                    mimeType = "image/png";
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 
