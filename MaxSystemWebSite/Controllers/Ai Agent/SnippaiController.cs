@@ -1,20 +1,27 @@
 ﻿using BaseSQL.Interface;
 using BaseWebApi.Interface;
+using Dapper;
+using DocumentFormat.OpenXml.Vml.Office;
+using DocumentFormat.OpenXml.Wordprocessing;
 using MaxSys.Helpers;
 using MaxSys.Interface;
+using MaxSys.Models;
 using MaxSystemWebSite.Controllers.PMO;
+using MaxSystemWebSite.Models.MCP;
+using MaxSystemWebSite.Models.SETTING;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartTemplateCore.Models.Common;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Encodings.Web;
-using Dapper;
 using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml.Vml.Office;
 
 namespace MaxSystemWebSite.Controllers.Ai_Agent
 {
@@ -26,13 +33,16 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
         private readonly IJWTToken _jwtToken;
         private readonly ISQL _SQL;
         private static Dictionary<string, List<MessageChatBot>> _threadMessages = new();
+        private readonly IEmail _emailService;
+
 
 
         public SnippaiController(ILogger<SnippaiController> logger, IConfiguration configuration, IWebApi webApi,
-           IDapper dapper, IAuthenticator authenticator, UserProfileService userProfileService)
+           IDapper dapper, IAuthenticator authenticator, UserProfileService userProfileService, IEmail emailService)
             : base(configuration, webApi, dapper, authenticator) // Call the base constructor
         {
             _logger = logger;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -491,6 +501,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                         return;
                     }
 
+
                     await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
                     await Response.Body.FlushAsync();
                     return;
@@ -568,7 +579,6 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                             isMCP = false;
                             dynamic mcp = JsonConvert.DeserializeObject(aiReplyText.Replace("[MCP]",""));
                             string action = mcp?.action;
-                            string connStr = mcp?.connection_string;
 
                             if (string.IsNullOrWhiteSpace(action))
                             {
@@ -577,18 +587,23 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                                 return;
                             }
 
-                            if (string.IsNullOrWhiteSpace(connStr))
-                            {
-                                await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
 
-                            using var connection = new SqlConnection(connStr);
-                            await connection.OpenAsync();
 
                             if (action == "DB_QUERY_EXECUTE")
                             {
+                                string connStr = mcp?.connection_string;
+
+                                if (string.IsNullOrWhiteSpace(connStr))
+                                {
+                                    await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                                    await Response.Body.FlushAsync();
+                                    return;
+                                }
+
+
+                                using var connection = new SqlConnection(connStr);
+                                await connection.OpenAsync();
+
                                 string sql = mcp.sql;
                                 var result = await connection.QueryAsync(sql);
                                 string json = JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -683,10 +698,258 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                                     parameters.Add(pair.Key, pair.Value);
                                 }
 
+                                string connStr = mcp?.connection_string;
+
+                                if (string.IsNullOrWhiteSpace(connStr))
+                                {
+                                    await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                                    await Response.Body.FlushAsync();
+                                    return;
+                                }
+
+
+                                using var connection = new SqlConnection(connStr);
+                                await connection.OpenAsync();
+
                                 var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
                                 string json = JsonConvert.SerializeObject(result, Formatting.Indented);
 
                                 await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                                await Response.Body.FlushAsync();
+                                return;
+                            }
+
+                            if (action == "SEND_EMAIL")
+                            {
+                                string cleanedJson = aiReplyText.Replace("[MCP]", "");
+                                JObject jObject = JObject.Parse(cleanedJson);
+
+                                JToken paramsToken = jObject["params"];
+                                MCP_EmailParams emailParams = paramsToken.ToObject<MCP_EmailParams>();
+                                string SenderEmail = mcp?.@params?.sender?.emailAddress?.address;
+
+                                List<Recipient> ListReceipt = new List<Recipient>();
+                                List<Recipient> ListCc = new List<Recipient>();
+                                List<Recipient> ListBcc = new List<Recipient>();
+
+                                if (emailParams != null)
+                                {
+                                    if (emailParams.Recipient != null)
+                                    {
+                                        foreach (var item in emailParams.Recipient)
+                                        {
+                                            ListReceipt.Add(new Recipient
+                                            {
+                                                EmailAddress = new EmailAddress
+                                                {
+                                                    Address = item.EmailAddress.Address,
+                                                    Name = item.EmailAddress.Name
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    if (emailParams.Cc != null)
+                                    {
+                                        foreach (var item in emailParams.Cc)
+                                        {
+                                            ListCc.Add(new Recipient
+                                            {
+                                                EmailAddress = new EmailAddress
+                                                {
+                                                    Address = item.EmailAddress.Address,
+                                                    Name = item.EmailAddress.Name
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    if (emailParams.Bcc != null)
+                                    {
+                                        foreach (var item in emailParams.Bcc)
+                                        {
+                                            ListBcc.Add(new Recipient
+                                            {
+                                                EmailAddress = new EmailAddress
+                                                {
+                                                    Address = item.EmailAddress.Address,
+                                                    Name = item.EmailAddress.Name
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    var modelTemp = new Emai_TemplateSent
+                                    {
+                                        Recipient = ListReceipt,
+                                        CC = ListCc,
+                                        BCC = ListBcc,
+                                        Subject = emailParams.Subject,
+                                        subTemplate = emailParams.Body,
+                                        WORD_REPLACE = new List<(string ori, string replace)>
+                                {
+                                    ("[APPLICATION_NAME]", emailParams.Subject),
+                                    ("[EMAIL_SUBJECT]", emailParams.Subject),
+                                    ("[EMAIL_BODY]", emailParams.Body),
+                                    ("[HELP_DESK_EMAIL]", "hr@maxsys.com.my")
+                                },
+                                        Attachments = new List<Emai_TemplateSent.EmailAttachment>()
+                                    };
+
+                                    modelTemp.mainTemplate = await modelTemp.EmailBodyTemplate();
+                                    modelTemp.bodyContent = modelTemp.mainTemplate.Replace("[BODY]", modelTemp.subTemplate);
+                                    var wordResult = modelTemp.WordReplacer(modelTemp.bodyContent);
+                                    if (wordResult.Item1)
+                                    {
+                                        modelTemp.bodyContent = wordResult.Item2;
+                                    }
+                                    SETTING_EMAIL settingEmail = new SETTING_EMAIL();
+
+                                    settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
+                                    settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
+                                    settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
+                                    settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+
+
+
+                                    modelTemp.Setting_Setup = new Setting_Setup();
+                                    modelTemp.Setting_Setup.SMTP_ACCOUNT = SenderEmail;
+
+                                    _emailService.InitGraph(settingEmail);
+
+                                    (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
+
+                                    if (!result.status)
+                                    {
+                                        await Response.WriteAsync($"Failed to send email.{result.message}");
+                                    }
+                                    await Response.WriteAsync($"Your Email subject: \n {emailParams.Subject}");
+                                    await Response.WriteAsync($"\nYour Email body: \n {emailParams.Body}");
+                                    await Response.WriteAsync($"\nEmail sent");
+                                    await Response.Body.FlushAsync();
+                                    return;
+                                }
+                            }
+
+                            if (action == "WEB_SEARCH")
+                            {
+                                string? url = mcp?.query;
+
+                                if (string.IsNullOrWhiteSpace(url))
+                                {
+                                    await Response.WriteAsync("Invalid or missing URL.");
+                                    await Response.Body.FlushAsync();
+                                    return;
+                                }
+
+                                var tools = new[]
+                                    {
+                                    new { type = "web_search_preview" }
+                                    };
+
+
+                                string instructions =
+                                "You are a web search agent. The user will provide a URL or a query. " +
+                                "You must perform a web search using the provided input and return a summary of the results. " +
+                                "The output must be in valid HTML only. Use HTML tags such as <div>, <h1>, <h2>, <p>, <a>, and <ul>. " +
+                                "Wrap everything in an outer <div> tag. Do not include any explanations or comments outside of the HTML. " +
+                                "Do not say 'Here's the result' or similar. Just return clean HTML, suitable for embedding directly into a webpage."+
+                                "Return only the HTML. Do not include any Markdown, plain text, or commentary. Start your response with <div>.";
+
+
+
+                                var payload = new
+                                {
+                                    model = "gpt-4.1-mini",
+                                    input = new[]
+                                    {
+                                        new { role = "user", content = url }
+                                    },
+                                    instructions = instructions,
+                                    temperature = temperature,
+                                    tools = tools
+                                };
+
+                                using var httpClient = new HttpClient();
+                                httpClient.DefaultRequestHeaders.Authorization =
+                                    new AuthenticationHeaderValue("Bearer", apiKey);
+
+                                string jsonPayload = JsonConvert.SerializeObject(payload);
+                                var contentWeb = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                                HttpResponseMessage apiResponse = null;
+
+                                try
+                                {
+                                    apiResponse = await httpClient.PostAsync("https://api.openai.com/v1/responses", contentWeb);
+                                }
+                                catch (HttpRequestException ex)
+                                {
+                                    await Response.WriteAsync($"HTTP Request Error: {ex.Message}");
+                                    return;
+                                }
+
+                                if (apiResponse == null)
+                                {
+                                    await Response.WriteAsync("No response received.");
+                                    return;
+                                }
+
+                                string responseText = await apiResponse.Content.ReadAsStringAsync();
+
+                                //JObject jObject = JObject.Parse(responseText);
+                                //JToken paramsToken = jObject["params"];
+
+                                ApiResponse emailParams = JsonConvert.DeserializeObject<ApiResponse>(responseText);
+                                //Console.WriteLine(emailParams);
+
+                                string extractedText = emailParams.Output
+                                    ?.FirstOrDefault(o => o.Type == "message")
+                                    ?.Content?
+                                    .FirstOrDefault(c => c.Type == "output_text")
+                                    ?.Text;
+
+                                if (!string.IsNullOrEmpty(extractedText))
+                                {
+                                    await Response.WriteAsync(extractedText);
+                                }
+                                else
+                                {
+                                    await Response.WriteAsync("No output text found.");
+                                }
+
+
+
+                                //if (!apiResponse.IsSuccessStatusCode)
+                                //{
+                                //    await Response.WriteAsync($"API Error: {(int)apiResponse.StatusCode} {apiResponse.ReasonPhrase}\nResponse Body: {responseText}");
+                                //}
+
+                                //ApiResponse assistantoutput = null;
+
+                                //try
+                                //{
+                                //    Console.WriteLine(responseText); // or use a debugger
+                                //    assistantoutput = JsonConvert.DeserializeObject<ApiResponse>(responseText);
+                                //}
+                                //catch (JsonException ex)
+                                //{
+                                //    await Response.WriteAsync($"JSON Deserialization Error: {ex.Message}");
+                                //    return; // exit early, so assistantoutput won't be used when it's null
+                                //}
+
+                                //string resultText = assistantoutput?.Output?[0]?.Content?[0]?.Text;
+
+                                //if (!string.IsNullOrWhiteSpace(resultText))
+                                //{
+                                //    await Response.WriteAsync(resultText);
+                                //}
+                                //else
+                                //{
+                                //    await Response.WriteAsync("No content returned in response.");
+                                //}
+
+                                await Response.WriteAsync(extractedText);
                                 await Response.Body.FlushAsync();
                                 return;
                             }
@@ -711,7 +974,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 fullAssistantReply.Append(content);
                 fullLineBuffer.Append(content);
 
-                if (!fullAssistantReply.ToString().Contains("[MCP]"))
+                if (fullAssistantReply.ToString().Contains("[MCP]"))
                 {
                     isMCP = true;
                 }
