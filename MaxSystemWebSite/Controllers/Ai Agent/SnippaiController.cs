@@ -439,80 +439,80 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             //_threadMessages[threadId].AddRange(request.Messages);
 
             // === MCP Instruction Execution ===
-            var latestMessage = request.Messages.LastOrDefault()?.content?.Trim();
-            if (!string.IsNullOrWhiteSpace(latestMessage) && latestMessage.StartsWith("{"))
-            {
-                try
-                {
-                    dynamic mcp = JsonConvert.DeserializeObject(latestMessage);
-                    string action = mcp?.action;
-                    //string connStr = mcp?.connection_string;
-                    string connStrRaw = mcp?.connection_string;
-                    string connStr = ExtractConnectionStringFromHtml(connStrRaw);
+            //var latestMessage = request.Messages.LastOrDefault()?.content?.Trim();
+            //if (!string.IsNullOrWhiteSpace(latestMessage) && latestMessage.StartsWith("{"))
+            //{
+            //    try
+            //    {
+            //        dynamic mcp = JsonConvert.DeserializeObject(latestMessage);
+            //        string action = mcp?.action;
+            //        //string connStr = mcp?.connection_string;
+            //        string connStrRaw = mcp?.connection_string;
+            //        string connStr = ExtractConnectionStringFromHtml(connStrRaw);
 
-                    if (string.IsNullOrWhiteSpace(action))
-                    {
-                        await Response.WriteAsync("❌ Missing `action` in MCP payload.");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
+            //        if (string.IsNullOrWhiteSpace(action))
+            //        {
+            //            await Response.WriteAsync("❌ Missing `action` in MCP payload.");
+            //            await Response.Body.FlushAsync();
+            //            return;
+            //        }
 
-                    if (string.IsNullOrWhiteSpace(connStr))
-                    {
-                        await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string` before executing.");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
+            //        if (string.IsNullOrWhiteSpace(connStr))
+            //        {
+            //            await Response.WriteAsync("🔐 Please provide a valid SQL Server `connection_string` before executing.");
+            //            await Response.Body.FlushAsync();
+            //            return;
+            //        }
 
-                    using var connection = new SqlConnection(connStr);
-                    await connection.OpenAsync();
+            //        using var connection = new SqlConnection(connStr);
+            //        await connection.OpenAsync();
 
-                    if (action == "DB_QUERY_EXECUTE")
-                    {
-                        string sql = mcp.sql;
-                        var result = await connection.QueryAsync(sql);
-                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-
-
-                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
-
-                    if (action == "DB_INSERT_UPDATE")
-                    {
-                        string spName = mcp.sp_name;
-                        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
-
-                        var parameters = new DynamicParameters();
-                        foreach (var pair in paramDict)
-                        {
-                            parameters.Add(pair.Key, pair.Value);
-                        }
-
-                        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-
-                        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-                        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-                        await Response.Body.FlushAsync();
-                        return;
-                    }
+            //        if (action == "DB_QUERY_EXECUTE")
+            //        {
+            //            string sql = mcp.sql;
+            //            var result = await connection.QueryAsync(sql);
+            //            string json = JsonConvert.SerializeObject(result, Formatting.Indented);
 
 
-                    await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
-                    await Response.Body.FlushAsync();
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
-                    await Response.Body.FlushAsync();
-                    return;
-                }
-            }
+
+            //            await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+
+            //            await Response.Body.FlushAsync();
+            //            return;
+            //        }
+
+            //        if (action == "DB_INSERT_UPDATE")
+            //        {
+            //            string spName = mcp.sp_name;
+            //            var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+
+            //            var parameters = new DynamicParameters();
+            //            foreach (var pair in paramDict)
+            //            {
+            //                parameters.Add(pair.Key, pair.Value);
+            //            }
+
+            //            var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+
+            //            string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+            //            await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+            //            await Response.Body.FlushAsync();
+            //            return;
+            //        }
+
+
+            //        await Response.WriteAsync("⚠ Unknown action provided in MCP payload.");
+            //        await Response.Body.FlushAsync();
+            //        return;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        await Response.WriteAsync($"❌ MCP Error: {WebUtility.HtmlEncode(ex.Message)}");
+            //        await Response.Body.FlushAsync();
+            //        return;
+            //    }
+            //}
 
             // === Fallback: OpenAI ChatGPT Streaming ===
             var body = new
@@ -726,7 +726,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
 
                                 JToken paramsToken = jObject["params"];
                                 MCP_EmailParams emailParams = paramsToken.ToObject<MCP_EmailParams>();
-                                string SenderEmail = mcp?.@params?.sender?.emailAddress?.address;
+                                string SenderEmail = EMAIL;
 
                                 List<Recipient> ListReceipt = new List<Recipient>();
                                 List<Recipient> ListCc = new List<Recipient>();
@@ -919,36 +919,6 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                                 }
 
 
-
-                                //if (!apiResponse.IsSuccessStatusCode)
-                                //{
-                                //    await Response.WriteAsync($"API Error: {(int)apiResponse.StatusCode} {apiResponse.ReasonPhrase}\nResponse Body: {responseText}");
-                                //}
-
-                                //ApiResponse assistantoutput = null;
-
-                                //try
-                                //{
-                                //    Console.WriteLine(responseText); // or use a debugger
-                                //    assistantoutput = JsonConvert.DeserializeObject<ApiResponse>(responseText);
-                                //}
-                                //catch (JsonException ex)
-                                //{
-                                //    await Response.WriteAsync($"JSON Deserialization Error: {ex.Message}");
-                                //    return; // exit early, so assistantoutput won't be used when it's null
-                                //}
-
-                                //string resultText = assistantoutput?.Output?[0]?.Content?[0]?.Text;
-
-                                //if (!string.IsNullOrWhiteSpace(resultText))
-                                //{
-                                //    await Response.WriteAsync(resultText);
-                                //}
-                                //else
-                                //{
-                                //    await Response.WriteAsync("No content returned in response.");
-                                //}
-
                                 await Response.WriteAsync(extractedText);
                                 await Response.Body.FlushAsync();
                                 return;
@@ -957,6 +927,9 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                             await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
                             await Response.Body.FlushAsync();
                         }
+                        await Response.WriteAsync("!![DONE]!!");
+                        await Response.Body.FlushAsync();
+
                     }
                     catch (Exception ex)
                     {
@@ -1019,6 +992,13 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                         }
 
                         if (pendingBacktick.Length > 4)
+                        {
+                            await Response.WriteAsync(pendingBacktick);
+                            await Response.Body.FlushAsync();
+                            pendingBacktick = "";
+                        }
+                        else if (insideCodeBlock == false && (!pendingBacktick.Contains("[MCP]") || !pendingBacktick.Contains("[M") 
+                            || !pendingBacktick.Contains("[MC") || !pendingBacktick.Contains("[MCP"))) 
                         {
                             await Response.WriteAsync(pendingBacktick);
                             await Response.Body.FlushAsync();

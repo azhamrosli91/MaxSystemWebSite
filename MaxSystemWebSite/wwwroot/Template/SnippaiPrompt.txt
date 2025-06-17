@@ -111,24 +111,24 @@ when asked to do this task you must return with this format
         "address": ""
       }
     },
-    "recipient": {
+    "recipient": [{
       "emailAddress": {
         "name": "",
         "address": ""
       }
-    },
-    "cc": {
+    }],
+    "cc": [{
       "emailAddress": {
         "name": "",
         "address": ""
       }
-    },
-    "bcc": {
+    }],
+    "bcc": [{
       "emailAddress": {
         "name": "",
         "address": ""
       }
-    },	
+    }],	
     "subject": "extract from the user query",
     "body": "extract from the user query and make sure to follow html format"
   }

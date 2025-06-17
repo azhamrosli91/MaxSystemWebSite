@@ -665,6 +665,7 @@
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
+
                             $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
                             $('.chatloading').remove(); // ✅ Remove loading spinner inside user bubble
                             $('.bodydata .p-3').append('<hr class="my-3 border-secondary" />');
@@ -672,9 +673,28 @@
                             return;
                         }
 
-                        const chunk = decoder.decode(value, { stream: true });
-                        $botStream.append(chunk); // Stream tokens to DOM
-                        $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50); // Auto-scroll
+                        // const chunk = decoder.decode(value, { stream: true });
+                        // $botStream.append(chunk); // Stream tokens to DOM
+
+                        // $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50); // Auto-scroll
+                         const chunk = decoder.decode(value, { stream: true });
+
+                            // Append the chunk
+                            $botStream.append(chunk);
+
+                            // Sanitize after appending
+                            let currentHtml = $botStream.html();
+                            currentHtml = currentHtml
+                                .replace(/!!\[DONE\]!!/g, '')
+                                .replace(/\[MCP\]/g, '')
+                                .replace(/\[MCP/g, '');
+
+                            $botStream.html(currentHtml);
+                            $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50);
+
+
+
+
                         read(); // Continue reading
                     });
                 }
