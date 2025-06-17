@@ -683,15 +683,42 @@
                             $botStream.append(chunk);
 
                             // Sanitize after appending
-                            let currentHtml = $botStream.html();
-                            currentHtml = currentHtml
-                                .replace(/!!\[DONE\]!!/g, '')
-                                .replace(/\[MCP\]/g, '')
-                                .replace(/\[MCP/g, '');
+                                let currentHtml = $botStream.html();
+                                currentHtml = currentHtml
+                                    .replace(/!!\[DONE\]!!/g, '')
+                                    .replace(/\[MCP\]/g, '')
+                                    .replace(/\[MCP/g, '');
 
-                            $botStream.html(currentHtml);
-                            $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50);
+                                // Replace all ```lang\ncode\n``` with codebox
+                                currentHtml = currentHtml.replace(/```(\w+)?\n([\s\S]*?)```/g, function (match, lang, code) {
+                                    const currentLang = lang || 'text';
+                                    const tmpID = generateUUID();
+                                    const cleanCode = $('<div>').text(code.trim()).html(); // Escape HTML safely
+                                    return codebox(currentLang, tmpID, cleanCode);
+                                });
+                                // 2. Replace --- with <hr />
+                                currentHtml = currentHtml.replace(/^\s*---\s*$/gm, '<hr />');
 
+                                // 3. Replace **bold** with <strong>
+                                currentHtml = currentHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+                                // 4. Replace *italic* with <em>
+                                currentHtml = currentHtml.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                                // 5. Replace `inline code` with <code>
+                                currentHtml = currentHtml.replace(/`([^`\n]+?)`/g, '<code>$1</code>');
+
+                                // 6. Convert [text](url) to clickable links
+                                currentHtml = currentHtml.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+                                // 7. Convert ![alt](image_url) to <img src="">
+                                currentHtml = currentHtml.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;">');
+
+                                // 8. Remove ###
+                                currentHtml = currentHtml.replace(/###/g, '');
+                                
+                                $botStream.html(currentHtml);
+                                $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50);
 
 
 
@@ -707,6 +734,40 @@
                 $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
             });
         });
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+              function codebox(currentLang, tmpID, cleanCode) {
+                  if (currentLang === 'js') {
+                    currentLang = 'javascript';
+                  }
+
+                  const codebox = `
+                    <div class="code-box">
+                      <div class="code-box-header">
+                        <div class="title">${currentLang}</div>
+                        <div class="buttons"><button class="btn-copy">Copy</button></div>
+                      </div>
+                      <pre><code class="language-${currentLang}" id="${tmpID}">${cleanCode}</code></pre>
+                    </div>
+                    <script>
+                      setTimeout(() => {
+                        const codeBlock = document.getElementById('${tmpID}');
+                        if (codeBlock) hljs.highlightElement(codeBlock);
+                      }, 100);
+                    </scr` + `ipt>
+                  `;
+
+                  return codebox;
+                }
+
+        
 
         function getOrCreateThreadId() {
             const storageKey = 'chat_thread_id';
