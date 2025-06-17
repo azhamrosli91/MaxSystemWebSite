@@ -15,6 +15,7 @@ using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SmartTemplateCore.Models.Common;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Net;
@@ -414,7 +415,8 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             {
                 _threadMessages[threadId] = new List<MessageChatBot>
                 {
-                    new MessageChatBot("system", systemPrompt)
+                    new MessageChatBot("system", systemPrompt),
+                    new MessageChatBot("user", "my name is "+ NAME +" and my email is "+ EMAIL)
                 };
             }
 
@@ -435,6 +437,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     transformedMessages.Add(msg);
                 }
             }
+
             _threadMessages[threadId].AddRange(transformedMessages);
             //_threadMessages[threadId].AddRange(request.Messages);
 
@@ -957,102 +960,102 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     //string xx = "";
                     string combined = fullLineBuffer.ToString();
 
-                    if (!insideCodeBlock)
-                    {
-                        pendingBacktick += content;
+                    //if (!insideCodeBlock)
+                    //{
+                    //    pendingBacktick += content;
 
-                        if (pendingBacktick.EndsWith("`")) {
-                            continue;
-                        }
-                        if (pendingBacktick.EndsWith("``"))
-                        {
-                            continue;
-                        }
-                        if (pendingBacktick.EndsWith("```"))
-                        {
-                            continue;
-                        }
+                    //    if (pendingBacktick.EndsWith("`")) {
+                    //        continue;
+                    //    }
+                    //    if (pendingBacktick.EndsWith("``"))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    if (pendingBacktick.EndsWith("```"))
+                    //    {
+                    //        continue;
+                    //    }
                     
 
 
 
-                        var startIdx = pendingBacktick.ToString().Contains("```");
-                        if (startIdx == true)
-                        {
-                            insideCodeBlock = true;
-                            codeBuffer.Clear();
+                    //    var startIdx = pendingBacktick.ToString().Contains("```");
+                    //    if (startIdx == true)
+                    //    {
+                    //        insideCodeBlock = true;
+                    //        codeBuffer.Clear();
 
-                            //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
-                            //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                            currentLang =  "plaintext";
+                    //        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
+                    //        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                    //        currentLang =  "plaintext";
 
-                            pendingBacktick = "";
-                            fullLineBuffer.Clear();
-                            continue;
-                        }
+                    //        pendingBacktick = "";
+                    //        fullLineBuffer.Clear();
+                    //        continue;
+                    //    }
 
-                        if (pendingBacktick.Length > 4)
-                        {
-                            await Response.WriteAsync(pendingBacktick);
-                            await Response.Body.FlushAsync();
-                            pendingBacktick = "";
-                        }
-                        else if (insideCodeBlock == false && (!pendingBacktick.Contains("[MCP]") || !pendingBacktick.Contains("[M") 
-                            || !pendingBacktick.Contains("[MC") || !pendingBacktick.Contains("[MCP"))) 
-                        {
-                            await Response.WriteAsync(pendingBacktick);
-                            await Response.Body.FlushAsync();
-                            pendingBacktick = "";
-                        }
+                    //    if (pendingBacktick.Length > 4)
+                    //    {
+                    //        await Response.WriteAsync(pendingBacktick);
+                    //        await Response.Body.FlushAsync();
+                    //        pendingBacktick = "";
+                    //    }
+                    //    else if (insideCodeBlock == false && (!pendingBacktick.Contains("[MCP]") || !pendingBacktick.Contains("[M") 
+                    //        || !pendingBacktick.Contains("[MC") || !pendingBacktick.Contains("[MCP"))) 
+                    //    {
+                    //        await Response.WriteAsync(pendingBacktick);
+                    //        await Response.Body.FlushAsync();
+                    //        pendingBacktick = "";
+                    //    }
 
-                        continue;
-                    }
+                    //    continue;
+                    //}
 
-                    if (insideCodeBlock)
-                    {
-                        codeBuffer.Append(content);
+    //                if (insideCodeBlock)
+    //                {
+    //                    codeBuffer.Append(content);
 
-                        if (codeBuffer.ToString().Contains("```"))
-                        {
-                            var cleanCode = codeBuffer.ToString();
-                            var endIndex = cleanCode.IndexOf("```", StringComparison.Ordinal);
-                            cleanCode = cleanCode.Substring(0, endIndex);
+    //                    if (codeBuffer.ToString().Contains("```"))
+    //                    {
+    //                        var cleanCode = codeBuffer.ToString();
+    //                        var endIndex = cleanCode.IndexOf("```", StringComparison.Ordinal);
+    //                        cleanCode = cleanCode.Substring(0, endIndex);
 
-                            // Match pattern ```||> [|lang|]
-                            var match = Regex.Match(fullAssistantReply.ToString(), @"``` *?(?<lang>[^\s]+)");
-                            if (match.Success)
-                            {
-                                currentLang = match.Groups["lang"].Value.Trim().ToLower();
-                            }
+    //                        // Match pattern ```||> [|lang|]
+    //                        var match = Regex.Match(fullAssistantReply.ToString(), @"``` *?(?<lang>[^\s]+)");
+    //                        if (match.Success)
+    //                        {
+    //                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
+    //                        }
 
-                            string tmpID = $"tmpbox_{Guid.NewGuid().ToString()}";
-                            string codeBoxHtml = $@"
-    <div class=""code-box"">
-      <div class=""code-box-header"">
-        <div class=""title"">{currentLang}</div>
-        <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
-      </div>
-      <pre><code class=""language-{currentLang}"" id=""{tmpID}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
-    </div>
-    <script>
-      setTimeout(() => {{
-        const codeBlock = document.getElementById('{tmpID}');
-        if (codeBlock) hljs.highlightElement(codeBlock);
-      }}, 100);
-    </script>";
-                            await Response.WriteAsync(codeBoxHtml);
-                            await Response.Body.FlushAsync();
+    //                        string tmpID = $"tmpbox_{Guid.NewGuid().ToString()}";
+    //                        string codeBoxHtml = $@"
+    //<div class=""code-box"">
+    //  <div class=""code-box-header"">
+    //    <div class=""title"">{currentLang}</div>
+    //    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
+    //  </div>
+    //  <pre><code class=""language-{currentLang}"" id=""{tmpID}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
+    //</div>
+    //<script>
+    //  setTimeout(() => {{
+    //    const codeBlock = document.getElementById('{tmpID}');
+    //    if (codeBlock) hljs.highlightElement(codeBlock);
+    //  }}, 100);
+    //</script>";
+    //                        await Response.WriteAsync(codeBoxHtml);
+    //                        await Response.Body.FlushAsync();
 
 
-                            codeBuffer.Clear();
-                            pendingBacktick = "";
-                            insideCodeBlock = false;
-                            fullLineBuffer.Clear();
-                            continue;
-                        }
+    //                        codeBuffer.Clear();
+    //                        pendingBacktick = "";
+    //                        insideCodeBlock = false;
+    //                        fullLineBuffer.Clear();
+    //                        continue;
+    //                    }
 
-                        continue;
-                    }
+    //                    continue;
+    //                }
 
                     await Response.WriteAsync(content);
                     await Response.Body.FlushAsync();
