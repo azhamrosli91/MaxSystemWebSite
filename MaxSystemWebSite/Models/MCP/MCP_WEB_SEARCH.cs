@@ -27,6 +27,11 @@
         public Dictionary<string, object> Metadata { get; set; }
     }
 
+    public class WebSearchRequest
+    {
+        public string Query { get; set; }
+    }
+
     public class OutputItem
     {
         public string Id { get; set; }

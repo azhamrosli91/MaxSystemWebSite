@@ -162,13 +162,11 @@
     .code-box {
         background-color: #1e1e1e;
         border-radius: 8px;
-        overflow: hidden;
         font-family: Consolas, monospace;
         color: #f8f8f2;
         margin-top: 1rem;
         display: flex;
         flex-direction: column;
-        max-height: 400px; /* set a max height if needed */
     }
 
 
@@ -263,6 +261,7 @@
 
 <div class="chat-message-header">
     <div class="d-flex justify-content-end">
+        <div class="btn btn-phoenix-secondary" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</div>
         <div class="btn btn-sm btn-primary" id="btnStartNew">Start New Conversation</div>
     </div>
 </div>
@@ -270,7 +269,7 @@
 <div class="chat-message-container">
     <div class="bodydata">
         <div class="bodydata">
-            <div class="p-3">
+            <div class="p-3 chatbotinternal">
                 <!-- Bot/User messages go here -->
                 <!-- 👇 Loading Spinner -->
             </div>
@@ -286,15 +285,15 @@
             <div class="chatInputExtraAction d-flex justify-content-between align-items-end">
                 <div class="d-flex align-item-center">
                     <div class="btn-group dropup px-2">
-                        <button class="btn dropdown-toggle chatAddDDL" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
+                        <button class="btn dropdown-toggle chatAddDDL" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                         <div class="dropdown-menu py-0" id="ddlAddOption">
-                            <div class="dropdown-item" data-val="TEST1">Test Value 1</div>
-                            <div class="dropdown-item" data-val="TEST2">Test Value 2</div>
-                            <div class="dropdown-item" data-val="TEST3">Test Value 3</div>
+                            <!-- Connectors will be injected here -->
                         </div>
                     </div>
                     <label class="btn btn-link py-0 px-2 text-body fs-9" for="chatPhotos-0"><span class="fa-solid fa-image"></span></label>
-                    <input class="d-none" type="file" accept="image/*" id="chatPhotos-0" />
+                    <input class="d-none" type="file" accept="image" id="chatPhotos-0" />
                     <label class="btn btn-link py-0 px-2 text-body fs-9" for="chatAttachment-0"> <span class="fa-solid fa-paperclip"></span></label>
                     <input class="d-none" type="file" id="chatAttachment-0" />
                     <div class="btn-group position-relative">
@@ -684,18 +683,76 @@
 
                             // Sanitize after appending
                                 let currentHtml = $botStream.html();
-                                currentHtml = currentHtml
-                                    .replace(/!!\[DONE\]!!/g, '')
-                                    .replace(/\[MCP\]/g, '')
-                                    .replace(/\[MCP/g, '');
 
+                                // console.log(currentHtml);
+                                if (currentHtml != "" && currentHtml != undefined  && currentHtml.includes("!![DONE]!!")){
+                                    
+                                // console.log(cleanCode);
                                 // Replace all ```lang\ncode\n``` with codebox
-                                currentHtml = currentHtml.replace(/```(\w+)?\n([\s\S]*?)```/g, function (match, lang, code) {
+                                var original = currentHtml;
+
+                                currentHtml = currentHtml.replace(/```(?:([a-zA-Z]+)|(?=[\s\S]*?\[MCP\]))\n([\s\S]*?)```/g, function (match, lang, code) {
                                     const currentLang = lang || 'text';
                                     const tmpID = generateUUID();
                                     const cleanCode = $('<div>').text(code.trim()).html(); // Escape HTML safely
+                                    // alert(cleancode);
                                     return codebox(currentLang, tmpID, cleanCode);
                                 });
+                                if (original.toUpperCase().includes("```MCP")) {
+                                let match = original.match(/```MCP([\s\S]*?)```!!\[DONE\]!!/i);
+
+                                if (match && match[1]) {
+                                    try {
+                                        let jsonText = match[1].trim();
+                                        let jsonData = JSON.parse(jsonText);
+                                        var action = jsonData.action;
+                                        if (action === "WEB_SEARCH") {
+                                            console.log("Executing web search for query:", jsonData.query);
+                                            alert(jsonData.query);
+
+                                            // 🔽 AJAX example to your controller
+                                            $.ajax({
+                                                url: '/Snippai/WebSearch',
+                                                method: 'POST',
+                                                contentType: 'application/json',
+                                                data: JSON.stringify({ query: jsonData.query }),
+                                                error: function (err) {
+                                                    console.error("AJAX error:", err);
+                                                }
+                                            });
+                                        }
+
+                                    } catch (e) {
+                                        console.error("Invalid JSON:", e);
+                                    }
+                                }
+                            }
+                                // if (original.toUpperCase().includes("```MCP")) {
+                                //     Extract JSON inside the MCP block
+                                //     let match = original.match(/```MCP([\s\S]*?)```!!\[DONE\]!!/i);
+
+                                //     if (match && match[1]) {
+                                //         try {
+                                //             Trim and parse the JSON part
+                                //             let jsonText = match[1].trim();
+                                //             let jsonData = JSON.parse(jsonText);
+
+                                //             var action = jsonData.action;
+
+                                //             if(action == "WEB_SEARCH"){
+                                //                 console.log("Executing web search");
+                                //             }
+
+                                //         } catch (e) {
+                                //             console.error("Invalid JSON:", e);
+                                //         }
+                                //     }
+                                // }
+
+                                currentHtml = currentHtml
+                                    .replace(/!!\[DONE\]!!/g, '')
+                                    // .replace(/\[MCP\]/g, '')
+                                    // .replace(/\[MCP/g, '');
                                 // 2. Replace --- with <hr />
                                 currentHtml = currentHtml.replace(/^\s*---\s*$/gm, '<hr />');
 
@@ -716,9 +773,13 @@
 
                                 // 8. Remove ###
                                 currentHtml = currentHtml.replace(/###/g, '');
-                                
+
+                                // console.log("Processed HTML:", currentHtml);
                                 $botStream.html(currentHtml);
                                 $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50);
+                                
+                           }
+                                
 
 
 
@@ -743,29 +804,34 @@
             });
         }
 
-              function codebox(currentLang, tmpID, cleanCode) {
-                  if (currentLang === 'js') {
-                    currentLang = 'javascript';
-                  }
+        function codebox(currentLang, tmpID, cleanCode) {
+          if (currentLang === 'js') {
+            currentLang = 'javascript';
+          }
 
-                  const codebox = `
-                    <div class="code-box">
-                      <div class="code-box-header">
-                        <div class="title">${currentLang}</div>
-                        <div class="buttons"><button class="btn-copy">Copy</button></div>
-                      </div>
-                      <pre><code class="language-${currentLang}" id="${tmpID}">${cleanCode}</code></pre>
-                    </div>
-                    <script>
-                      setTimeout(() => {
-                        const codeBlock = document.getElementById('${tmpID}');
-                        if (codeBlock) hljs.highlightElement(codeBlock);
-                      }, 100);
-                    </scr` + `ipt>
-                  `;
+          // Decode HTML entities
+          const txt = document.createElement("textarea");
+          txt.innerHTML = cleanCode;
+          const decodedCode = txt.value;
+          const codebox = `
+            <div class="code-box">
+              <div class="code-box-header">
+                <div class="title">${currentLang}</div>
+                <div class="buttons"><button class="btn-copy">Copy</button></div>
+              </div>
+              <pre><code class="language-${currentLang}" id="${tmpID}">${decodedCode}</code></pre>
+            </div>
+            <script>
+              setTimeout(() => {
+                const codeBlock = document.getElementById('${tmpID}');
+                if (codeBlock) hljs.highlightElement(codeBlock);
+              }, 100);
+            </scr` + `ipt>
+          `;
 
-                  return codebox;
-                }
+          return codebox;
+        }
+
 
         
 
@@ -785,6 +851,109 @@
                     v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+      $("#btnStartNew").on("click", function () {
+        $.ajax({
+          url: "/Snippai/StartNewConversation",
+          type: "POST",
+          success: function (data) {
+            console.log("New thread ID:", data.threadId, data.old_thread);
+
+            // Retrieve existing threads array or initialize new
+            let threads = JSON.parse(localStorage.getItem("threads")) || [];
+
+            // Append old_thread if not exists
+            if (data.old_thread && !threads.includes(data.old_thread)) {
+              threads.push(data.old_thread);
+            }
+
+            // Append new threadId if not exists
+            if (data.threadId && !threads.includes(data.threadId)) {
+              threads.push(data.threadId);
+            }
+
+            // Save updated threads array back to localStorage
+            localStorage.setItem("threads", JSON.stringify(threads));
+
+            // Save current thread separately
+            localStorage.setItem("current_thread", data.threadId);
+
+            // Optionally clear the chat UI
+            $(".chatbotinternal").html("");
+          },
+          error: function (xhr, status, error) {
+            console.error("Error:", error);
+            alert("❌ Could not start new conversation.");
+          }
+        });
+      });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+        }
+
+        function loadFromCookie() {
+            const cookieData = getCookie('connectorData');
+            if (!cookieData) return [];
+            try {
+                return JSON.parse(cookieData);
+            } catch {
+                return [];
+            }
+        }
+
+        const connectorData = loadFromCookie();
+        const dropdownMenu = document.getElementById('ddlAddOption');
+
+        if (!dropdownMenu) {
+            console.error('Dropdown menu not found!');
+            return;
+        }
+
+        // Render connectors
+        connectorData.forEach((connector, index) => {
+            const div = document.createElement('div');
+            div.classList.add('dropdown-item');
+            div.textContent = connector.name;
+            // Store serialized object in data-connector (not data-val)
+            div.setAttribute('data-connector', JSON.stringify(connector));
+            div.setAttribute('data-val', connector.name);
+            dropdownMenu.appendChild(div);
+        });
+
+        // Handle dropdown click
+        dropdownMenu.addEventListener('click', function (e) {
+            const item = e.target.closest('.dropdown-item');
+            if (!item) return;
+
+            const rawData = item.getAttribute('data-connector');
+            try {
+                const connector = JSON.parse(rawData);
+                console.log("✅ You selected connector:", connector);
+
+                // ✅ DO SOMETHING WITH IT
+                handleConnectorSelection(connector);
+
+            } catch (err) {
+                console.error("❌ Failed to parse connector data", rawData);
+            }
+        });
+
+        // Action when user selects a connector
+        function handleConnectorSelection(connector) {
+            // Example: Just log the name or do something useful
+            // alert("You selected: " + connector.name + " (" + connector.type + ")");
+            // You can use connector.server / connector.email / connector.url etc.
         }
     });
 </script>

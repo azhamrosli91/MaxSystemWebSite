@@ -9,6 +9,7 @@ using MaxSys.Models;
 using MaxSystemWebSite.Controllers.PMO;
 using MaxSystemWebSite.Models.MCP;
 using MaxSystemWebSite.Models.SETTING;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph.Models;
@@ -310,6 +311,110 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             return result.id;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> StartNewConversation()
+        {
+            string old_thread = Request.Cookies["chat_thread_id"];
+            string apiKey = _configuration["ChatGPT:SecretKey"];
+            var threadId = await CreateNewThread(apiKey);
+
+            // Set cookie here (this is correct)
+            Response.Cookies.Append("chat_thread_id", threadId, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+
+            return Json(new { threadId, old_thread });
+        }
+
+        [HttpPost]
+        public async Task WebSearch([FromBody] WebSearchRequest request)
+        {
+            string apiKey = _configuration["ChatGPT:SecretKey"];
+            string url = request.Query;
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                Response.ContentType = "text/plain";
+                await Response.WriteAsync("Invalid or missing URL.");
+                await Response.Body.FlushAsync();
+                return;
+            }
+
+            var tools = new[] { new { type = "web_search_preview" } };
+
+            string instructions =
+                "You are a web search agent. The user will provide a URL or a query. " +
+                "You must perform a web search using the provided input and return a summary of the results. " +
+                "The output must be in valid HTML only. Use HTML tags such as <div>, <h1>, <h2>, <p>, <a>, and <ul>. " +
+                "Wrap everything in an outer <div> tag. Do not include any explanations or comments outside of the HTML. " +
+                "Do not say 'Here's the result' or similar. Just return clean HTML, suitable for embedding directly into a webpage." +
+                "Return only the HTML. Do not include any Markdown, plain text, or commentary. Start your response with <div>.";
+
+            var payload = new
+            {
+                model = "gpt-4.1-mini",
+                input = new[] { new { role = "user", content = url } },
+                instructions = instructions,
+                temperature = 0.3,
+                tools = tools
+            };
+
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+            var contentWeb = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage apiResponse;
+
+            try
+            {
+                apiResponse = await httpClient.PostAsync("https://api.openai.com/v1/responses", contentWeb);
+            }
+            catch (HttpRequestException ex)
+            {
+                Response.ContentType = "text/plain";
+                await Response.WriteAsync($"HTTP Request Error: {ex.Message}");
+                await Response.Body.FlushAsync();
+                return;
+            }
+
+            if (apiResponse == null)
+            {
+                Response.ContentType = "text/plain";
+                await Response.WriteAsync("No response received.");
+                await Response.Body.FlushAsync();
+                return;
+            }
+
+            string responseText = await apiResponse.Content.ReadAsStringAsync();
+
+            ApiResponse emailParams = JsonConvert.DeserializeObject<ApiResponse>(responseText);
+
+            string extractedText = emailParams.Output?
+                .FirstOrDefault(o => o.Type == "message")?
+                .Content?
+                .FirstOrDefault(c => c.Type == "output_text")?
+                .Text;
+
+            Response.ContentType = "text/html";
+
+            if (string.IsNullOrEmpty(extractedText))
+            {
+                await Response.WriteAsync(extractedText);
+            }
+            else
+            {
+                await Response.WriteAsync("No output text found.");
+            }
+
+            await Response.Body.FlushAsync();
+        }
+
         private async Task PostUserMessageToThread(string threadId, string message, string apiKey)
         {
             var client = CreateHttpClientWithProxy(apiKey);
@@ -577,359 +682,359 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     {
                         var aiReplyText = fullAssistantReply.ToString().Trim();
 
-                        if (aiReplyText.StartsWith("[MCP]"))
-                        {
-                            isMCP = false;
-                            dynamic mcp = JsonConvert.DeserializeObject(aiReplyText.Replace("[MCP]",""));
-                            string action = mcp?.action;
+                        //if (aiReplyText.StartsWith("[MCP]"))
+                        //{
+                        //    isMCP = false;
+                        //    dynamic mcp = JsonConvert.DeserializeObject(aiReplyText.Replace("[MCP]",""));
+                        //    string action = mcp?.action;
 
-                            if (string.IsNullOrWhiteSpace(action))
-                            {
-                                await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
-
-
-
-                            if (action == "DB_QUERY_EXECUTE")
-                            {
-                                string connStr = mcp?.connection_string;
-
-                                if (string.IsNullOrWhiteSpace(connStr))
-                                {
-                                    await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
-                                    await Response.Body.FlushAsync();
-                                    return;
-                                }
-
-
-                                using var connection = new SqlConnection(connStr);
-                                await connection.OpenAsync();
-
-                                string sql = mcp.sql;
-                                var result = await connection.QueryAsync(sql);
-                                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-                                var rows = result.ToList();
-                                if (rows.Count == 0)
-                                {
-                                    await Response.WriteAsync("<p><i>No data returned.</i></p>");
-                                    await Response.Body.FlushAsync();
-                                    return;
-                                }
-
-                                // Build HTML table
-                                var html = new StringBuilder();
-                                // Start code-box wrapper
-                                html.Append(@"
-                                <div class='code-box'>
-                                  <div class='code-box-header'>
-                                    <div class='title'>table</div>
-                                    <div class='buttons'>
-                                      <button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button>
-                                    </div>
-                                  </div>
-                                  <div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'>
-                                    <table class='table table-bordered table-sm mb-0'>
-                                      <thead class='table-light'><tr>");
+                        //    if (string.IsNullOrWhiteSpace(action))
+                        //    {
+                        //        await Response.WriteAsync("❌ MCP action missing from ChatGPT output.");
+                        //        await Response.Body.FlushAsync();
+                        //        return;
+                        //    }
 
 
 
-                                // Get headers from first row
-                                foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
-                                {
-                                    html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
-                                }
-                                html.Append("</tr></thead><tbody>");
+                        //    if (action == "DB_QUERY_EXECUTE")
+                        //    {
+                        //        string connStr = mcp?.connection_string;
 
-                                foreach (var row in rows)
-                                {
-                                    html.Append("<tr>");
-                                    foreach (var val in (IDictionary<string, object>)row)
-                                    {
-                                        html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
-                                    }
-                                    html.Append("</tr>");
-                                }
-
-                                html.Append(@"
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
-
-                                <script>
-                                function downloadExcel() {
-                                    const payload = {
-                                        filename: 'MCP_Result',
-                                        data: " + JsonConvert.SerializeObject(rows) + @"
-                                    };
-
-                                    fetch('/Snippai/ExportExcel', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify(payload)
-                                    })
-                                    .then(resp => resp.blob())
-                                    .then(blob => {
-                                        const link = document.createElement('a');
-                                        link.href = window.URL.createObjectURL(blob);
-                                        link.download = payload.filename + '.xlsx';
-                                        link.click();
-                                    })
-                                    .catch(err => alert('Export failed: ' + err));
-                                }
-                                </script>");
+                        //        if (string.IsNullOrWhiteSpace(connStr))
+                        //        {
+                        //            await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                        //            await Response.Body.FlushAsync();
+                        //            return;
+                        //        }
 
 
-                                await Response.WriteAsync(html.ToString());
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
+                        //        using var connection = new SqlConnection(connStr);
+                        //        await connection.OpenAsync();
 
-                            if (action == "DB_INSERT_UPDATE")
-                            {
-                                string spName = mcp.sp_name;
-                                var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+                        //        string sql = mcp.sql;
+                        //        var result = await connection.QueryAsync(sql);
+                        //        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
 
-                                var parameters = new DynamicParameters();
-                                foreach (var pair in paramDict)
-                                {
-                                    parameters.Add(pair.Key, pair.Value);
-                                }
+                        //        var rows = result.ToList();
+                        //        if (rows.Count == 0)
+                        //        {
+                        //            await Response.WriteAsync("<p><i>No data returned.</i></p>");
+                        //            await Response.Body.FlushAsync();
+                        //            return;
+                        //        }
 
-                                string connStr = mcp?.connection_string;
-
-                                if (string.IsNullOrWhiteSpace(connStr))
-                                {
-                                    await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
-                                    await Response.Body.FlushAsync();
-                                    return;
-                                }
-
-
-                                using var connection = new SqlConnection(connStr);
-                                await connection.OpenAsync();
-
-                                var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
-                                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
-
-                                await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
-
-                            if (action == "SEND_EMAIL")
-                            {
-                                string cleanedJson = aiReplyText.Replace("[MCP]", "");
-                                JObject jObject = JObject.Parse(cleanedJson);
-
-                                JToken paramsToken = jObject["params"];
-                                MCP_EmailParams emailParams = paramsToken.ToObject<MCP_EmailParams>();
-                                string SenderEmail = EMAIL;
-
-                                List<Recipient> ListReceipt = new List<Recipient>();
-                                List<Recipient> ListCc = new List<Recipient>();
-                                List<Recipient> ListBcc = new List<Recipient>();
-
-                                if (emailParams != null)
-                                {
-                                    if (emailParams.Recipient != null)
-                                    {
-                                        foreach (var item in emailParams.Recipient)
-                                        {
-                                            ListReceipt.Add(new Recipient
-                                            {
-                                                EmailAddress = new EmailAddress
-                                                {
-                                                    Address = item.EmailAddress.Address,
-                                                    Name = item.EmailAddress.Name
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    if (emailParams.Cc != null)
-                                    {
-                                        foreach (var item in emailParams.Cc)
-                                        {
-                                            ListCc.Add(new Recipient
-                                            {
-                                                EmailAddress = new EmailAddress
-                                                {
-                                                    Address = item.EmailAddress.Address,
-                                                    Name = item.EmailAddress.Name
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    if (emailParams.Bcc != null)
-                                    {
-                                        foreach (var item in emailParams.Bcc)
-                                        {
-                                            ListBcc.Add(new Recipient
-                                            {
-                                                EmailAddress = new EmailAddress
-                                                {
-                                                    Address = item.EmailAddress.Address,
-                                                    Name = item.EmailAddress.Name
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    var modelTemp = new Emai_TemplateSent
-                                    {
-                                        Recipient = ListReceipt,
-                                        CC = ListCc,
-                                        BCC = ListBcc,
-                                        Subject = emailParams.Subject,
-                                        subTemplate = emailParams.Body,
-                                        WORD_REPLACE = new List<(string ori, string replace)>
-                                {
-                                    ("[APPLICATION_NAME]", emailParams.Subject),
-                                    ("[EMAIL_SUBJECT]", emailParams.Subject),
-                                    ("[EMAIL_BODY]", emailParams.Body),
-                                    ("[HELP_DESK_EMAIL]", "hr@maxsys.com.my")
-                                },
-                                        Attachments = new List<Emai_TemplateSent.EmailAttachment>()
-                                    };
-
-                                    modelTemp.mainTemplate = await modelTemp.EmailBodyTemplate();
-                                    modelTemp.bodyContent = modelTemp.mainTemplate.Replace("[BODY]", modelTemp.subTemplate);
-                                    var wordResult = modelTemp.WordReplacer(modelTemp.bodyContent);
-                                    if (wordResult.Item1)
-                                    {
-                                        modelTemp.bodyContent = wordResult.Item2;
-                                    }
-                                    SETTING_EMAIL settingEmail = new SETTING_EMAIL();
-
-                                    settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
-                                    settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
-                                    settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
-                                    settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+                        //        // Build HTML table
+                        //        var html = new StringBuilder();
+                        //        // Start code-box wrapper
+                        //        html.Append(@"
+                        //        <div class='code-box'>
+                        //          <div class='code-box-header'>
+                        //            <div class='title'>table</div>
+                        //            <div class='buttons'>
+                        //              <button onclick='downloadExcel()' class='btn-export'><i class='fas fa-file-export'></i> Export</button>
+                        //            </div>
+                        //          </div>
+                        //          <div class='table-responsive' style='max-height:400px; overflow:auto; padding:10px;'>
+                        //            <table class='table table-bordered table-sm mb-0'>
+                        //              <thead class='table-light'><tr>");
 
 
 
-                                    modelTemp.Setting_Setup = new Setting_Setup();
-                                    modelTemp.Setting_Setup.SMTP_ACCOUNT = SenderEmail;
+                        //        // Get headers from first row
+                        //        foreach (var col in ((IDictionary<string, object>)rows[0]).Keys)
+                        //        {
+                        //            html.Append($"<th>{WebUtility.HtmlEncode(col)}</th>");
+                        //        }
+                        //        html.Append("</tr></thead><tbody>");
 
-                                    _emailService.InitGraph(settingEmail);
+                        //        foreach (var row in rows)
+                        //        {
+                        //            html.Append("<tr>");
+                        //            foreach (var val in (IDictionary<string, object>)row)
+                        //            {
+                        //                html.Append($"<td>{WebUtility.HtmlEncode(val.Value?.ToString() ?? "")}</td>");
+                        //            }
+                        //            html.Append("</tr>");
+                        //        }
 
-                                    (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
+                        //        html.Append(@"
+                        //              </tbody>
+                        //            </table>
+                        //          </div>
+                        //        </div>
 
-                                    if (!result.status)
-                                    {
-                                        await Response.WriteAsync($"Failed to send email.{result.message}");
-                                    }
-                                    await Response.WriteAsync($"Your Email subject: \n {emailParams.Subject}");
-                                    await Response.WriteAsync($"\nYour Email body: \n {emailParams.Body}");
-                                    await Response.WriteAsync($"\nEmail sent");
-                                    await Response.Body.FlushAsync();
-                                    return;
-                                }
-                            }
+                        //        <script>
+                        //        function downloadExcel() {
+                        //            const payload = {
+                        //                filename: 'MCP_Result',
+                        //                data: " + JsonConvert.SerializeObject(rows) + @"
+                        //            };
 
-                            if (action == "WEB_SEARCH")
-                            {
-                                string? url = mcp?.query;
-
-                                if (string.IsNullOrWhiteSpace(url))
-                                {
-                                    await Response.WriteAsync("Invalid or missing URL.");
-                                    await Response.Body.FlushAsync();
-                                    return;
-                                }
-
-                                var tools = new[]
-                                    {
-                                    new { type = "web_search_preview" }
-                                    };
-
-
-                                string instructions =
-                                "You are a web search agent. The user will provide a URL or a query. " +
-                                "You must perform a web search using the provided input and return a summary of the results. " +
-                                "The output must be in valid HTML only. Use HTML tags such as <div>, <h1>, <h2>, <p>, <a>, and <ul>. " +
-                                "Wrap everything in an outer <div> tag. Do not include any explanations or comments outside of the HTML. " +
-                                "Do not say 'Here's the result' or similar. Just return clean HTML, suitable for embedding directly into a webpage."+
-                                "Return only the HTML. Do not include any Markdown, plain text, or commentary. Start your response with <div>.";
-
-
-
-                                var payload = new
-                                {
-                                    model = "gpt-4.1-mini",
-                                    input = new[]
-                                    {
-                                        new { role = "user", content = url }
-                                    },
-                                    instructions = instructions,
-                                    temperature = temperature,
-                                    tools = tools
-                                };
-
-                                using var httpClient = new HttpClient();
-                                httpClient.DefaultRequestHeaders.Authorization =
-                                    new AuthenticationHeaderValue("Bearer", apiKey);
-
-                                string jsonPayload = JsonConvert.SerializeObject(payload);
-                                var contentWeb = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                                HttpResponseMessage apiResponse = null;
-
-                                try
-                                {
-                                    apiResponse = await httpClient.PostAsync("https://api.openai.com/v1/responses", contentWeb);
-                                }
-                                catch (HttpRequestException ex)
-                                {
-                                    await Response.WriteAsync($"HTTP Request Error: {ex.Message}");
-                                    return;
-                                }
-
-                                if (apiResponse == null)
-                                {
-                                    await Response.WriteAsync("No response received.");
-                                    return;
-                                }
-
-                                string responseText = await apiResponse.Content.ReadAsStringAsync();
-
-                                //JObject jObject = JObject.Parse(responseText);
-                                //JToken paramsToken = jObject["params"];
-
-                                ApiResponse emailParams = JsonConvert.DeserializeObject<ApiResponse>(responseText);
-                                //Console.WriteLine(emailParams);
-
-                                string extractedText = emailParams.Output
-                                    ?.FirstOrDefault(o => o.Type == "message")
-                                    ?.Content?
-                                    .FirstOrDefault(c => c.Type == "output_text")
-                                    ?.Text;
-
-                                if (!string.IsNullOrEmpty(extractedText))
-                                {
-                                    await Response.WriteAsync(extractedText);
-                                }
-                                else
-                                {
-                                    await Response.WriteAsync("No output text found.");
-                                }
+                        //            fetch('/Snippai/ExportExcel', {
+                        //                method: 'POST',
+                        //                headers: {
+                        //                    'Content-Type': 'application/json'
+                        //                },
+                        //                body: JSON.stringify(payload)
+                        //            })
+                        //            .then(resp => resp.blob())
+                        //            .then(blob => {
+                        //                const link = document.createElement('a');
+                        //                link.href = window.URL.createObjectURL(blob);
+                        //                link.download = payload.filename + '.xlsx';
+                        //                link.click();
+                        //            })
+                        //            .catch(err => alert('Export failed: ' + err));
+                        //        }
+                        //        </script>");
 
 
-                                await Response.WriteAsync(extractedText);
-                                await Response.Body.FlushAsync();
-                                return;
-                            }
+                        //        await Response.WriteAsync(html.ToString());
+                        //        await Response.Body.FlushAsync();
+                        //        return;
+                        //    }
 
-                            await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
-                            await Response.Body.FlushAsync();
-                        }
+                        //    if (action == "DB_INSERT_UPDATE")
+                        //    {
+                        //        string spName = mcp.sp_name;
+                        //        var paramDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(mcp.@params.ToString());
+
+                        //        var parameters = new DynamicParameters();
+                        //        foreach (var pair in paramDict)
+                        //        {
+                        //            parameters.Add(pair.Key, pair.Value);
+                        //        }
+
+                        //        string connStr = mcp?.connection_string;
+
+                        //        if (string.IsNullOrWhiteSpace(connStr))
+                        //        {
+                        //            await Response.WriteAsync("🔐 MCP request from ChatGPT requires `connection_string`.");
+                        //            await Response.Body.FlushAsync();
+                        //            return;
+                        //        }
+
+
+                        //        using var connection = new SqlConnection(connStr);
+                        //        await connection.OpenAsync();
+
+                        //        var result = await connection.QueryAsync(spName, parameters, commandType: CommandType.StoredProcedure);
+                        //        string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+                        //        await Response.WriteAsync($@"<pre><code class=""language-json"">{WebUtility.HtmlEncode(json)}</code></pre>");
+                        //        await Response.Body.FlushAsync();
+                        //        return;
+                        //    }
+
+                        //    if (action == "SEND_EMAIL")
+                        //    {
+                        //        string cleanedJson = aiReplyText.Replace("[MCP]", "");
+                        //        JObject jObject = JObject.Parse(cleanedJson);
+
+                        //        JToken paramsToken = jObject["params"];
+                        //        MCP_EmailParams emailParams = paramsToken.ToObject<MCP_EmailParams>();
+                        //        string SenderEmail = EMAIL;
+
+                        //        List<Recipient> ListReceipt = new List<Recipient>();
+                        //        List<Recipient> ListCc = new List<Recipient>();
+                        //        List<Recipient> ListBcc = new List<Recipient>();
+
+                        //        if (emailParams != null)
+                        //        {
+                        //            if (emailParams.Recipient != null)
+                        //            {
+                        //                foreach (var item in emailParams.Recipient)
+                        //                {
+                        //                    ListReceipt.Add(new Recipient
+                        //                    {
+                        //                        EmailAddress = new EmailAddress
+                        //                        {
+                        //                            Address = item.EmailAddress.Address,
+                        //                            Name = item.EmailAddress.Name
+                        //                        }
+                        //                    });
+                        //                }
+                        //            }
+
+                        //            if (emailParams.Cc != null)
+                        //            {
+                        //                foreach (var item in emailParams.Cc)
+                        //                {
+                        //                    ListCc.Add(new Recipient
+                        //                    {
+                        //                        EmailAddress = new EmailAddress
+                        //                        {
+                        //                            Address = item.EmailAddress.Address,
+                        //                            Name = item.EmailAddress.Name
+                        //                        }
+                        //                    });
+                        //                }
+                        //            }
+
+                        //            if (emailParams.Bcc != null)
+                        //            {
+                        //                foreach (var item in emailParams.Bcc)
+                        //                {
+                        //                    ListBcc.Add(new Recipient
+                        //                    {
+                        //                        EmailAddress = new EmailAddress
+                        //                        {
+                        //                            Address = item.EmailAddress.Address,
+                        //                            Name = item.EmailAddress.Name
+                        //                        }
+                        //                    });
+                        //                }
+                        //            }
+
+                        //            var modelTemp = new Emai_TemplateSent
+                        //            {
+                        //                Recipient = ListReceipt,
+                        //                CC = ListCc,
+                        //                BCC = ListBcc,
+                        //                Subject = emailParams.Subject,
+                        //                subTemplate = emailParams.Body,
+                        //                WORD_REPLACE = new List<(string ori, string replace)>
+                        //        {
+                        //            ("[APPLICATION_NAME]", emailParams.Subject),
+                        //            ("[EMAIL_SUBJECT]", emailParams.Subject),
+                        //            ("[EMAIL_BODY]", emailParams.Body),
+                        //            ("[HELP_DESK_EMAIL]", "hr@maxsys.com.my")
+                        //        },
+                        //                Attachments = new List<Emai_TemplateSent.EmailAttachment>()
+                        //            };
+
+                        //            modelTemp.mainTemplate = await modelTemp.EmailBodyTemplate();
+                        //            modelTemp.bodyContent = modelTemp.mainTemplate.Replace("[BODY]", modelTemp.subTemplate);
+                        //            var wordResult = modelTemp.WordReplacer(modelTemp.bodyContent);
+                        //            if (wordResult.Item1)
+                        //            {
+                        //                modelTemp.bodyContent = wordResult.Item2;
+                        //            }
+                        //            SETTING_EMAIL settingEmail = new SETTING_EMAIL();
+
+                        //            settingEmail.TENANT_ID = _configuration["Settings:TenantId"];
+                        //            settingEmail.CLIENT_ID = _configuration["Settings:ClientId"];
+                        //            settingEmail.CLIENT_SECRET = _configuration["Settings:ClientSecret"];
+                        //            settingEmail.GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0];
+
+
+
+                        //            modelTemp.Setting_Setup = new Setting_Setup();
+                        //            modelTemp.Setting_Setup.SMTP_ACCOUNT = SenderEmail;
+
+                        //            _emailService.InitGraph(settingEmail);
+
+                        //            (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
+
+                        //            if (!result.status)
+                        //            {
+                        //                await Response.WriteAsync($"Failed to send email.{result.message}");
+                        //            }
+                        //            await Response.WriteAsync($"Your Email subject: \n {emailParams.Subject}");
+                        //            await Response.WriteAsync($"\nYour Email body: \n {emailParams.Body}");
+                        //            await Response.WriteAsync($"\nEmail sent");
+                        //            await Response.Body.FlushAsync();
+                        //            return;
+                        //        }
+                        //    }
+
+                        //if (action == "WEB_SEARCH")
+                        //{
+                        //    string? url = mcp?.query;
+
+                        //    if (string.IsNullOrWhiteSpace(url))
+                        //    {
+                        //        await Response.WriteAsync("Invalid or missing URL.");
+                        //        await Response.Body.FlushAsync();
+                        //        return;
+                        //    }
+
+                        //    var tools = new[]
+                        //        {
+                        //            new { type = "web_search_preview" }
+                        //            };
+
+
+                        //    string instructions =
+                        //    "You are a web search agent. The user will provide a URL or a query. " +
+                        //    "You must perform a web search using the provided input and return a summary of the results. " +
+                        //    "The output must be in valid HTML only. Use HTML tags such as <div>, <h1>, <h2>, <p>, <a>, and <ul>. " +
+                        //    "Wrap everything in an outer <div> tag. Do not include any explanations or comments outside of the HTML. " +
+                        //    "Do not say 'Here's the result' or similar. Just return clean HTML, suitable for embedding directly into a webpage." +
+                        //    "Return only the HTML. Do not include any Markdown, plain text, or commentary. Start your response with <div>.";
+
+
+
+                        //    var payload = new
+                        //    {
+                        //        model = "gpt-4.1-mini",
+                        //        input = new[]
+                        //        {
+                        //                new { role = "user", content = url }
+                        //            },
+                        //        instructions = instructions,
+                        //        temperature = temperature,
+                        //        tools = tools
+                        //    };
+
+                        //    using var httpClient = new HttpClient();
+                        //    httpClient.DefaultRequestHeaders.Authorization =
+                        //        new AuthenticationHeaderValue("Bearer", apiKey);
+
+                        //    string jsonPayload = JsonConvert.SerializeObject(payload);
+                        //    var contentWeb = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                        //    HttpResponseMessage apiResponse = null;
+
+                        //    try
+                        //    {
+                        //        apiResponse = await httpClient.PostAsync("https://api.openai.com/v1/responses", contentWeb);
+                        //    }
+                        //    catch (HttpRequestException ex)
+                        //    {
+                        //        await Response.WriteAsync($"HTTP Request Error: {ex.Message}");
+                        //        return;
+                        //    }
+
+                        //    if (apiResponse == null)
+                        //    {
+                        //        await Response.WriteAsync("No response received.");
+                        //        return;
+                        //    }
+
+                        //    string responseText = await apiResponse.Content.ReadAsStringAsync();
+
+                        //    //JObject jObject = JObject.Parse(responseText);
+                        //    //JToken paramsToken = jObject["params"];
+
+                        //    ApiResponse emailParams = JsonConvert.DeserializeObject<ApiResponse>(responseText);
+                        //    //Console.WriteLine(emailParams);
+
+                        //    string extractedText = emailParams.Output
+                        //        ?.FirstOrDefault(o => o.Type == "message")
+                        //        ?.Content?
+                        //        .FirstOrDefault(c => c.Type == "output_text")
+                        //        ?.Text;
+
+                        //    if (!string.IsNullOrEmpty(extractedText))
+                        //    {
+                        //        await Response.WriteAsync(extractedText);
+                        //    }
+                        //    else
+                        //    {
+                        //        await Response.WriteAsync("No output text found.");
+                        //    }
+
+
+                        //    await Response.WriteAsync(extractedText);
+                        //    await Response.Body.FlushAsync();
+                        //    return;
+                        //}
+
+                        //    await Response.WriteAsync("⚠ Unknown MCP action from ChatGPT.");
+                        //    await Response.Body.FlushAsync();
+                        //}
                         await Response.WriteAsync("!![DONE]!!");
                         await Response.Body.FlushAsync();
 
@@ -950,118 +1055,120 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 fullAssistantReply.Append(content);
                 fullLineBuffer.Append(content);
 
-                if (fullAssistantReply.ToString().Contains("[MCP]"))
-                {
-                    isMCP = true;
-                }
-                if (isMCP ==false)
-                { 
-                
-                    //string xx = "";
-                    string combined = fullLineBuffer.ToString();
+                //if (fullAssistantReply.ToString().Contains("[MCP]"))
+                //{
+                //    isMCP = true;
+                //}
+                //            if (isMCP ==false)
+                //            { 
 
-                    //if (!insideCodeBlock)
-                    //{
-                    //    pendingBacktick += content;
+                //                //string xx = "";
+                //                string combined = fullLineBuffer.ToString();
 
-                    //    if (pendingBacktick.EndsWith("`")) {
-                    //        continue;
-                    //    }
-                    //    if (pendingBacktick.EndsWith("``"))
-                    //    {
-                    //        continue;
-                    //    }
-                    //    if (pendingBacktick.EndsWith("```"))
-                    //    {
-                    //        continue;
-                    //    }
-                    
+                //                //if (!insideCodeBlock)
+                //                //{
+                //                //    pendingBacktick += content;
 
+                //                //    if (pendingBacktick.EndsWith("`")) {
+                //                //        continue;
+                //                //    }
+                //                //    if (pendingBacktick.EndsWith("``"))
+                //                //    {
+                //                //        continue;
+                //                //    }
+                //                //    if (pendingBacktick.EndsWith("```"))
+                //                //    {
+                //                //        continue;
+                //                //    }
 
 
-                    //    var startIdx = pendingBacktick.ToString().Contains("```");
-                    //    if (startIdx == true)
-                    //    {
-                    //        insideCodeBlock = true;
-                    //        codeBuffer.Clear();
-
-                    //        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
-                    //        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                    //        currentLang =  "plaintext";
-
-                    //        pendingBacktick = "";
-                    //        fullLineBuffer.Clear();
-                    //        continue;
-                    //    }
-
-                    //    if (pendingBacktick.Length > 4)
-                    //    {
-                    //        await Response.WriteAsync(pendingBacktick);
-                    //        await Response.Body.FlushAsync();
-                    //        pendingBacktick = "";
-                    //    }
-                    //    else if (insideCodeBlock == false && (!pendingBacktick.Contains("[MCP]") || !pendingBacktick.Contains("[M") 
-                    //        || !pendingBacktick.Contains("[MC") || !pendingBacktick.Contains("[MCP"))) 
-                    //    {
-                    //        await Response.WriteAsync(pendingBacktick);
-                    //        await Response.Body.FlushAsync();
-                    //        pendingBacktick = "";
-                    //    }
-
-                    //    continue;
-                    //}
-
-    //                if (insideCodeBlock)
-    //                {
-    //                    codeBuffer.Append(content);
-
-    //                    if (codeBuffer.ToString().Contains("```"))
-    //                    {
-    //                        var cleanCode = codeBuffer.ToString();
-    //                        var endIndex = cleanCode.IndexOf("```", StringComparison.Ordinal);
-    //                        cleanCode = cleanCode.Substring(0, endIndex);
-
-    //                        // Match pattern ```||> [|lang|]
-    //                        var match = Regex.Match(fullAssistantReply.ToString(), @"``` *?(?<lang>[^\s]+)");
-    //                        if (match.Success)
-    //                        {
-    //                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
-    //                        }
-
-    //                        string tmpID = $"tmpbox_{Guid.NewGuid().ToString()}";
-    //                        string codeBoxHtml = $@"
-    //<div class=""code-box"">
-    //  <div class=""code-box-header"">
-    //    <div class=""title"">{currentLang}</div>
-    //    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
-    //  </div>
-    //  <pre><code class=""language-{currentLang}"" id=""{tmpID}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
-    //</div>
-    //<script>
-    //  setTimeout(() => {{
-    //    const codeBlock = document.getElementById('{tmpID}');
-    //    if (codeBlock) hljs.highlightElement(codeBlock);
-    //  }}, 100);
-    //</script>";
-    //                        await Response.WriteAsync(codeBoxHtml);
-    //                        await Response.Body.FlushAsync();
 
 
-    //                        codeBuffer.Clear();
-    //                        pendingBacktick = "";
-    //                        insideCodeBlock = false;
-    //                        fullLineBuffer.Clear();
-    //                        continue;
-    //                    }
+                //                //    var startIdx = pendingBacktick.ToString().Contains("```");
+                //                //    if (startIdx == true)
+                //                //    {
+                //                //        insideCodeBlock = true;
+                //                //        codeBuffer.Clear();
 
-    //                    continue;
-    //                }
+                //                //        //var remaining = pendingBacktick.Substring(startIdx + 6).TrimStart();
+                //                //        //var parts = remaining.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                //                //        currentLang =  "plaintext";
 
-                    await Response.WriteAsync(content);
-                    await Response.Body.FlushAsync();
-                    fullLineBuffer.Clear();
-                }
+                //                //        pendingBacktick = "";
+                //                //        fullLineBuffer.Clear();
+                //                //        continue;
+                //                //    }
 
+                //                //    if (pendingBacktick.Length > 4)
+                //                //    {
+                //                //        await Response.WriteAsync(pendingBacktick);
+                //                //        await Response.Body.FlushAsync();
+                //                //        pendingBacktick = "";
+                //                //    }
+                //                //    else if (insideCodeBlock == false && (!pendingBacktick.Contains("[MCP]") || !pendingBacktick.Contains("[M") 
+                //                //        || !pendingBacktick.Contains("[MC") || !pendingBacktick.Contains("[MCP"))) 
+                //                //    {
+                //                //        await Response.WriteAsync(pendingBacktick);
+                //                //        await Response.Body.FlushAsync();
+                //                //        pendingBacktick = "";
+                //                //    }
+
+                //                //    continue;
+                //                //}
+
+                ////                if (insideCodeBlock)
+                ////                {
+                ////                    codeBuffer.Append(content);
+
+                ////                    if (codeBuffer.ToString().Contains("```"))
+                ////                    {
+                ////                        var cleanCode = codeBuffer.ToString();
+                ////                        var endIndex = cleanCode.IndexOf("```", StringComparison.Ordinal);
+                ////                        cleanCode = cleanCode.Substring(0, endIndex);
+
+                ////                        // Match pattern ```||> [|lang|]
+                ////                        var match = Regex.Match(fullAssistantReply.ToString(), @"``` *?(?<lang>[^\s]+)");
+                ////                        if (match.Success)
+                ////                        {
+                ////                            currentLang = match.Groups["lang"].Value.Trim().ToLower();
+                ////                        }
+
+                ////                        string tmpID = $"tmpbox_{Guid.NewGuid().ToString()}";
+                ////                        string codeBoxHtml = $@"
+                ////<div class=""code-box"">
+                ////  <div class=""code-box-header"">
+                ////    <div class=""title"">{currentLang}</div>
+                ////    <div class=""buttons""><button class=""btn-copy"">Copy</button></div>
+                ////  </div>
+                ////  <pre><code class=""language-{currentLang}"" id=""{tmpID}"">{WebUtility.HtmlEncode(cleanCode)}</code></pre>
+                ////</div>
+                ////<script>
+                ////  setTimeout(() => {{
+                ////    const codeBlock = document.getElementById('{tmpID}');
+                ////    if (codeBlock) hljs.highlightElement(codeBlock);
+                ////  }}, 100);
+                ////</script>";
+                ////                        await Response.WriteAsync(codeBoxHtml);
+                ////                        await Response.Body.FlushAsync();
+
+
+                ////                        codeBuffer.Clear();
+                ////                        pendingBacktick = "";
+                ////                        insideCodeBlock = false;
+                ////                        fullLineBuffer.Clear();
+                ////                        continue;
+                ////                    }
+
+                ////                    continue;
+                ////                }
+
+                //                await Response.WriteAsync(content);
+                //                await Response.Body.FlushAsync();
+                //                fullLineBuffer.Clear();
+                //            }
+                await Response.WriteAsync(WebUtility.HtmlEncode(content));
+                await Response.Body.FlushAsync();
+                fullLineBuffer.Clear();
             }
 
 
