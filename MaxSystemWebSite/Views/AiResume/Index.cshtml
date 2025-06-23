@@ -105,7 +105,7 @@
                     <hr />
                     <div class="mb-3">
                         <!-- Your table -->
-                        <table id="example" class="table table-striped" style="width:100%">
+                        <table id="example" class="table table-striped table-hover tr-responsive-table default-list" style="width:100%">
                             <thead>
                                 <tr>
                                     <th style="min-width: 250px;">Contact</th>
@@ -114,8 +114,7 @@
                                     <th style="min-width: 120px; text-align: center;">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -194,6 +193,20 @@
 
         // Initialize DataTable
         const table = $('#example').DataTable({
+            columnDefs: [
+                {
+                    targets: "_all", // Apply to all columns
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        var api = this.api();
+                        // Add the data-title attribute with the column header text
+                        if ($(api.column(col).header()).hasClass('mv-d-none')) {
+                            $(td).addClass('mv-d-none');
+                        }
+                        var headerText = api.column(col).header().textContent;
+                        $(td).attr('data-title', headerText);
+                    }
+                }
+            ],
             initComplete: function () {
                  $("#example").wrap(`<div class="tr-scrolledDataTable h-100"></div>`);
             }
