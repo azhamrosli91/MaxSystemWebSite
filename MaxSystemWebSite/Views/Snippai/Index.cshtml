@@ -610,6 +610,7 @@
        //SENT button
         $('#btnSend').on('click', function () {
             const messageContent = $('.chat-textarea').html().trim();
+
             const username = $("#txtuseremail").val(); // Replace dynamically if needed
 
             if (!messageContent) {
@@ -620,16 +621,40 @@
             const $btn = $(this);
             $btn.prop('disabled', true).html('Sending...');
 
+
+            function getLoadingPlaceholder() {
+                    return `
+                        <div class="loading-placeholder">
+                            <span class="loader"></span>
+                            <span class="loading-text">Thinking...</span>
+                        </div>
+                    `;
+                }
+
             // Append user message (blue bubble)
+            // Sanitize and resize any images inside the user message
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = messageContent;
+
+            tempDiv.querySelectorAll('img').forEach(img => {
+                img.style.maxWidth = '200px';  // Limit image width
+                img.style.maxHeight = '200px'; // Optional: limit height
+                img.style.borderRadius = '8px'; // Optional: rounded corners
+                img.style.margin = '5px 0'; // Optional: spacing
+            });
+
+            const safeUserHTML = tempDiv.innerHTML;
+
             const userMsg = `
             <div class="chat-message user d-flex justify-content-start align-items-center" style="flex-wrap: nowrap;">
               <div id="chat-loading" class="chatloading me-2 flex-shrink-0">
                 <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
               </div>
               <div class="text-start" style="word-break: break-word; white-space: normal;">
-                ${messageContent}
+                ${safeUserHTML}
               </div>
             </div>`;
+
 
 
             $('.bodydata .p-3').append(userMsg);
@@ -660,7 +685,6 @@
             }).then(response => {
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder('utf-8');
-
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
@@ -685,48 +709,108 @@
                                 let currentHtml = $botStream.html();
 
                                 // console.log(currentHtml);
-                                if (currentHtml != "" && currentHtml != undefined  && currentHtml.includes("!![DONE]!!")){
+                        if (currentHtml != "" && currentHtml != undefined  && currentHtml.includes("!![DONE]!!"))
+                        {
                                     
                                 // console.log(cleanCode);
                                 // Replace all ```lang\ncode\n``` with codebox
                                 var original = currentHtml;
+                                var mcpjson = "";
+                                var isMCP = false;
+                                let mcpPlaceholderID = ''; // Add this above so it’s accessible globally in this scope
 
                                 currentHtml = currentHtml.replace(/```(?:([a-zA-Z]+)|(?=[\s\S]*?\[MCP\]))\n([\s\S]*?)```/g, function (match, lang, code) {
                                     const currentLang = lang || 'text';
                                     const tmpID = generateUUID();
                                     const cleanCode = $('<div>').text(code.trim()).html(); // Escape HTML safely
                                     // alert(cleancode);
+                                        // Check if this block is an MCP block
+                                    if (match.toUpperCase().includes('[MCP]') || (currentLang.toUpperCase() === 'MCP')) {
+                                        mcpjson = cleanCode;
+                                        MCP = JSON.stringify(mcpjson)
+                                        let parsed = JSON.parse(mcpjson); // convert string to object
+                                        let action = parsed.action;
+
+                                        mcpPlaceholderID = `mcp-placeholder-${tmpID}`;
+
+                                        
+                                        return `
+                                            <div class="text-muted my-2 d-flex align-items-center gap-2" id="mcp-placeholder-${tmpID}">
+                                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                                <span>Executing ${action}...</span>
+                                            </div>
+                                        `;
+                                    }
                                     return codebox(currentLang, tmpID, cleanCode);
                                 });
-                                if (original.toUpperCase().includes("```MCP")) {
-                                let match = original.match(/```MCP([\s\S]*?)```!!\[DONE\]!!/i);
+                                 console.log(original);
 
-                                if (match && match[1]) {
-                                    try {
-                                        let jsonText = match[1].trim();
-                                        let jsonData = JSON.parse(jsonText);
-                                        var action = jsonData.action;
-                                        if (action === "WEB_SEARCH") {
-                                            console.log("Executing web search for query:", jsonData.query);
-                                            alert(jsonData.query);
+                                if (original.toUpperCase().includes("[MCP]")||original.toUpperCase().includes("```MCP")) {
+                                    const $mcpLoading = $(`<div class="mcp-loading my-2 text-muted"><span class="spinner-border spinner-border-sm"></span> Executing MCP...</div>`);
+                                    $botStream.append($mcpLoading);
+                                    isMCP = true;
+                                    console.log(mcpjson);
+                                        (async () => {
+                                            try {
+                                                const response = await fetch('/api/MCP/handle', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify(mcpjson)
+                                                });
 
-                                            // 🔽 AJAX example to your controller
-                                            $.ajax({
-                                                url: '/Snippai/WebSearch',
-                                                method: 'POST',
-                                                contentType: 'application/json',
-                                                data: JSON.stringify({ query: jsonData.query }),
-                                                error: function (err) {
-                                                    console.error("AJAX error:", err);
+                                                if (!response.ok) {
+                                                    const errorText = await response.text();
+                                                    throw new Error(errorText);
                                                 }
-                                            });
-                                        }
+                                                $mcpLoading.remove();
+                                                const html = await response.text();
 
-                                    } catch (e) {
-                                        console.error("Invalid JSON:", e);
-                                    }
+                                                // ✅ Remove the placeholder after MCP completes
+                                            if (mcpPlaceholderID) {
+                                                $(`#${mcpPlaceholderID}`).remove();
+                                            }
+
+                                                // Append MCP HTML to the current bot stream message
+                                                $botStream.append("<br>");
+
+                                                currentHtml = html
+                                                    .replace(/!!\[DONE\]!!/g, '')
+                                                    // .replace(/\[MCP\]/g, '')
+                                                    // .replace(/\[MCP/g, '');
+                                                // 2. Replace --- with <hr />
+                                                currentHtml = currentHtml.replace(/^\s*---\s*$/gm, '<hr />');
+
+                                                // 3. Replace **bold** with <strong>
+                                                currentHtml = currentHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+                                                // 4. Replace *italic* with <em>
+                                                currentHtml = currentHtml.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                                                // 5. Replace `inline code` with <code>
+                                                currentHtml = currentHtml.replace(/`([^`\n]+?)`/g, '<code>$1</code>');
+
+                                                // 6. Convert [text](url) to clickable links
+                                                currentHtml = currentHtml.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+                                                // 7. Convert ![alt](image_url) to <img src="">
+                                                currentHtml = currentHtml.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;">');
+
+                                                // 8. Remove ###
+                                                currentHtml = currentHtml.replace(/###/g, '');
+
+                                                $botStream.append(currentHtml);
+
+                                                $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 300);
+                                            } catch (err) {
+                                                console.error("MCP AJAX Error:", err);
+                                                alert('MCP error: ' + err.message);
+                                            }
+                                        })();
+
+                                
                                 }
-                            }
                                 // if (original.toUpperCase().includes("```MCP")) {
                                 //     Extract JSON inside the MCP block
                                 //     let match = original.match(/```MCP([\s\S]*?)```!!\[DONE\]!!/i);
@@ -795,7 +879,9 @@
                 $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
             });
         });
-
+        function sanitiseString(value){
+        
+        }
         function generateUUID() {
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 var r = Math.random() * 16 | 0,
@@ -927,7 +1013,16 @@
             div.textContent = connector.name;
             // Store serialized object in data-connector (not data-val)
             div.setAttribute('data-connector', JSON.stringify(connector));
-            div.setAttribute('data-val', connector.name);
+            // div.setAttribute('data-val', connector.name + connector.type);
+            if (connector.type == 'email'){
+                div.setAttribute('data-val', connector.type + connector.email);
+            }
+            if (connector.type == 'mssql'){
+                div.setAttribute('data-val', connector.type + connector.server +  connector.username + connector.password);
+            }
+            if (connector.type == 'proxy'){
+                div.setAttribute('data-val', connector.type  + connector.url + connector.username + connector.password + connector.required);
+            }
             dropdownMenu.appendChild(div);
         });
 
@@ -951,9 +1046,7 @@
 
         // Action when user selects a connector
         function handleConnectorSelection(connector) {
-            // Example: Just log the name or do something useful
-            // alert("You selected: " + connector.name + " (" + connector.type + ")");
-            // You can use connector.server / connector.email / connector.url etc.
+
         }
     });
 </script>

@@ -141,14 +141,14 @@
                             <input type="text"
                                    class="form-control"
                                    id="proxyUser"
-                                   name="username" />
+                                   name="proxyusername" />
                         </div>
                         <div class="mb-3">
                             <label for="proxyPass" class="form-label">Password</label>
                             <input type="password"
                                    class="form-control"
                                    id="proxyPass"
-                                   name="password" />
+                                   name="proxypassword" />
                         </div>
                         <div class="mb-3 d-flex align-items-center">
                             <input class="form-check-input me-2"
@@ -282,9 +282,9 @@
                 data.email = formData.get('email');
             } else if (type === 'proxy') {
                 data.url = formData.get('url');
-                data.username = formData.get('username');
-                data.password = formData.get('password');
-                data.required = formData.get('required') === 'on';
+                data.username = formData.get('proxyusername');
+                data.password = formData.get('proxypassword');
+                data.required = form.elements['required'].checked;
             }
 
             // Add human-readable summary
@@ -340,10 +340,10 @@
                     form.elements['email'].value = item.email || '';
                 } else if (item.type === 'proxy') {
                     form.elements['url'].value = item.url || '';
-                    form.elements['username'].value = item.username || '';
-                    form.elements['password'].value = item.password || '';
-                    form.elements['required'].checked = item.required || false;
-                }
+                    form.elements['proxyusername'].value = item.username || '';
+                    form.elements['proxypassword'].value = item.password || '';
+                    form.elements['required'].checked = !!item.required;
+                  }
 
                 new bootstrap.Modal(modal).show();
             }
