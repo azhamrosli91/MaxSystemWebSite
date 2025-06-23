@@ -69,6 +69,9 @@
     .tr-responsive-table tbody td.mv-d-none {
         display: none;
     }
+    .tr-responsive-table tbody td.mv-d-column {
+        flex-direction: column;
+    }
 
     .tr-responsive-table td:not(.dataTables_empty)::before {
         content: attr(data-title);
@@ -76,6 +79,10 @@
         max-width: 100px;
         flex-shrink: 0;
         font-weight: bold;
+    }
+    .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before {
+        width: 100%;
+        max-width: unset;
     }
 
 
@@ -275,6 +282,10 @@
 .boostrap-none .tr-responsive-table tbody td.mv-d-none {
     display: none;
 }
+.boostrap-sm .tr-responsive-table tbody td.d-column,
+.boostrap-none .tr-responsive-table tbody td.d-column {
+    flex-direction: column;
+}
 
 .boostrap-sm .tr-responsive-table td:not(.dataTables_empty)::before,
 .boostrap-none .tr-responsive-table td:not(.dataTables_empty)::before {
@@ -283,6 +294,11 @@
     max-width: 100px;
     flex-shrink: 0;
     font-weight: bold;
+}
+.boostrap-sm .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before,
+.boostrap-none .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before {
+    width: 100%;
+    max-width: unset;
 }
 
 
