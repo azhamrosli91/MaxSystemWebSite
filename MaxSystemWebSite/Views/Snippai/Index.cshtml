@@ -611,35 +611,41 @@
         });
        //SENT button
         $('#btnSend').on('click', function () {
-            const messageContent = $('.chat-textarea').html().trim();
-
-            // Check for image tag
+            const $btn = $(this);
+            const rawMessageContent = $('.chat-textarea').html().trim();
             const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = messageContent;
+            tempDiv.innerHTML = rawMessageContent;
 
-            const containsImage = tempDiv.querySelector('img') !== null;
-
-            if (containsImage) {
+            // Check for image tags
+            if (tempDiv.querySelector('img')) {
                 alert("Images are not supported in user messages.");
                 $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
                 return;
             }
 
-            const safeUserHTML = tempDiv.innerHTML;
+            const username = $("#txtuseremail").val(); // Replace dynamically if needed
+            const messageContent = tempDiv.innerHTML;
 
+            if (!messageContent) {
+                alert("Please enter a message.");
+                return;
+            }
+
+            $btn.prop('disabled', true).html('Sending...');
+
+            // Append user message (blue bubble)
             const userMsg = `
             <div class="chat-message user d-flex justify-content-start align-items-center" style="flex-wrap: nowrap;">
               <div id="chat-loading" class="chatloading me-2 flex-shrink-0">
                 <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
               </div>
               <div class="text-start" style="word-break: break-word; white-space: normal;">
-                ${safeUserHTML}
+                ${messageContent}
               </div>
             </div>`;
 
-
-
             $('.bodydata .p-3').append(userMsg);
+
 
             // Prepare bot message container (append early)
             const botMsgContainer = `<div class="chat-message bot"><div class="bot-stream"></div></div>`;
