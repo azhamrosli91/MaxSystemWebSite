@@ -292,10 +292,12 @@
                             <!-- Connectors will be injected here -->
                         </div>
                     </div>
+                    <!-- comment out attachment and input image
                     <label class="btn btn-link py-0 px-2 text-body fs-9" for="chatPhotos-0"><span class="fa-solid fa-image"></span></label>
                     <input class="d-none" type="file" accept="image" id="chatPhotos-0" />
                     <label class="btn btn-link py-0 px-2 text-body fs-9" for="chatAttachment-0"> <span class="fa-solid fa-paperclip"></span></label>
                     <input class="d-none" type="file" id="chatAttachment-0" />
+                     -->
                     <div class="btn-group position-relative">
                         <!-- Table icon -->
                         <label class="btn btn-link py-0 px-2 text-body fs-9" id="tableIcon">
@@ -611,37 +613,17 @@
         $('#btnSend').on('click', function () {
             const messageContent = $('.chat-textarea').html().trim();
 
-            const username = $("#txtuseremail").val(); // Replace dynamically if needed
-
-            if (!messageContent) {
-                alert("Please enter a message.");
-                return;
-            }
-
-            const $btn = $(this);
-            $btn.prop('disabled', true).html('Sending...');
-
-
-            function getLoadingPlaceholder() {
-                    return `
-                        <div class="loading-placeholder">
-                            <span class="loader"></span>
-                            <span class="loading-text">Thinking...</span>
-                        </div>
-                    `;
-                }
-
-            // Append user message (blue bubble)
-            // Sanitize and resize any images inside the user message
+            // Check for image tag
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = messageContent;
 
-            tempDiv.querySelectorAll('img').forEach(img => {
-                img.style.maxWidth = '200px';  // Limit image width
-                img.style.maxHeight = '200px'; // Optional: limit height
-                img.style.borderRadius = '8px'; // Optional: rounded corners
-                img.style.margin = '5px 0'; // Optional: spacing
-            });
+            const containsImage = tempDiv.querySelector('img') !== null;
+
+            if (containsImage) {
+                alert("Images are not supported in user messages.");
+                $btn.prop('disabled', false).html('Send <span class="fa-solid fa-paper-plane ms-1"></span>');
+                return;
+            }
 
             const safeUserHTML = tempDiv.innerHTML;
 
