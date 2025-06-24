@@ -6,6 +6,17 @@
 
 
 /**--RESPONSIVE DATA TABLE LISTING-------------------------------------------------**/
+.table.tr-responsive-table.table-striped > tbody > tr:nth-of-type(even) > * {
+    --phoenix-table-color-type: unset;
+    --phoenix-table-bg-type: unset;
+}
+.table.tr-responsive-table.dataTable.table-striped > tbody > tr > td:first-child {
+    padding: 1rem 0.5rem;
+}
+.table.tr-responsive-table.dataTable.table-striped > tbody > tr > td:last-child {
+    padding: 1rem 0.5rem;
+}
+
 
 /**--MOBILE VIEW-------------------------------------------------------------------**/
 @media (max-width: 768px) {
@@ -19,7 +30,7 @@
     table.tr-responsive-table.dataTable.table-striped > tbody > tr.odd {
         box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.05);
     }
-    table.tr-responsive-table.dataTable.table-striped > tbody > tr.odd > * {
+    table.tr-responsive-table.dataTable.table-striped > tbody > tr > * {
         box-shadow: unset;
     }
 
@@ -58,13 +69,20 @@
     .tr-responsive-table tbody td.mv-d-none {
         display: none;
     }
+    .tr-responsive-table tbody td.mv-d-column {
+        flex-direction: column;
+    }
 
-    .tr-responsive-table td::before {
+    .tr-responsive-table td:not(.dataTables_empty)::before {
         content: attr(data-title);
         width: 40%;
         max-width: 100px;
         flex-shrink: 0;
         font-weight: bold;
+    }
+    .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before {
+        width: 100%;
+        max-width: unset;
     }
 
 
@@ -264,6 +282,10 @@
 .boostrap-none .tr-responsive-table tbody td.mv-d-none {
     display: none;
 }
+.boostrap-sm .tr-responsive-table tbody td.d-column,
+.boostrap-none .tr-responsive-table tbody td.d-column {
+    flex-direction: column;
+}
 
 .boostrap-sm .tr-responsive-table td:not(.dataTables_empty)::before,
 .boostrap-none .tr-responsive-table td:not(.dataTables_empty)::before {
@@ -272,6 +294,11 @@
     max-width: 100px;
     flex-shrink: 0;
     font-weight: bold;
+}
+.boostrap-sm .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before,
+.boostrap-none .tr-responsive-table td.mv-d-column:not(.dataTables_empty)::before {
+    width: 100%;
+    max-width: unset;
 }
 
 
