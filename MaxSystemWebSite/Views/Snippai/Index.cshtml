@@ -755,10 +755,15 @@
                                                 $mcpLoading.remove();
                                                 const html = await response.text();
 
+                                                // _threadMessages[threadId].Add(new MessageChatBot("assistant", response));
+
+
+
+
                                                 // ✅ Remove the placeholder after MCP completes
-                                            if (mcpPlaceholderID) {
-                                                $(`#${mcpPlaceholderID}`).remove();
-                                            }
+                                                if (mcpPlaceholderID) {
+                                                    $(`#${mcpPlaceholderID}`).remove();
+                                                }
 
                                                 // Append MCP HTML to the current bot stream message
                                                 $botStream.append("<br>");
@@ -788,7 +793,31 @@
                                                 // 8. Remove ###
                                                 currentHtml = currentHtml.replace(/###/g, '');
 
-                                                $botStream.append(currentHtml);
+                                                const tempDiv = document.createElement('div');
+                                                tempDiv.innerHTML = currentHtml;
+                                                $botStream.append(tempDiv);
+
+
+                                                console.log(html);
+
+                                                fetch('/Snippai/post-assistant-message', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify(html)
+                                                    })
+                                                    .then(response => {
+                                                        if (!response.ok) throw new Error("Network response was not ok");
+                                                        return response.json();
+                                                    })
+                                                    .then(data => {
+                                                        console.log("Message sent successfully:", data);
+                                                    })
+                                                    .catch(error => {
+                                                        console.error("Error sending message:", error);
+                                                    });
+
 
                                                 $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 300);
                                             } catch (err) {

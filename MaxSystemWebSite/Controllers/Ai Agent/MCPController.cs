@@ -20,6 +20,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 
 namespace MaxSystemWebSite.Controllers.Ai_Agent
 {
@@ -102,8 +103,9 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 string SenderEmail = EMAIL;
 
                 // ✅ Decode HTML entities
-                string decodedBody = WebUtility.HtmlDecode(emailParams.Body);
+                var decodedBody = WebUtility.HtmlDecode(WebUtility.HtmlDecode(emailParams.Body));
 
+                Console.WriteLine(decodedBody);
                 List<Recipient> ListReceipt = new List<Recipient>();
                 List<Recipient> ListCc = new List<Recipient>();
                 List<Recipient> ListBcc = new List<Recipient>();
@@ -163,12 +165,12 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                         Subject = emailParams.Subject,
                         subTemplate = decodedBody,
                         WORD_REPLACE = new List<(string ori, string replace)>
-                {
+                    {
                     ("[APPLICATION_NAME]", emailParams.Subject),
                     ("[EMAIL_SUBJECT]", emailParams.Subject),
                     ("[EMAIL_BODY]", decodedBody),
                     ("[HELP_DESK_EMAIL]", "hr@maxsys.com.my")
-                },
+                    },
                         Attachments = new List<Emai_TemplateSent.EmailAttachment>()
                     };
 
@@ -195,6 +197,9 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
 
                     _emailService.InitGraph(settingEmail);
 
+                    //Console.WriteLine("Sending Email with Body:");
+                    //Console.WriteLine(modelTemp.bodyContent);
+                    //modelTemp.bodyContent = WebUtility.HtmlDecode(modelTemp.bodyContent);
                     (bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
 
                     if (!result.status)
@@ -280,6 +285,14 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 .Content?
                 .FirstOrDefault(c => c.Type == "output_text")?
                 .Text;
+
+
+            string threadId = null;
+
+            if (Request.Cookies.ContainsKey("chat_thread_id"))
+            {
+                threadId = Request.Cookies["chat_thread_id"];
+            }
 
             return (true,"okay", extractedText);
         }

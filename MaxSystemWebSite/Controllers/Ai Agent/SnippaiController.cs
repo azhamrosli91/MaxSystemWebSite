@@ -415,6 +415,22 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             await Response.Body.FlushAsync();
         }
 
+        [HttpPost]
+        [Route("Snippai/post-assistant-message")]
+        public IActionResult PostAssistantMessageToThread([FromBody] string message)
+        {
+            string threadId = null;
+
+            if (Request.Cookies.ContainsKey("chat_thread_id"))
+            {
+                threadId = Request.Cookies["chat_thread_id"];
+            }
+
+            _threadMessages[threadId].Add(new MessageChatBot("assistant", message));
+
+            return Ok(new { status = "Message added" });
+        }
+
         private async Task PostUserMessageToThread(string threadId, string message, string apiKey)
         {
             var client = CreateHttpClientWithProxy(apiKey);
@@ -1166,16 +1182,20 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 //                await Response.Body.FlushAsync();
                 //                fullLineBuffer.Clear();
                 //            }
+
+
+
                 await Response.WriteAsync(WebUtility.HtmlEncode(content));
                 await Response.Body.FlushAsync();
                 fullLineBuffer.Clear();
             }
 
-
-
             _threadMessages[threadId].Add(new MessageChatBot("assistant", fullAssistantReply.ToString()));
-           
 
+            //foreach (var message in _threadMessages[threadId])
+            //{
+            //    Console.WriteLine($"[{message.role}] {message.content}");
+            //}
         }
         public static string ExtractConnectionStringFromHtml(string html)
         {
