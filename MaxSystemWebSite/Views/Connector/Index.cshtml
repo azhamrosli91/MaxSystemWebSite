@@ -239,7 +239,7 @@
 
         function getFormDetails(data, type) {
             if (type === 'mssql') {
-                return `Server: ${data.server || ''}, User: ${data.username || ''}`;
+                return `Server: ${data.server || ''}, Database: ${data.database || ''}, User: ${data.username || ''}`;
             } else if (type === 'email') {
                 return `Email: ${data.email || ''}`;
             } else if (type === 'proxy') {
@@ -283,7 +283,7 @@
 
             if (type === 'mssql') {
                 data.server = formData.get('server');
-                data.datatabase = formData.get('database');
+                data.database = formData.get('database');
                 data.username = formData.get('username');
                 data.password = formData.get('password');
             } else if (type === 'email') {
@@ -342,7 +342,7 @@
 
                 if (item.type === 'mssql') {
                     form.elements['server'].value = item.server || '';
-                    form.elements['database'].value = item.username || '';
+                    form.elements['database'].value = item.database || '';
                     form.elements['username'].value = item.username || '';
                     form.elements['password'].value = item.password || '';
                 } else if (item.type === 'email') {
