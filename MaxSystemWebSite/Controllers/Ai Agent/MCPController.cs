@@ -286,14 +286,6 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 .FirstOrDefault(c => c.Type == "output_text")?
                 .Text;
 
-
-            string threadId = null;
-
-            if (Request.Cookies.ContainsKey("chat_thread_id"))
-            {
-                threadId = Request.Cookies["chat_thread_id"];
-            }
-
             return (true,"okay", extractedText);
         }
         private async Task<(bool status, string message, string dt)> DB(string valueparam)
