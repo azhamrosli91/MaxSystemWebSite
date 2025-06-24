@@ -87,7 +87,7 @@
             <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
                 <a href="#hero" class="logo d-flex align-items-center me-auto">
-                     <img src="~/Images/Max_logo3.ico" alt="Max System Logo" class="logo-img" style="height: 125px; width: auto;" apple>
+                <img src="~/Images/Max_logo3.ico" alt="Max System Logo" loading="lazy" class="logo-img" style="height: 125px; width: auto;" apple>
                     <h1 class="sitename fs-4 me-4">Max System Solution</h1>
                 </a>
 
@@ -107,7 +107,10 @@
                 </nav>
 
                 @if (string.IsNullOrEmpty(username)){
-                    <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a>
+@*                     <a class="btn-getstarted" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login Employee</a> *@
+                <a class="btn-getstarted" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="Sign">
+                    Login Employee
+                       </a>
                 }else{
                 <a class="btn-getstarted" href="/MM_UserProfile/index">Go To Portal - @username</a>
                 }
@@ -131,7 +134,7 @@
             <!-- Hero Section -->
             <section id="hero" class="hero section dark-background" style="position:relative; overflow:hidden;">
                 <img src="~/Images/bg10.jpg" alt="background image server"
-                     style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.2; z-index:1;" apple/>
+                 style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0.2; z-index:1;" loading="lazy" apple />
  
                 <div class="container" style="position:relative; z-index:10;">
                     <div class="row gy-4">
@@ -146,7 +149,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
-                            <img src="~/Images/img/hero-img.png" class="img-fluid animated" alt="Landing images" apple>
+                        <img src="~/Images/img/hero-img.png" class="img-fluid animated" alt="Landing images" loading="lazy" apple>
                         </div>
                     </div>
                 </div>
@@ -197,12 +200,12 @@
                             }
                         </script>
                         <div class="swiper-wrapper align-items-center">
-                            <div class="swiper-slide"><img src="~/Images/img/clients/amphenol_logo.png" class="img-fluid" alt="Amphenol Logo" apple></div>
-                            <div class="swiper-slide"><img src="~/Images/img/clients/first_link_logo.png" class="img-fluid" alt="Firstlink Logo" apple></div>
-                            <div class="swiper-slide"><img src="~/Images/img/clients/plexus_logo.png" class="img-fluid" alt="Plexus Logo" apple></div>
-                            <div class="swiper-slide"><img src="~/Images/img/clients/azra_logo.png" class="img-fluid" alt="AZRA GREEN Logo" apple></div>
-                            <div class="swiper-slide"><img src="~/Images/img/clients/ase_logo.png" class="img-fluid" alt="ASE Logo" apple></div>
-                            <div class="swiper-slide"><img src="~/Images/img/clients/tms_logo.png" class="img-fluid" alt="TMS Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/amphenol_logo.png" class="img-fluid" alt="Amphenol Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/first_link_logo.png" class="img-fluid" alt="Firstlink Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/plexus_logo.png" class="img-fluid" alt="Plexus Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/azra_logo.png" class="img-fluid" alt="AZRA GREEN Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/ase_logo.png" class="img-fluid" alt="ASE Logo" apple></div>
+                            <div class="swiper-slide"><img loading="lazy" src="~/Images/img/clients/tms_logo.png" class="img-fluid" alt="TMS Logo" apple></div>
                        
                         </div>
                     </div>
@@ -298,7 +301,7 @@
                         </div>
 
                         <div class="col-lg-5 order-1 order-lg-2 why-us-img">
-                            <img src="~/Images/img/why-us.png" class="img-fluid" alt="Why us" data-aos="zoom-in" data-aos-delay="100" apple>
+                        <img src="~/Images/img/why-us.png" class="img-fluid" loading="lazy" alt="Why us" data-aos="zoom-in" data-aos-delay="100" apple>
                         </div>
                     </div>
 
@@ -411,7 +414,7 @@
                     <div class="row">
 
                         <div class="col-lg-6 d-flex align-items-center">
-                            <img src="~/Images/img/illustration/illustration-10.webp" class="img-fluid" alt="illustration images" apple>
+                        <img src="~/Images/img/illustration/illustration-10.webp" class="img-fluid" alt="illustration images" loading="lazy" apple>
                         </div>
 
                         <div class="col-lg-6 pt-4 pt-lg-0 content">
@@ -478,7 +481,7 @@
                         <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
                             <div class="steps-item">
                                 <div class="steps-image">
-                                    <img src="~/Images/img/steps/steps-1.webp" alt="Step 1" class="img-fluid" apple>
+                                <img src="~/Images/img/steps/steps-1.webp" alt="Step 1" class="img-fluid" loading="lazy" apple>
                                 </div>
                                 <div class="steps-content">
                                     <div class="steps-number">01</div>
@@ -505,7 +508,7 @@
                         <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
                             <div class="steps-item">
                                 <div class="steps-image">
-                                    <img src="~/Images/img/steps/steps-2.webp" alt="Step 2" class="img-fluid" apple>
+                                <img src="~/Images/img/steps/steps-2.webp" alt="Step 2" class="img-fluid" loading="lazy" apple>
                                 </div>
                                 <div class="steps-content">
                                     <div class="steps-number">02</div>
@@ -532,7 +535,7 @@
                         <div class="col-lg-4" data-aos="fade-up" data-aos-delay="400">
                             <div class="steps-item">
                                 <div class="steps-image">
-                                    <img src="~/Images/img/steps/steps-3.webp" alt="Step 3" class="img-fluid" apple>
+                                <img src="~/Images/img/steps/steps-3.webp" alt="Step 3" class="img-fluid" loading="lazy" apple>
                                 </div>
                                 <div class="steps-content">
                                     <div class="steps-number">03</div>
@@ -565,7 +568,7 @@
             <!-- Call To Action Section -->
             <section id="call-to-action" class="call-to-action section dark-background">
 
-                <img src="~/Images/img/bg/bg-8.webp" alt="Background Image" apple>
+            <img src="~/Images/img/bg/bg-8.webp" alt="Background Image" loading="lazy" apple>
 
                 <div class="container">
 
@@ -616,7 +619,7 @@
                                 </div>
                             </div><!-- End Portfolio Item --> *@
                         <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
-                            <img src="~/Images/img/portfolio/penduduk.jpg" class="img-fluid" alt="ePenduduk" apple>
+                            <img src="~/Images/img/portfolio/penduduk.jpg" class="img-fluid" alt="ePenduduk" loading="lazy" apple>
                             <div class="portfolio-info">
                                 <h4>Web - ePenduduk</h4>
                                 <p>Designed to streamline the management and tracking of resident information. It enables users to efficiently view and manage resident data.</p>
@@ -625,7 +628,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
-                            <img src="~/Images/img/portfolio/AiScreenMax.png" class="img-fluid" alt="Ai Screen Max" apple>
+                            <img src="~/Images/img/portfolio/AiScreenMax.png" class="img-fluid" alt="Ai Screen Max" loading="lazy" apple>
                             <div class="portfolio-info">
                                 <h4>Web - Ai Resume Screening</h4>
                                 <p>Designed to help HR / Recruiter to find best candidates for the job position using screening the resume.</p>
@@ -634,7 +637,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-app">
-                            <img src="~/Images/img/portfolio/MariaAgent.png" class="img-fluid" alt="Maria Ai Agent" apple>
+                            <img src="~/Images/img/portfolio/MariaAgent.png" class="img-fluid" alt="Maria Ai Agent" loading="lazy" apple>
                             <div class="portfolio-info">
                                 <h4>Maria AI Agent</h4>
                                 <p>Designed for developer and small business to speed up development and automate the support using AI and MCP.</p>
@@ -643,7 +646,7 @@
                             </div>
                         </div>
                              <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-                            <img src="~/Images/img/portfolio/defect_detection.png" class="img-fluid" alt="Defect detection" apple>
+                            <img src="~/Images/img/portfolio/defect_detection.png" class="img-fluid" alt="Defect detection" loading="lazy" apple>
                                 <div class="portfolio-info">
                                     <h4>Defect Detection (Ai)</h4>
                                     <p>Using power of computer vision to track defect of the product.</p>
@@ -683,7 +686,7 @@
                             @* </div><!-- End Portfolio Item --> *@
 
                             <div class="col-lg-4 col-md-3 col-sm-12 portfolio-item isotope-item filter-branding">
-                                <img src="~/Images/img/portfolio/mobile.png" class="img-fluid" alt="HR Management System" apple>
+                            <img src="~/Images/img/portfolio/mobile.png" class="img-fluid" alt="HR Management System" loading="lazy" apple>
                                 <div class="portfolio-info">
                                     <h4>Microsft 365 - HR Management System</h4>
                                     <p>HR solution integrated with Microsoft 365 to streamline employee records, leave management, payroll, and performance tracking.</p>
@@ -704,7 +707,7 @@
 
                            
                         <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-product">
-                            <img src="~/Images/img/portfolio/detection_v.png" class="img-fluid" alt="Vehicle Detection" apple>
+                            <img src="~/Images/img/portfolio/detection_v.png" class="img-fluid" alt="Vehicle Detection" loading="lazy" apple>
                             <div class="portfolio-info">
                                 <h4>Vehicle Detection</h4>
                                 <p>Vehicle detection allow the business to track the movement of the lorry or tracking vehicle from existing cctv.</p>
@@ -713,7 +716,7 @@
                             </div>
                         </div>
                             <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-product">
-                                <img src="~/Images/img/portfolio/poweragent.png" class="img-fluid" alt="Power Agent" apple>
+                            <img src="~/Images/img/portfolio/poweragent.png" class="img-fluid" alt="Power Agent" loading="lazy" apple>
                                 <div class="portfolio-info">
                                     <h4>Chat Bot Power Agent</h4>
                                     <p>Power agent is internal chatbot for maxsystem staff to know about standard operation, rule and on boarding process.</p>
@@ -722,7 +725,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 portfolio-item isotope-item filter-product">
-                                <img src="~/Images/img/portfolio/MaxsysChatbot.png" class="img-fluid" alt="Power Agent" apple>
+                            <img src="~/Images/img/portfolio/MaxsysChatbot.png" class="img-fluid" alt="Power Agent" loading="lazy" apple>
                                 <div class="portfolio-info">
                                     <h4>Chat Bot Power Agent</h4>
                                     <p>This chatbot interface, branded as "AI Agent (Melissa)," is designed to assist clients or users in accessing company information and HR-related queries. It serves as a virtual assistant for Max System, helping visitors learn about services provided, contact methods, and job application procedures. The clean, white-background layout enhances readability and professionalism, making it ideal for corporate use on websites or internal portals..</p>
@@ -761,143 +764,7 @@
 
             </section><!-- /Portfolio Section -->
 
-            <!-- Team Section -->
-            <section id="team" class="team section" style="display:none">
-
-                <!-- Section Title -->
-                <div class="container section-title" data-aos="fade-up">
-                    <h2>Meet Our Management</h2>
-                    @* <p>Behind every great project is a passionate team! Get to know the talented professionals who bring our innovative solutions to life.</p> *@
-                    <p>At Max System, our leadership team brings together years of experience and deep industry knowledge to drive innovation, integrity, and excellence. Meet the people guiding our vision and ensuring we deliver outstanding value to our clients and employees.</p>
-                </div><!-- End Section Title -->
-
-                <div class="container">
-
-                    <style>
-                        .team-member .pic img {
-                            width: 150px; /* Adjust size as needed */
-                            height: 150px;
-                            object-fit: cover;
-                            border-radius: 50%;
-                        }
-                    </style>
-
-                    <div class="row gy-4">
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/lee.jpg" class="img-fluid" alt="Lee Eng Hwa" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Lee Eng Hwa</h4>
-                                    <span>Chief Executive Officer</span>
-                                    <p>Leading the company with a vision for innovation and excellence.</p>
-                                    <div class="email">
-                                        <a href="mailto:ehlee@maxsys.com.my">
-                                            <i class="bi bi-envelope-fill"></i> ehlee@maxsys.com.my
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/shazwanie.png" class="img-fluid" alt="Shazwanie" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Shazwanie</h4>
-                                    <span>HR Manager</span>
-                                    <p>Managing human resources and employee well-being.</p>
-                                    <div class="email">
-                                        <a href="mailto:shazwanie@maxsys.com.my">
-                                            <i class="bi bi-envelope-fill"></i> shazwanie@maxsys.com.my
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/azham.jpg" class="img-fluid" alt="Azham" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Azham</h4>
-                                    <span>Technical Leader</span>
-                                    <p>Overseeing technical development and innovation.</p>
-                                    <div class="email">
-                                        <a href="mailto:azham@maxsys.com.my">
-                                            <i class="bi bi-envelope-fill"></i> azham@maxsys.com.my
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/yan.jpg" class="img-fluid" alt="Teh Jia Yan" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Teh Jia Yan</h4>
-                                    <span>Assistant Manager</span>
-                                    <p>Supporting operations and strategic initiatives.</p>
-                                    <div class="email">
-                                        <a href="mailto:jiayan.teh.r9@mail.toray">
-                                            <i class="bi bi-envelope-fill"></i> jiayan.teh.r9@mail.toray
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/hong.jpg" class="img-fluid" alt="Yuen Wei Hong" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Yuen Wei Hong</h4>
-                                    <span>Assistant Manager</span>
-                                    <p>Assisting in management and project execution.</p>
-                                    <div class="email">
-                                        <a href="mailto:whyuan@maxsys.com.my">
-                                            <i class="bi bi-envelope-fill"></i> whyuan@maxsys.com.my
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
-                            <div class="team-member d-flex align-items-start">
-                                <div class="pic me-3">
-                                    <img src="~/Images/img/person/foo.jpg" class="img-fluid" alt="Yuen Wei Hong" apple>
-                                </div>
-                                <div class="member-info">
-                                    <h4>Foo Sze Khai</h4>
-                                    <span>Assistant Manager</span>
-                                    <p>Coordinating with stakeholders to align goals and expectations.</p>
-                                    <div class="email">
-                                        <a href="mailto:skfoo-i@maxsys.com.my">
-                                            <i class="bi bi-envelope-fill"></i> skfoo-i@maxsys.com.my
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section><!-- /Team Section -->
-       
+           
              @*   <!-- Faq 2 Section --> *@
             @* <section id="faq-2" class="faq-2 section light-background"> *@
 
@@ -987,7 +854,7 @@
                             <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">
 
                                 <div class="post-img position-relative overflow-hidden">
-                                    <img src="~/Images/img/blog/team9.jpg" class="img-fluid" alt="team 9" apple>
+                                <img src="~/Images/img/blog/team9.jpg" class="img-fluid" loading="lazy" alt="team 9" apple>
                                     <span class="post-date">July 1</span>
                                 </div>
 
@@ -1018,7 +885,7 @@
                             <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="200">
 
                                 <div class="post-img position-relative overflow-hidden">
-                                    <img src="~/Images/img/blog/Ramadan8.jpeg" class="img-fluid" alt="Ramadan 8" apple>
+                                <img src="~/Images/img/blog/Ramadan8.jpeg" class="img-fluid" loading="lazy" alt="Ramadan 8" apple>
                                     <span class="post-date">March 27</span>
                                 </div>
 
@@ -1049,7 +916,7 @@
                             <div class="post-item position-relative h-100">
 
                                 <div class="post-img position-relative overflow-hidden">
-                                    <img src="~/Images/img/blog/recognition.jpeg" class="img-fluid" alt="Recognition event" apple>
+                                <img src="~/Images/img/blog/recognition.jpeg" class="img-fluid" loading="lazy" alt="Recognition event" apple>
                                     <span class="post-date">2024 - 2025</span>
                                 </div>
 
@@ -1096,31 +963,31 @@
                             <div id="carouselTeamBuilding" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                      <div class="carousel-item active">
-                                        <img src="~/Images/img/blog/team9.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
+                                        <img src="~/Images/img/blog/team9.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team8.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
+                                    <img src="~/Images/img/blog/team8.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 8" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team7.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 7" apple>
+                                        <img src="~/Images/img/blog/team7.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 7" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team6.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 6" apple>
+                                    <img src="~/Images/img/blog/team6.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 6" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team5.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 5" apple>
+                                    <img src="~/Images/img/blog/team5.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 5" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team4.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 4" apple>
+                                        <img src="~/Images/img/blog/team4.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 4" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team3.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 3" apple>
+                                    <img src="~/Images/img/blog/team3.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 3" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team2.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;"alt="Team 2" apple>
+                                        <img src="~/Images/img/blog/team2.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;"alt="Team 2" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/team1.jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 1" apple>
+                                    <img src="~/Images/img/blog/team1.jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Team 1" apple>
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselTeamBuilding" data-bs-slide="prev">
@@ -1162,28 +1029,28 @@
                             <div id="carouselRamadan" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
-                                        <img src="~/Images/img/blog/Ramadan8.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
+                                    <img src="~/Images/img/blog/Ramadan8.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan7.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
+                                        <img src="~/Images/img/blog/Ramadan7.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 7" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan6.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 6" apple>
+                                    <img src="~/Images/img/blog/Ramadan6.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 6" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan5.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 5" apple>
+                                        <img src="~/Images/img/blog/Ramadan5.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 5" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan4.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 4" apple>
+                                    <img src="~/Images/img/blog/Ramadan4.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 4" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan3.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 3" apple>
+                                        <img src="~/Images/img/blog/Ramadan3.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 3" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan2.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 2" apple>
+                                    <img src="~/Images/img/blog/Ramadan2.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 2" apple>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="~/Images/img/blog/Ramadan1.jpeg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 1" apple>
+                                    <img src="~/Images/img/blog/Ramadan1.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Ramadan 1" apple>
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselRamadan" data-bs-slide="prev">
@@ -1222,34 +1089,34 @@
                             <div id="carouselGifts" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
-                                      <img src="~/Images/img/blog/recognition.jpeg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
+                                    <img src="~/Images/img/blog/recognition.jpeg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (9).jpg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
+                                    <img src="~/Images/img/blog/Gift (9).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 9" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (8).jpg"  class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 8" apple>
+                                    <img src="~/Images/img/blog/Gift (8).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 8" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (7).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 7" apple>
+                                      <img src="~/Images/img/blog/Gift (7).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 7" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (6).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 6" apple>
+                                    <img src="~/Images/img/blog/Gift (6).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 6" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (5).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 5" apple>
+                                      <img src="~/Images/img/blog/Gift (5).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 5" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (4).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 4" apple>
+                                      <img src="~/Images/img/blog/Gift (4).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 4" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (3).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 3" apple>
+                                      <img src="~/Images/img/blog/Gift (3).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 3" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (2).jpg" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 2" apple>
+                                    <img src="~/Images/img/blog/Gift (2).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 2" apple>
                                     </div>
                                     <div class="carousel-item">
-                                      <img src="~/Images/img/blog/Gift (1).jpg"class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 1" apple>
+                                    <img src="~/Images/img/blog/Gift (1).jpg" loading="lazy" class="d-block w-100 img-fluid" style="height: 600px; object-fit: contain;" alt="Gift 1" apple>
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselGifts" data-bs-slide="prev">
@@ -1671,10 +1538,11 @@
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center d-none"><i class="bi bi-arrow-up-short"></i></a>
 
         <!-- Preloader -->
-        <div id="preloader"></div>
+        @* <div id="preloader"></div> *@
 
         <!-- Bootstrap JS: CDN first -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      @*   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> *@
+         <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
         <!-- Fallback: Load local if CDN fails -->
         <script>
@@ -1704,7 +1572,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="loginForm" method="post" action="/Home/Login">
+@*                         <form id="loginForm" method="post" action="/Home/Login">
                             @Html.AntiForgeryToken() <!-- Add this line -->
                             <div class="mb-3">
                                 <label for="loginEmail" class="form-label">Email address</label>
@@ -1722,10 +1590,10 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Sign In</button>
                         </form>
-                        <hr />
+                        <hr /> *@
                     <div class="text-center mt-3">
                         <a class="btn btn-outline-primary btn-microsoft-small d-flex align-items-center justify-content-center w-100" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="Sign">
-                            <img src="~/Images/Microsoft_logo.svg" alt="Microsoft Logo" style="height: 20px; margin-right: 8px;">
+                            <img src="~/Images/Microsoft_logo.svg" loading="lazy" alt="Microsoft Logo" style="height: 20px; margin-right: 8px;">
                             <span>Microsoft Sign In</span>
                         </a>
                     </div>
@@ -1747,7 +1615,7 @@
             <div class="chbot-header">
                 <div class="chbot-uprofile">
                     <div class="chbot-uprofile-icon d-flex align-items-center justify-content-center text-white" style="font-size:8px;">
-                        <img src="~/Images/Max_logo3.ico" alt="Max System Logo" class="logo-img" style="height: 23px; width: auto;">
+                    <img src="~/Images/Max_logo3.ico" loading="lazy" alt="Max System Logo" class="logo-img" style="height: 23px; width: auto;">
                     </div>
                     <span class="chbot-uprofile-text">Ai Agent (Melissa)</span>
                 </div>

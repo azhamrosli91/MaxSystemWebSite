@@ -101,6 +101,13 @@
                                    name="server" />
                         </div>
                         <div class="mb-3">
+                            <label for="mssqlUser" class="form-label">Database</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="mssqlDatabase"
+                                   name="database" />
+                        </div>
+                        <div class="mb-3">
                             <label for="mssqlUser" class="form-label">Username</label>
                             <input type="text"
                                    class="form-control"
@@ -276,6 +283,7 @@
 
             if (type === 'mssql') {
                 data.server = formData.get('server');
+                data.datatabase = formData.get('database');
                 data.username = formData.get('username');
                 data.password = formData.get('password');
             } else if (type === 'email') {
@@ -334,6 +342,7 @@
 
                 if (item.type === 'mssql') {
                     form.elements['server'].value = item.server || '';
+                    form.elements['database'].value = item.username || '';
                     form.elements['username'].value = item.username || '';
                     form.elements['password'].value = item.password || '';
                 } else if (item.type === 'email') {
