@@ -261,7 +261,7 @@
 
 <div class="chat-message-header">
     <div class="d-flex justify-content-end">
-        <div class="btn btn-phoenix-secondary" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</div>
+        <div class="btn btn-phoenix-secondary me-2" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</div>
         <div class="btn btn-sm btn-primary" id="btnStartNew">Start New Conversation</div>
     </div>
 </div>
@@ -755,10 +755,23 @@
                                                 $mcpLoading.remove();
                                                 const html = await response.text();
 
-                                                // _threadMessages[threadId].Add(new MessageChatBot("assistant", response));
+                                                if (mcpjson.action && mcpjson.action.toUpperCase() === "REPORTING") {
+                                                    try {
+                                                        const configObject = eval(`(${html})`); // parse the returned chart config
+                                                        const chartId = 'c3-chart-' + generateUUID(); // generate a unique ID
+                                                        $botStream.append(`<div id="${chartId}" class="my-3"></div>`); // insert the chart container
+                                                        configObject.bindto = `#${chartId}`; // attach the config to the new div
 
-
-
+                                                        // Run the chart
+                                                        setTimeout(() => {
+                                                            c3.generate(configObject);
+                                                        }, 100);
+                                                    } catch (e) {
+                                                        console.error("Failed to render C3 chart:", e);
+                                                        $botStream.append(`<div class="text-danger">Chart rendering error: ${e.message}</div>`);
+                                                    }
+                                                } else {
+                                                }
 
                                                 // ✅ Remove the placeholder after MCP completes
                                                 if (mcpPlaceholderID) {

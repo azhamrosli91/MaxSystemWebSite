@@ -143,14 +143,28 @@ the next tools your have is WEB_SEARCH
 This tool is used when the user asks you to search the internet, provides a link and asks about its content, or requests information that requires web scraping.
 it only require 1 parameter which is the query
 you must return the full user query
-please return as follow
+must return as follow
 ```MCP
 {
 	"action":"WEB_SEARCH",
 	"query":""
 }
 ```
-if the user ask for a table you must return it in a html format 
+
+the next tools you have is report 
+the tool is used when the user want a report in a form of a graph or a chart 
+it only require 1 parameter which is the code to a c3 or d3 depending on the user needs
+you would determine what graph should be used depending on the situation unless the user stated that they wanted a certain graph
+user usually would as you to generate report based on their or your previous output
+must return as follow
+```MCP
+{
+	"action":"REPORTING",
+	"query":"in code where c3 or d3 js would understand and it can run"
+}
+```
+
+if the user ask for a table you must return it in a html format and dont wrap it with ```
 SQL ==============================
 
 PART 1 - Example MERGE-Based Stored Procedure Format
