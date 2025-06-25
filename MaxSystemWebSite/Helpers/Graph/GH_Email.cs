@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using static System.Formats.Asn1.AsnWriter;
 using System.Net.Http.Headers;
 using E_Template.Helpers;
+using Microsoft.Graph.Users.Item.Messages.Item.Reply;
 
 namespace MaxSystemWebSite.Helpers.Graph
 {
@@ -608,7 +609,7 @@ namespace MaxSystemWebSite.Helpers.Graph
                 }
 
                 // Set default values for attribute and orderby if not provided
-                attribute ??= new[] { "id", "conversationId", "from", "isRead", "receivedDateTime", "subject" };
+                attribute ??= new[] { "id", "conversationId", "from", "isRead", "receivedDateTime", "subject", "body" };
                 orderby ??= new[] { "receivedDateTime DESC" };
 
                 // Fetch emails from the specified folder
@@ -899,6 +900,56 @@ namespace MaxSystemWebSite.Helpers.Graph
                 return (false, $"failed {ex.Message}");
             }
         }
+        public async Task<(bool success, string message)> ReplyEmailAsync(string userId, string messageId, string replyBodyHtml)
+        {
+            try
+            {
+                _ = _appClient ?? throw new NullReferenceException("Graph has not been initialized for app auth");
+
+                if (string.IsNullOrEmpty(userId))
+                    return (false, "User ID is required");
+
+                if (string.IsNullOrEmpty(messageId))
+                    return (false, "Message ID is required");
+
+                if (string.IsNullOrEmpty(replyBodyHtml))
+                    return (false, "Reply body content is required");
+
+                var message = new Microsoft.Graph.Models.Message
+                {
+                    Body = new Microsoft.Graph.Models.ItemBody
+                    {
+                        ContentType = Microsoft.Graph.Models.BodyType.Html,
+                        Content = replyBodyHtml
+                    }
+                };
+
+
+                // Your reply logic
+                var requestBody = new ReplyPostRequestBody
+                {
+                    Message = new Message
+                    {
+                        Body = new ItemBody
+                        {
+                            ContentType = BodyType.Html,
+                            Content = replyBodyHtml
+                        }
+                    }
+                };
+
+                await _appClient.Users[userId].Messages[messageId].Reply.PostAsync(requestBody);
+
+
+
+                return (true, "Reply sent successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Failed to send reply: {ex.Message}");
+            }
+        }
+
         public async Task<(bool success, string message)> SendComposeEmailAsync(Emai_TemplateSent model)
         {
             try

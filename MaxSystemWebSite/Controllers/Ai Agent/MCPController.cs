@@ -24,6 +24,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
+using System.Web.Helpers;
 using static System.Net.WebRequestMethods;
 
 namespace MaxSystemWebSite.Controllers.Ai_Agent
@@ -104,10 +105,52 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     (bool status, string message, string dt) reademaildata = await ReadEmail(valueparam);
                     return Ok(reademaildata.dt);
 
+                case "REPLY_EMAIL":
+                    (bool status, string message, string dt) replyemaildata = await ReplyEmail(valueparam);
+                    return Ok(replyemaildata.dt);
+
                 default:
                     return BadRequest("Unknown Command: " + action);
             }
         }
+        public async Task<(bool status, string message, string dt)> ReplyEmail(string valueparam)
+        {
+            SETTING_EMAIL settingEmail = new SETTING_EMAIL
+            {
+                TENANT_ID = _configuration["AzureAd:TenantId"],
+                CLIENT_ID = _configuration["AzureAd:ClientId"],
+                CLIENT_SECRET = _configuration["AzureAd:ClientSecrectValue"],
+                GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0]
+            };
+
+            _emailService.InitGraph(settingEmail);
+
+            var (found, msg, userId) = await _emailService.GetUserIdByEmailAsync(EMAIL);
+
+
+            try
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(valueparam);
+                var root = doc.RootElement;
+
+                string messageId = root.GetProperty("messageId").GetString();
+                string body = root.GetProperty("body").GetString();
+
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(messageId) || string.IsNullOrEmpty(body))
+                {
+                    return (false, "One or more required fields are missing", "");
+                }
+
+                var (success, message) = await _emailService.ReplyEmailAsync(userId, messageId, body);
+
+                return (success, message, body);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Exception: {ex.Message}", "");
+            }
+        }
+
         public async Task<(bool status, string message, string dt)> ReadEmail(string valueparam)
         {
 
@@ -136,8 +179,38 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 return (false, message, message);
             }
 
-            var json = System.Text.Json.JsonSerializer.Serialize(emails);
-            return (true, "Emails retrieved", json);
+            // Malaysia Timezone
+            var malaysiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time"); // Windows uses this ID
+
+            var filteredEmails = emails?.Value?.Select(e => new
+            {
+                Id = e.Id, // ✅ Keep it
+                From = e.From?.EmailAddress?.Name ?? e.From?.EmailAddress?.Address ?? "(Unknown)",
+                Subject = e.Subject ?? "(No Subject)",
+                Content = e.Body?.Content ?? "(No Content)",
+                Received = e.ReceivedDateTime != null
+                    ? TimeZoneInfo.ConvertTimeFromUtc(e.ReceivedDateTime.Value.UtcDateTime, malaysiaTimeZone).ToString("yyyy-MM-dd HH:mm:ss")
+                    : "(No Date)"
+            }).ToList();
+
+            var formatted = new StringBuilder();
+
+            int index = 1;
+            foreach (var email in filteredEmails)
+            {
+                formatted.AppendLine($"Email {index}");
+                formatted.AppendLine($"From: {email.From}");
+                formatted.AppendLine($"Subject: {email.Subject}");
+                formatted.AppendLine($"Content: {email.Content}");
+                formatted.AppendLine($"Received: {email.Received}");
+                formatted.AppendLine(); // Blank line between emails
+                index++;
+            }
+
+            var result = formatted.ToString();
+            var json = System.Text.Json.JsonSerializer.Serialize(filteredEmails);
+            Console.WriteLine(json);
+            return (true, "Formatted emails", json);
         }
         public async Task<(bool status, string message, string dt)> HTTPrest(string valueparam)
         {

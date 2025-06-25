@@ -641,7 +641,7 @@
               <div id="chat-loading" class="chatloading me-2 flex-shrink-0">
                 <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
               </div>
-              <div class="text-start" style="word-break: break-word; white-space: normal;">
+              <div class="text-start" style="word-break: break-word; white-space: pre-wrap;">
                 ${messageContent}
               </div>
             </div>`;
@@ -712,7 +712,7 @@
                                 currentHtml = currentHtml.replace(/```(?:([a-zA-Z]+)|(?=[\s\S]*?\[MCP\]))\n([\s\S]*?)```/g, function (match, lang, code) {
                                     const currentLang = lang || 'text';
                                     const tmpID = generateUUID();
-                                    const cleanCode = $('<div>').text(code.trim()).html(); // Escape HTML safely
+                                    const cleanCode = code.trim();//$('<div>').text(code.trim()).html(); Escape HTML safely
                                     // alert(cleancode);
                                         // Check if this block is an MCP block
                                     if (match.toUpperCase().includes('[MCP]') || (currentLang.toUpperCase() === 'MCP')) {
@@ -776,14 +776,7 @@
                                                         $botStream.append(`<div class="text-danger">Chart rendering error: ${e.message}</div>`);
                                                     }
                                                 } else {
-                                                }
-
-                                                // ✅ Remove the placeholder after MCP completes
-                                                if (mcpPlaceholderID) {
-                                                    $(`#${mcpPlaceholderID}`).remove();
-                                                }
-
-                                                // Append MCP HTML to the current bot stream message
+                                                    // Append MCP HTML to the current bot stream message
                                                 $botStream.append("<br>");
 
                                                 currentHtml = html
@@ -814,6 +807,14 @@
                                                 const tempDiv = document.createElement('div');
                                                 tempDiv.innerHTML = currentHtml;
                                                 $botStream.append(tempDiv);
+                                                }
+
+                                                // ✅ Remove the placeholder after MCP completes
+                                                if (mcpPlaceholderID) {
+                                                    $(`#${mcpPlaceholderID}`).remove();
+                                                }
+
+                                                
 
 
                                                 console.log(html);
@@ -843,30 +844,7 @@
                                                 alert('MCP error: ' + err.message);
                                             }
                                         })();
-
-                                
                                 }
-                                // if (original.toUpperCase().includes("```MCP")) {
-                                //     Extract JSON inside the MCP block
-                                //     let match = original.match(/```MCP([\s\S]*?)```!!\[DONE\]!!/i);
-
-                                //     if (match && match[1]) {
-                                //         try {
-                                //             Trim and parse the JSON part
-                                //             let jsonText = match[1].trim();
-                                //             let jsonData = JSON.parse(jsonText);
-
-                                //             var action = jsonData.action;
-
-                                //             if(action == "WEB_SEARCH"){
-                                //                 console.log("Executing web search");
-                                //             }
-
-                                //         } catch (e) {
-                                //             console.error("Invalid JSON:", e);
-                                //         }
-                                //     }
-                                // }
 
                                 currentHtml = currentHtml
                                     .replace(/!!\[DONE\]!!/g, '')
@@ -893,8 +871,12 @@
                                 // 8. Remove ###
                                 currentHtml = currentHtml.replace(/###/g, '');
 
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = currentHtml;
+                                $botStream.append(tempDiv);
+
                                 // console.log("Processed HTML:", currentHtml);
-                                $botStream.html(currentHtml);
+                                $botStream.html(tempDiv);
                                 $('.chat-message-container').animate({ scrollTop: $('.chat-message-container')[0].scrollHeight }, 50);
                                 
                            }

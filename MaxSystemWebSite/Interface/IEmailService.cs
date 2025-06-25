@@ -1,5 +1,4 @@
-﻿using MailKit.Net.Imap;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Search;
 using MimeKit;
 using MaxSys.Models;
@@ -36,5 +35,7 @@ namespace MaxSys.Interface
         Task<(bool success, string message, EmailContent_Response? data)> GetEmailBodyContentByV1MessageID(string userID, string messageId);
         Task<(bool success, string message)> SendEmailAsync(Emai_TemplateSent model);
         Task<(bool success, string message)> SendComposeEmailAsync(Emai_TemplateSent model);
+        Task<(bool success, string message, string? userId)> GetUserIdByEmailAsync(string userEmail);
+        Task<(bool success, string message)> ReplyEmailAsync(string userId, string messageId, string replyBodyHtml);
     }
 }
