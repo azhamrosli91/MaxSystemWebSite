@@ -4,6 +4,7 @@ using Dapper;
 using MaxSys.Helpers;
 using MaxSys.Interface;
 using MaxSys.Models;
+using MaxSystemWebSite.Helpers.Graph;
 using MaxSystemWebSite.Models.MCP;
 using MaxSystemWebSite.Models.SETTING;
 using Microsoft.AspNetCore.Http;
@@ -107,6 +108,37 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     return BadRequest("Unknown Command: " + action);
             }
         }
+        public async Task<(bool status, string message, string dt)> ReadEmail(string valueparam)
+        {
+
+            SETTING_EMAIL settingEmail = new SETTING_EMAIL
+            {
+                TENANT_ID = _configuration["AzureAd:TenantId"],
+                CLIENT_ID = _configuration["AzureAd:ClientId"],
+                CLIENT_SECRET = _configuration["AzureAd:ClientSecrectValue"],
+                GRAPH_USER = _configuration.GetSection("Settings:GraphUserScopes").Get<string[]>()[0]
+            };
+
+            _emailService.InitGraph(settingEmail);
+
+
+            //(bool status, string message) result = await _emailService.SendEmailAsync(modelTemp);
+            var (found, msg, userId) = await _emailService.GetUserIdByEmailAsync(EMAIL);
+
+            if (!found || string.IsNullOrEmpty(userId))
+            {
+                return (false, msg, msg);
+            }
+
+            var (success, message, emails) = await _emailService.GetEmailList(userId);
+            if (!success)
+            {
+                return (false, message, message);
+            }
+
+            var json = System.Text.Json.JsonSerializer.Serialize(emails);
+            return (true, "Emails retrieved", json);
+        }
         public async Task<(bool status, string message, string dt)> HTTPrest(string valueparam)
         {
             try
@@ -165,7 +197,6 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                 return (false, $"Exception: {ex.Message}", "");
             }
         }  
-
         public async Task<(bool status, string message, string dt)> Reporting(string valueparam)
         {
             return (true, "report executed", valueparam);
@@ -372,7 +403,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
         //    {
         // Deserialize your MCP payload
         //dynamic mcp = JsonConvert.DeserializeObject(valueparam.Replace("[MCP]", ""));
-        //string connStr = "Server=dbdev.azhamrosli.com,1433;Initial Catalog=DB_AiScreen;Persist Security Info=False;User ID=aiscreenmax;Password=Black@654321;MultipleActiveResultSets=False;Encrypt=False;";     // e.g. "Server=db.internal.local;Port=1433;User Id=...;"
+        //string connStr = "";     // e.g. "Server=db.internal.local;Port=1433;User Id=...;"
         //string sshHost = "10.252.133.21";                // e.g. "bastion.example.com"
         //int sshPort = 8080;        // default to 22
         //string sshUser = "muhamadazham.rosli.q9@mail.toray";                // your SSH user
