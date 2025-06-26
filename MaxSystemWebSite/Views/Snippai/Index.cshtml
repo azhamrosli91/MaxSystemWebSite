@@ -263,7 +263,7 @@
 
 <div class="chat-message-header">
     <div class="d-flex justify-content-end">
-        <div class="btn btn-phoenix-secondary me-2" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</div>
+        <!--div class="btn btn-phoenix-secondary me-2" href="../AiResume/History"><span class="fas fa-history me-2"></span>History</div>-->
         <div class="btn btn-sm btn-primary" id="btnStartNew">Start New Conversation</div>
     </div>
 </div>
@@ -1033,6 +1033,9 @@
             // div.setAttribute('data-val', connector.name + connector.type);
             if (connector.type == 'email'){
                 div.setAttribute('data-val', connector.type + connector.email);
+            }
+            if (connector.type == 'apikey'){
+                div.setAttribute('data-val', "Api key = " + connector.apikey);
             }
             if (connector.type == 'mssql'){
                 div.setAttribute('data-val', connector.type + connector.server +  connector.username + connector.password);

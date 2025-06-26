@@ -88,6 +88,7 @@
                             <option value="mssql">MSSQL Database</option>
                             <option value="email">Email</option>
                             <option value="proxy">Proxy URL</option>
+                            <option value="apikey">Api Key</option>
                         </select>
                     </div>
 
@@ -120,6 +121,17 @@
                                    class="form-control"
                                    id="mssqlPass"
                                    name="password" />
+                        </div>
+                    </div>
+
+                    <!-- Api Key fields -->
+                    <div class="type-fields" id="fields-apikey" style="display: none;">
+                        <div class="mb-3">
+                            <label for="emailAddress" class="form-label">Api Key</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="apikey"
+                                   name="apikey" />
                         </div>
                     </div>
 
@@ -242,6 +254,8 @@
                 return `Server: ${data.server || ''}, Database: ${data.database || ''}, User: ${data.username || ''}`;
             } else if (type === 'email') {
                 return `Email: ${data.email || ''}`;
+            } else if (type === 'apikey') {
+                return `Api Key: ${data.apikey || ''}`;
             } else if (type === 'proxy') {
                 return `URL: ${data.url || ''}, User: ${data.username || ''}, Required: ${data.required ? 'Yes' : 'No'}`;
             }
@@ -278,7 +292,6 @@
             const name = formData.get('name');
             const type = formData.get('type');
 
-            // Extract all fields based on type
             let data = { name, type };
 
             if (type === 'mssql') {
@@ -288,6 +301,8 @@
                 data.password = formData.get('password');
             } else if (type === 'email') {
                 data.email = formData.get('email');
+            } else if (type === 'apikey') {
+                data.apikey = formData.get('apikey');
             } else if (type === 'proxy') {
                 data.url = formData.get('url');
                 data.username = formData.get('proxyusername');
@@ -295,7 +310,6 @@
                 data.required = form.elements['required'].checked;
             }
 
-            // Add human-readable summary
             data.details = getFormDetails(data, type);
 
             if (editIndex !== null) {
@@ -314,6 +328,7 @@
             modalTitle.textContent = "Configure Connector";
             submitBtn.textContent = "Save Connector";
         });
+
 
         // Handle edit/delete buttons
         tableBody.addEventListener('click', function (e) {
@@ -347,6 +362,8 @@
                     form.elements['password'].value = item.password || '';
                 } else if (item.type === 'email') {
                     form.elements['email'].value = item.email || '';
+                } else if (item.type === 'apikey') {
+                    form.elements['apikey'].value = item.apikey || '';
                 } else if (item.type === 'proxy') {
                     form.elements['url'].value = item.url || '';
                     form.elements['proxyusername'].value = item.username || '';
