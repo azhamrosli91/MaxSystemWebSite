@@ -609,7 +609,8 @@ namespace MaxSystemWebSite.Helpers.Graph
                 }
 
                 // Set default values for attribute and orderby if not provided
-                attribute ??= new[] { "id", "conversationId", "from", "isRead", "receivedDateTime", "subject", "body" };
+                attribute ??= new[] { "id", "conversationId", "from", "isRead", "receivedDateTime", "subject", "body", "ccRecipients",
+    "bccRecipients" };
                 orderby ??= new[] { "receivedDateTime DESC" };
 
                 // Fetch emails from the specified folder
@@ -1018,6 +1019,43 @@ namespace MaxSystemWebSite.Helpers.Graph
             }
         }
         #endregion
+
+        public async Task<(bool success, string message)> ReplyAllEmailAsync(string userId, string messageId, string replyBodyHtml)
+        {
+            try
+            {
+                _ = _appClient ?? throw new NullReferenceException("Graph has not been initialized for app auth");
+
+                if (string.IsNullOrEmpty(userId))
+                    return (false, "User ID is required");
+
+                if (string.IsNullOrEmpty(messageId))
+                    return (false, "Message ID is required");
+
+                if (string.IsNullOrEmpty(replyBodyHtml))
+                    return (false, "Reply body content is required");
+
+                var requestBody = new Microsoft.Graph.Users.Item.Messages.Item.ReplyAll.ReplyAllPostRequestBody
+                {
+                    Message = new Microsoft.Graph.Models.Message
+                    {
+                        Body = new Microsoft.Graph.Models.ItemBody
+                        {
+                            ContentType = Microsoft.Graph.Models.BodyType.Html,
+                            Content = replyBodyHtml
+                        }
+                    }
+                };
+
+                await _appClient.Users[userId].Messages[messageId].ReplyAll.PostAsync(requestBody);
+
+                return (true, "Reply All sent successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Failed to send Reply All: {ex.Message}");
+            }
+        }
 
     }
 }

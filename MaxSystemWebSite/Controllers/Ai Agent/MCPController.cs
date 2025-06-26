@@ -141,16 +141,15 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
                     return (false, "One or more required fields are missing", "");
                 }
 
-                var (success, message) = await _emailService.ReplyEmailAsync(userId, messageId, body);
+                var (success, message) = await _emailService.ReplyAllEmailAsync(userId, messageId, body);
 
                 return (success, message, body);
             }
             catch (Exception ex)
             {
-                return (false, $"Exception: {ex.Message}", "");
+                return (false, $"Exception: {ex.Message}", $"Exception: {ex.Message}");
             }
         }
-
         public async Task<(bool status, string message, string dt)> ReadEmail(string valueparam)
         {
 
@@ -182,15 +181,22 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             // Malaysia Timezone
             var malaysiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time"); // Windows uses this ID
 
+
             var filteredEmails = emails?.Value?.Select(e => new
             {
-                Id = e.Id, // ✅ Keep it
+                Id = e.Id, // ✅ Kept internally
                 From = e.From?.EmailAddress?.Name ?? e.From?.EmailAddress?.Address ?? "(Unknown)",
                 Subject = e.Subject ?? "(No Subject)",
                 Content = e.Body?.Content ?? "(No Content)",
                 Received = e.ReceivedDateTime != null
                     ? TimeZoneInfo.ConvertTimeFromUtc(e.ReceivedDateTime.Value.UtcDateTime, malaysiaTimeZone).ToString("yyyy-MM-dd HH:mm:ss")
-                    : "(No Date)"
+                    : "(No Date)",
+                Cc = e.CcRecipients != null
+                    ? string.Join(", ", e.CcRecipients.Select(r => r.EmailAddress?.Address ?? "(Unknown)"))
+                    : "(No CC)",
+                Bcc = e.BccRecipients != null
+                    ? string.Join(", ", e.BccRecipients.Select(r => r.EmailAddress?.Address ?? "(Unknown)"))
+                    : "(No BCC)"
             }).ToList();
 
             var formatted = new StringBuilder();
@@ -199,6 +205,7 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             foreach (var email in filteredEmails)
             {
                 formatted.AppendLine($"Email {index}");
+                formatted.AppendLine($"Id: {email.Id}");
                 formatted.AppendLine($"From: {email.From}");
                 formatted.AppendLine($"Subject: {email.Subject}");
                 formatted.AppendLine($"Content: {email.Content}");
@@ -209,8 +216,8 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
 
             var result = formatted.ToString();
             var json = System.Text.Json.JsonSerializer.Serialize(filteredEmails);
-            Console.WriteLine(json);
-            return (true, "Formatted emails", json);
+            Console.WriteLine(result);
+            return (true, "Formatted emails", result);
         }
         public async Task<(bool status, string message, string dt)> HTTPrest(string valueparam)
         {

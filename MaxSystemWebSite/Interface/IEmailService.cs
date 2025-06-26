@@ -37,5 +37,6 @@ namespace MaxSys.Interface
         Task<(bool success, string message)> SendComposeEmailAsync(Emai_TemplateSent model);
         Task<(bool success, string message, string? userId)> GetUserIdByEmailAsync(string userEmail);
         Task<(bool success, string message)> ReplyEmailAsync(string userId, string messageId, string replyBodyHtml);
+        Task<(bool success, string message)> ReplyAllEmailAsync(string userId, string messageId, string replyBodyHtml);
     }
 }
