@@ -204,12 +204,12 @@ namespace MaxSystemWebSite.Controllers.Ai_Agent
             int index = 1;
             foreach (var email in filteredEmails)
             {
-                formatted.AppendLine($"Email {index}");
-                formatted.AppendLine($"Id: {email.Id}");
-                formatted.AppendLine($"From: {email.From}");
-                formatted.AppendLine($"Subject: {email.Subject}");
-                formatted.AppendLine($"Content: {email.Content}");
-                formatted.AppendLine($"Received: {email.Received}");
+                formatted.AppendLine($"<h3>Email {index}</h3>");
+                formatted.AppendLine($"<b>From: {email.From} </b>");
+                formatted.AppendLine($"<b>Received: {email.Received}</b>");
+                formatted.AppendLine($"<b>Subject: {email.Subject}</b>");
+                formatted.AppendLine($"{email.Content}");
+                formatted.AppendLine($"<span style = 'display:none;'>Id: {email.Id}</span>");
                 formatted.AppendLine(); // Blank line between emails
                 index++;
             }

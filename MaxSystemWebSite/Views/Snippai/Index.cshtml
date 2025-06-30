@@ -783,6 +783,7 @@
                                                     .replace(/!!\[DONE\]!!/g, '')
                                                     // .replace(/\[MCP\]/g, '')
                                                     // .replace(/\[MCP/g, '');
+
                                                 // 2. Replace --- with <hr />
                                                 currentHtml = currentHtml.replace(/^\s*---\s*$/gm, '<hr />');
 
@@ -873,7 +874,7 @@
 
                                 const tempDiv = document.createElement('div');
                                 tempDiv.innerHTML = currentHtml;
-                                $botStream.append(tempDiv);
+                                // $botStream.append(tempDiv);
 
                                 // console.log("Processed HTML:", currentHtml);
                                 $botStream.html(tempDiv);
